@@ -18,7 +18,7 @@ RUN "date"
 
 # Type docker-php-ext-install to see available extensions
 RUN apk update \
-    && apk add --no-cache libcurl curl g++ make autoconf
+    && apk add --no-cache libcurl curl g++ make autoconf openssl-dev
 
 RUN apk add --no-cache --virtual .build-deps \
         $PHPIZE_DEPS \
@@ -29,9 +29,11 @@ RUN apk add --no-cache --virtual .build-deps \
         libxml2-dev \
         && docker-php-ext-install intl soap
 
+RUN pecl install mongodb
+
 # http://symfony.com/doc/current/performance.html
 RUN pecl install apcu-5.1.5
-RUN docker-php-ext-enable opcache apcu
+RUN docker-php-ext-enable opcache apcu mongodb
 # opcache
 RUN echo "opcache.max_accelerated_files=20000" >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini
 RUN echo "realpath_cache_ttl=600" >> /usr/local/etc/php/conf.d/php.ini

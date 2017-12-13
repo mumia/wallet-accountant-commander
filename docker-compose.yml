@@ -5,6 +5,8 @@ services:
         build: ./docker/php-fpm
         volumes:
             - ./:/srv/walletaccountantcommander
+        depends_on:
+            - mongo
     nginx:
         image: 'nginx:1.13-alpine'
         depends_on:
@@ -17,3 +19,14 @@ services:
         volumes:
             - './docker/nginx/conf.d:/etc/nginx/conf.d:ro'
             - ./var/nginx/logs/:/var/log/nginx
+    mongo:
+        image: 'mongo:3.6-jessie'
+        environment:
+            - MONGO_DATA_DIR=/data/db
+            - MONGO_LOG_DIR=/dev/null
+            - MONGODB_USER="user"
+            - MONGODB_PASS="password"
+        volumes:
+            - ./data/mongo:/data/db
+        ports:
+            - 27017:27017
