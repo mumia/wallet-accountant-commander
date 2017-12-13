@@ -1,0 +1,7 @@
+#index:
+#    path: /
+#    defaults: { _controller: 'App\Controller\DefaultController::index' }
+
+test:
+    path: /test
+    defaults: { _controller: 'App\Controller\TestController::test' }
