@@ -1,7 +1,7 @@
 #index:
 #    path: /
-#    defaults: { _controller: 'App\Controller\DefaultController::index' }
+#    defaults: { _controller: 'WalletAccountant\Controller\DefaultController::index' }
 
 test:
     path: /test
-    defaults: { _controller: 'App\Controller\TestController::test' }
+    defaults: { _controller: 'WalletAccountant\Controller\TestController::test' }
