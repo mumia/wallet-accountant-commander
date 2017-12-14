@@ -14,5 +14,5 @@ doctrine_mongodb:
                     is_bundle: false
                     type: annotation
                     dir: '%kernel.project_dir%/src/Document'
-                    prefix: App\Document\
+                    prefix: WalletAccountant\Document\
                     alias: App
