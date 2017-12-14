@@ -1,4 +1,46 @@
 {
+    "doctrine/annotations": {
+        "version": "1.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "1.0",
+            "ref": "cb4152ebcadbe620ea2261da1a1c5a9b8cea7672"
+        }
+    },
+    "doctrine/cache": {
+        "version": "v1.7.1"
+    },
+    "doctrine/collections": {
+        "version": "v1.5.0"
+    },
+    "doctrine/common": {
+        "version": "v2.8.1"
+    },
+    "doctrine/inflector": {
+        "version": "v1.2.0"
+    },
+    "doctrine/instantiator": {
+        "version": "1.1.0"
+    },
+    "doctrine/lexer": {
+        "version": "v1.0.1"
+    },
+    "doctrine/mongodb": {
+        "version": "1.6.1"
+    },
+    "doctrine/mongodb-odm": {
+        "version": "1.2.1"
+    },
+    "doctrine/mongodb-odm-bundle": {
+        "version": "3.3",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "3.3",
+            "ref": "e1ee362a520ff9e3e7c38fb5399499427ed91314"
+        }
+    },
     "paragonie/random_compat": {
         "version": "v2.0.11"
     },
@@ -36,6 +78,9 @@
         "version": "v3.4.1"
     },
     "symfony/dependency-injection": {
+        "version": "v3.4.1"
+    },
+    "symfony/doctrine-bridge": {
         "version": "v3.4.1"
     },
     "symfony/dotenv": {
@@ -76,6 +121,9 @@
     },
     "symfony/lts": {
         "version": "v3"
+    },
+    "symfony/options-resolver": {
+        "version": "v3.4.1"
     },
     "symfony/polyfill-apcu": {
         "version": "v1.6.0"
