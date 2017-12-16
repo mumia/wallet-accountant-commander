@@ -38,6 +38,11 @@ RUN docker-php-ext-enable opcache apcu mongodb
 RUN echo "opcache.max_accelerated_files=20000" >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini
 RUN echo "realpath_cache_ttl=600" >> /usr/local/etc/php/conf.d/php.ini
 
+# phpunit
+RUN wget https://phar.phpunit.de/phpunit.phar
+RUN chmod +x phpunit.phar
+RUN mv phpunit.phar /usr/local/bin/phpunit
+
 WORKDIR /srv/walletaccountantcommander
 
 COPY start.sh /usr/local/bin/docker-app-start
