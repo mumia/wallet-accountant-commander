@@ -1,24 +1,26 @@
-version: '2.1'
+version: '3'
 
 services:
     php:
         build: ./docker/php-fpm
         volumes:
-            - ./:/srv/walletaccountantcommander
+            - ./:/srv/walletaccountantcommander:delegated
         depends_on:
             - mongo
+        networks:
+           - commander
     nginx:
         image: 'nginx:1.13-alpine'
-        depends_on:
-            php:
-                condition: 'service_started'
         ports:
             - '9000:80'
-        volumes_from:
-            - php
+        depends_on:
+          - php
         volumes:
             - './docker/nginx/conf.d:/etc/nginx/conf.d:ro'
-            - ./var/nginx/logs/:/var/log/nginx
+            - ./var/nginx/logs/:/var/log/nginx:delegated
+            - ./:/srv/walletaccountantcommander:delegated
+        networks:
+           - commander
     mongo:
         image: 'mongo:3.6-jessie'
         environment:
@@ -27,6 +29,11 @@ services:
             - MONGODB_USER="user"
             - MONGODB_PASS="password"
         volumes:
-            - ./data/mongo:/data/db
+            - ./data/mongo:/data/db:delegated
         ports:
             - 27017:27017
+        networks:
+           - commander
+
+networks:
+    commander:
