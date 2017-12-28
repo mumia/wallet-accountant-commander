@@ -4,8 +4,8 @@ namespace WalletAccountant\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
-use WalletAccountant\Document\Realtime\UserEmails;
-use WalletAccountant\Infrastructure\MongoDB\UserEmailsRepository;
+use WalletAccountant\Document\User;
+use WalletAccountant\Infrastructure\MongoDB\UserRepository;
 
 /**
  * TestController
@@ -13,16 +13,16 @@ use WalletAccountant\Infrastructure\MongoDB\UserEmailsRepository;
 class TestController extends Controller
 {
     /**
-     * @var UserEmailsRepository
+     * @var UserRepository
      */
-    private $userEmailsRepository;
+    private $userRepository;
 
     /**
-     * @param UserEmailsRepository $userEmailsRepository
+     * @param UserRepository $userRepository
      */
-    public function __construct(UserEmailsRepository $userEmailsRepository)
+    public function __construct(UserRepository $userRepository)
     {
-        $this->userEmailsRepository = $userEmailsRepository;
+        $this->userRepository = $userRepository;
     }
 
     /**
@@ -34,14 +34,14 @@ class TestController extends Controller
         $val = sprintf('teste_%d@email.com', $val);
         var_dump($val);
 
-        $this->userEmailsRepository->emailExists($val);
+        $this->userRepository->emailExists($val);
 
-        $email = new UserEmails();
+        $email = new User();
         $email->email = $val;
 
-        $this->userEmailsRepository->persist($email);
+        $this->userRepository->persist($email);
 
-        $this->userEmailsRepository->emailExists($val);
+        $this->userRepository->emailExists($val);
 
         return new Response('Tested!');
     }
