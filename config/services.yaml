@@ -26,6 +26,20 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
+    WalletAccountant\Command\UserCreateCommand:
+        arguments: ['@prooph_service_bus.user_command_bus', '@prooph_service_bus.message_factory']
+        tags: ['console.command']
+
+    WalletAccountant\Domain\User\Handler\CreateUserHandler:
+        arguments: ['@user_repository']
+        public: true
+        tags:
+            - { name: 'prooph_service_bus.user_command_bus.route_target', message_detection: true }
+
+    WalletAccountant\Infrastructure\MongoDB\UserRepository:
+        arguments:
+            $databaseName: '%env(MONGODB_DB)%'
+
     WalletAccountant\Infrastructure\Client\MongoDB:
         arguments:
             - '@doctrine_mongodb'

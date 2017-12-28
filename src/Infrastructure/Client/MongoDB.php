@@ -5,6 +5,8 @@ namespace WalletAccountant\Infrastructure\Client;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\MongoDB\Connection;
+use InvalidArgumentException;
 
 /**
  * Client
@@ -38,5 +40,16 @@ class MongoDB implements MongoDBInterface
     public function getRepository(string $repositoryName): ObjectRepository
     {
         return $this->registry->getRepository($repositoryName);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getConnection(): Connection
+    {
+        /** @var Connection $connection */
+        $connection = $this->registry->getConnection();
+
+        return $connection;
     }
 }

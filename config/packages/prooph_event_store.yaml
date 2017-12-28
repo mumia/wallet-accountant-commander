@@ -1,0 +1,43 @@
+prooph_event_store:
+    stores:
+        user_store:
+            event_store: Prooph\EventStore\Pdo\MariaDbEventStore
+            repositories:
+                user_repository:
+                    repository_class: WalletAccountant\Infrastructure\EventStore\UserRepository
+                    aggregate_type: WalletAccountant\Domain\User\User
+                    aggregate_translator: prooph_event_sourcing.aggregate_translator
+                    snapshot_store: null
+                    stream_name: user
+                    one_stream_per_aggregate: true
+    projection_managers:
+        user_projection_manager:
+            event_store: Prooph\EventStore\Pdo\MariaDbEventStore # event store
+            connection: 'doctrine.pdo.connection'
+            projections:
+                user_projection:
+                    read_model: WalletAccountant\Projection\User\UserReadModel
+                    projection: WalletAccountant\Projection\User\UserProjection
+#                todo_projection:
+#                    read_model: Prooph\ProophessorDo\Projection\Todo\TodoReadModel
+#                    projection: Prooph\ProophessorDo\Projection\Todo\TodoProjection
+#                todo_reminder_projection:
+#                    read_model: Prooph\ProophessorDo\Projection\Todo\TodoReminderReadModel
+#                    projection: Prooph\ProophessorDo\Projection\Todo\TodoReminderProjection
+
+services:
+    Prooph\EventStore\Pdo\MariaDbEventStore:
+        arguments:
+            - '@prooph_event_store.message_factory'
+            - '@doctrine.pdo.connection'
+            - '@prooph_event_store.aggregate_stream_strategy'
+
+    doctrine.pdo.connection:
+        class: PDO
+        factory: ['@database_connection', getWrappedConnection]
+
+    prooph_event_store.aggregate_stream_strategy:
+        class: Prooph\EventStore\Pdo\PersistenceStrategy\MariaDbAggregateStreamStrategy
+
+    prooph_event_sourcing.aggregate_translator:
+        class: Prooph\EventSourcing\EventStoreIntegration\AggregateTranslator

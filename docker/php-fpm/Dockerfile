@@ -27,7 +27,7 @@ RUN apk add --no-cache --virtual .build-deps \
         icu-dev \
         zlib-dev \
         libxml2-dev \
-        && docker-php-ext-install intl soap
+        && docker-php-ext-install intl soap pdo_mysql
 
 RUN pecl install mongodb
 
@@ -43,9 +43,18 @@ RUN wget https://phar.phpunit.de/phpunit.phar
 RUN chmod +x phpunit.phar
 RUN mv phpunit.phar /usr/local/bin/phpunit
 
+# mariadb client
+RUN apk add mysql-client
+#RUN sed '/skip-external-locking/a bind-address=0.0.0.0' /etc/mysql/my.cnf
+#
+#RUN mysql_install_db --user=mysql --ldata=/var/lib/mysql
+
 WORKDIR /srv/walletaccountantcommander
 
 COPY start.sh /usr/local/bin/docker-app-start
+COPY boot_db.sh /root/boot_db.sh
+COPY install_db.sql /root/install_db.sql
+RUN chmod +x /root/boot_db.sh
 RUN chmod +x /usr/local/bin/docker-app-start
 
 CMD ["docker-app-start"]

@@ -25,6 +25,7 @@ before_script:
 #  - if [[ "$DB" == "pgsql" ]]; then psql -c "DROP DATABASE IF EXISTS hello_world_test;" -U postgres; fi
 #  - if [[ "$DB" == "pgsql" ]]; then psql -c "create database hello_world_test;" -U postgres; fi
 #  - if [[ "$DB" == "mysql" ]]; then mysql -e "create database IF NOT EXISTS hello_world_test;" -uroot; fi
+ - phpenv config-rm xdebug.ini
  - wget https://phar.phpunit.de/phpunit.phar chmod +x phpunit.phar; sudo mv phpunit.phar /usr/local/bin/phpunit
  - cp phpunit.xml.dist phpunit.xml
  - composer self-update
@@ -37,7 +38,7 @@ before_script:
 
 # omitting "script:" will default to phpunit
 # use the $DB env variable to determine the phpunit.xml to use
-script: phpunit --configuration phpunit.xml --coverage-text
+script: phpdbg -qrr phpunit --configuration phpunit.xml --coverage-text
 
 # configure notifications (email, IRC, campfire etc)
 #notifications:

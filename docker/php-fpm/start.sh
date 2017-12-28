@@ -1,6 +1,8 @@
 #!/bin/sh
 set -xe
 
+/root/boot_db.sh
+
 # Detect the host IP to add to whitelist ips (index.php)
 export DOCKER_BRIDGE_IP=$(ip ro | grep default | cut -d' ' -f 3)
 

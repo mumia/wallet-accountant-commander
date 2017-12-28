@@ -7,6 +7,9 @@ services:
             - ./:/srv/walletaccountantcommander:delegated
         depends_on:
             - mongo
+            - mariadb
+        links:
+          - mariadb
         networks:
            - commander
     nginx:
@@ -14,7 +17,7 @@ services:
         ports:
             - '9000:80'
         depends_on:
-          - php
+            - php
         volumes:
             - './docker/nginx/conf.d:/etc/nginx/conf.d:ro'
             - ./var/nginx/logs/:/var/log/nginx:delegated
@@ -33,7 +36,18 @@ services:
         ports:
             - 27017:27017
         networks:
-           - commander
+            - commander
+    mariadb:
+        image: 'mariadb:10.3.2'
+        environment:
+            - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+            - MYSQL_USER = evtstr
+            - MYSQL_PASSWORD = mynormalpw
+            - MYSQL_DATABASE = events
+        ports:
+            - 3306:3306
+        networks:
+            - commander
 
 networks:
     commander:
