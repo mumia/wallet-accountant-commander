@@ -4,10 +4,12 @@ namespace WalletAccountant\Tests\Integration\Command;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
+use function getenv;
 use function json_encode;
 use function sprintf;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
+use function var_dump;
 
 /**
  * UserCreateCommandTest

@@ -25,8 +25,13 @@ before_script:
 #  - if [[ "$DB" == "pgsql" ]]; then psql -c "DROP DATABASE IF EXISTS hello_world_test;" -U postgres; fi
 #  - if [[ "$DB" == "pgsql" ]]; then psql -c "create database hello_world_test;" -U postgres; fi
 #  - if [[ "$DB" == "mysql" ]]; then mysql -e "create database IF NOT EXISTS hello_world_test;" -uroot; fi
+ - sudo apt-get install software-properties-common
+ - sudo apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xcbcb082a1bb943db
+ - sudo add-apt-repository 'deb [arch=amd64,i386,ppc64el] http://mirrors.up.pt/pub/mariadb/repo/10.3/ubuntu trusty main'
+ - sudo apt-get update
+ - sudo apt-get install mariadb-server mongodb
  - phpenv config-rm xdebug.ini
- - wget https://phar.phpunit.de/phpunit.phar chmod +x phpunit.phar; sudo mv phpunit.phar /usr/local/bin/phpunit
+ - wget https://phar.phpunit.de/phpunit.phar; mv phpunit.phar phpunit; chmod 755 phpunit;
  - cp phpunit.xml.dist phpunit.xml
  - composer self-update
  - composer global require "hirak/prestissimo:^0.3" --prefer-dist --no-progress --no-suggest --optimize-autoloader --classmap-authoritative
@@ -38,7 +43,7 @@ before_script:
 
 # omitting "script:" will default to phpunit
 # use the $DB env variable to determine the phpunit.xml to use
-script: phpdbg -qrr phpunit --configuration phpunit.xml --coverage-text
+script: make test-integration-travis
 
 # configure notifications (email, IRC, campfire etc)
 #notifications:

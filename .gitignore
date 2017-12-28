@@ -18,4 +18,5 @@ bin/.phpunit
 ###> phpunit/phpunit ###
 /phpunit
 /phpunit.xml
+/phpunit-travis.xml
 ###< phpunit/phpunit ###
