@@ -6,7 +6,7 @@ use Prooph\EventStore\Projection\AbstractReadModel;
 use function var_dump;
 use WalletAccountant\Document\User;
 use InvalidArgumentException;
-use WalletAccountant\Infrastructure\MongoDB\UserRepository;
+use WalletAccountant\Infrastructure\MongoDB\UserProjectionRepository;
 
 /**
  * UserReadModel
@@ -14,14 +14,14 @@ use WalletAccountant\Infrastructure\MongoDB\UserRepository;
 final class UserReadModel extends AbstractReadModel
 {
     /**
-     * @var UserRepository
+     * @var UserProjectionRepository
      */
     private $userRepository;
 
     /**
-     * @param UserRepository $userRepository
+     * @param UserProjectionRepository $userRepository
      */
-    public function __construct(UserRepository $userRepository)
+    public function __construct(UserProjectionRepository $userRepository)
     {
         $this->userRepository = $userRepository;
     }

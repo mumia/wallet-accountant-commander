@@ -20,7 +20,7 @@ class User
     /**
      * @var Name
      *
-     * @MongoDB\EmbedOne(targetDocument="User\Name")
+     * @MongoDB\EmbedOne(targetDocument="WalletAccountant\Document\User\Name")
      */
     public $name;
 }

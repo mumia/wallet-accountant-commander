@@ -5,9 +5,9 @@ namespace WalletAccountant\Infrastructure\MongoDB;
 use WalletAccountant\Infrastructure\Client\MongoDB;
 
 /**
- * AbstractMongoDBRepository
+ * AbstractProjectionRepository
  */
-abstract class AbstractMongoDBRepository
+abstract class AbstractProjectionRepository
 {
     /**
      * @var MongoDB

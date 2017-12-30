@@ -36,10 +36,20 @@ services:
         tags:
             - { name: 'prooph_service_bus.user_command_bus.route_target', message_detection: true }
 
-    WalletAccountant\Infrastructure\MongoDB\UserRepository:
+    WalletAccountant\Infrastructure\MongoDB\UserProjectionRepository:
         arguments:
             $databaseName: '%env(MONGODB_DB)%'
 
     WalletAccountant\Infrastructure\Client\MongoDB:
         arguments:
             - '@doctrine_mongodb'
+
+    # Projection runners
+    walletaccountant.projection_runner.user:
+        class: WalletAccountant\Projection\ProjectionRunner
+        public: true
+        arguments:
+            $projectionName: 'user_projection'
+            $projection: '@prooph_event_store.projection.user_projection'
+            $projectionManager: '@prooph_event_store.projection.user_projection.projection_manager'
+            $readModel: '@prooph_event_store.projection.user_projection.read_model'

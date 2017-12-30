@@ -5,7 +5,7 @@ namespace WalletAccountant\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use WalletAccountant\Document\User;
-use WalletAccountant\Infrastructure\MongoDB\UserRepository;
+use WalletAccountant\Infrastructure\MongoDB\UserProjectionRepository;
 
 /**
  * TestController
@@ -13,14 +13,14 @@ use WalletAccountant\Infrastructure\MongoDB\UserRepository;
 class TestController extends Controller
 {
     /**
-     * @var UserRepository
+     * @var UserProjectionRepository
      */
     private $userRepository;
 
     /**
-     * @param UserRepository $userRepository
+     * @param UserProjectionRepository $userRepository
      */
-    public function __construct(UserRepository $userRepository)
+    public function __construct(UserProjectionRepository $userRepository)
     {
         $this->userRepository = $userRepository;
     }

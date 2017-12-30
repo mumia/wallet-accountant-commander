@@ -3,19 +3,17 @@
 namespace WalletAccountant\Infrastructure\MongoDB;
 
 use WalletAccountant\Document\User;
-use InvalidArgumentException;
+use WalletAccountant\Domain\User\UserProjectionRepositoryInterface;
 
 /**
- * UserRepository
+ * UserProjectionRepository
  */
-final class UserRepository extends AbstractMongoDBRepository
+final class UserProjectionRepository extends AbstractProjectionRepository implements UserProjectionRepositoryInterface
 {
-    const COLLECTION_NAME = 'user';
+    protected const COLLECTION_NAME = 'user';
 
     /**
-     * @param User $document
-     *
-     * @throws InvalidArgumentException
+     * {@inheritdoc}
      */
     public function persist(User $document): void
     {
@@ -25,16 +23,13 @@ final class UserRepository extends AbstractMongoDBRepository
     }
 
     /**
-     * @param string $email
-     *
-     * @return bool
+     * {@inheritdoc}
      */
     public function emailExists(string $email): bool
     {
         $repository = $this->client->getRepository(User::class);
-        var_dump($repository->find($email));
 
-        return true;
+        return $repository->find($email) instanceof User;
     }
 
     /**
