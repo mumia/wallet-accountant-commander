@@ -18,12 +18,6 @@ prooph_event_store:
                 user_projection:
                     read_model: WalletAccountant\Projection\User\UserReadModel
                     projection: WalletAccountant\Projection\User\UserProjection
-#                todo_projection:
-#                    read_model: Prooph\ProophessorDo\Projection\Todo\TodoReadModel
-#                    projection: Prooph\ProophessorDo\Projection\Todo\TodoProjection
-#                todo_reminder_projection:
-#                    read_model: Prooph\ProophessorDo\Projection\Todo\TodoReminderReadModel
-#                    projection: Prooph\ProophessorDo\Projection\Todo\TodoReminderProjection
 
 services:
     Prooph\EventStore\Pdo\MariaDbEventStore:

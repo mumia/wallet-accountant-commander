@@ -45,9 +45,6 @@ RUN mv phpunit.phar /usr/local/bin/phpunit
 
 # mariadb client
 RUN apk add mysql-client
-#RUN sed '/skip-external-locking/a bind-address=0.0.0.0' /etc/mysql/my.cnf
-#
-#RUN mysql_install_db --user=mysql --ldata=/var/lib/mysql
 
 WORKDIR /srv/walletaccountantcommander
 

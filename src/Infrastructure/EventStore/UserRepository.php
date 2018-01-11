@@ -12,7 +12,6 @@ use WalletAccountant\Domain\User\UserRepositoryInterface;
  */
 final class UserRepository extends AggregateRepository implements UserRepositoryInterface
 {
-
     /**
      * {@inheritdoc}
      */
@@ -26,6 +25,9 @@ final class UserRepository extends AggregateRepository implements UserRepository
      */
     public function get(UserId $userId): ?User
     {
-        $this->getAggregateRoot($userId->toString());
+        /** @var User $user */
+        $user = $this->getAggregateRoot($userId->toString());
+
+        return $user;
     }
 }

@@ -32,7 +32,6 @@ class TestController extends Controller
     {
         $val = time();
         $val = sprintf('teste_%d@email.com', $val);
-        var_dump($val);
 
         $this->userRepository->emailExists($val);
 
