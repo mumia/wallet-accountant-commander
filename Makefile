@@ -3,29 +3,27 @@ MARIADB_HOST = mariadb
 MONGODB_HOST = mongo
 
 run-functional-test:
-	@./phpunit -c phpunit$(PHPUNIT_CONFIG_PREPEND).xml tests/Functional
+	@echo "Running functional tests" \
+	&& ./phpunit -c phpunit$(PHPUNIT_CONFIG_PREPEND).xml tests/Functional
 .PHONY: run-unit-test
 
 run-integration-test:
-	@./phpunit -c phpunit$(PHPUNIT_CONFIG_PREPEND).xml tests/Integration
+	@echo "Running integration tests" \
+	&& ./phpunit -c phpunit$(PHPUNIT_CONFIG_PREPEND).xml tests/Integration
 .PHONY: run-integration-test
 
 prepare-phpunit-config:
-	@cp phpunit$(PHPUNIT_CONFIG_PREPEND).xml.dist phpunit$(PHPUNIT_CONFIG_PREPEND).xml
+	@echo "Preparing test config" \
+	&& cp phpunit$(PHPUNIT_CONFIG_PREPEND).xml.dist phpunit$(PHPUNIT_CONFIG_PREPEND).xml
 .PHONY: prepare-phpunit-config
 
 prepare-test-database:
-	@mysql -h $(MARIADB_HOST) -uroot < tests/Integration/database/prepare_mariadb.sql \
+	@echo "Preparing test database" \
+	&& mysql -h $(MARIADB_HOST) -uroot < tests/database/prepare_mariadb.sql \
 	&& mysql -h $(MARIADB_HOST) -u root events_test < ./vendor/prooph/pdo-event-store/scripts/mariadb/01_event_streams_table.sql \
 	&& mysql -h $(MARIADB_HOST) -u root events_test < ./vendor/prooph/pdo-event-store/scripts/mariadb/02_projections_table.sql \
-	&& mongo $(MONGODB_HOST)/walletaccountant_test < tests/Integration/database/prepare_mongodb > /dev/null
+	&& mongo $(MONGODB_HOST)/walletaccountant_test < tests/database/prepare_mongodb > /dev/null
 .PHONY: prepare-test-database
-
-tests: test test-integration
-.PHONY: tests
-
-tests-travis: test-travis test-integration-travis
-.PHONY: tests-travis
 
 test: prepare-phpunit-config prepare-test-database run-functional-test
 .PHONY: test
