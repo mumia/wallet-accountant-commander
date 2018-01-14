@@ -15,7 +15,7 @@ services:
     # this creates a service per class whose id is the fully-qualified class name
     WalletAccountant\:
         resource: '../src/*'
-        exclude: '../src/{Common,Document,Tests}'
+        exclude: '../src/{Common,Document,tests}'
 
     # controllers are imported separately to make sure services can be injected
     # as action arguments even if you don't extend any base controller class

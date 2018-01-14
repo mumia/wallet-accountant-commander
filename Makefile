@@ -24,11 +24,17 @@ prepare-test-database:
 tests: test test-integration
 .PHONY: tests
 
-tests-travis: test test-integration-travis
+tests-travis: test-travis test-integration-travis
 .PHONY: tests-travis
 
-test: prepare-phpunit-config run-functional-test
+test: prepare-phpunit-config prepare-test-database run-functional-test
 .PHONY: test
+
+test-travis: PHPUNIT_CONFIG_PREPEND = -travis
+test-travis: MARIADB_HOST = 127.0.0.1
+test-travis: MONGODB_HOST = 127.0.0.1
+test-travis: test
+.PHONY: test-travis
 
 test-integration: prepare-phpunit-config prepare-test-database run-integration-test
 .PHONY: test-integration
