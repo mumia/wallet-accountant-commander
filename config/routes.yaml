@@ -5,3 +5,22 @@
 test:
     path: /test
     defaults: { _controller: 'WalletAccountant\Controller\TestController::test' }
+
+ping:
+    path: /ping
+    defaults: { _controller: 'WalletAccountant\Controller\PingController::ping' }
+
+ping_authenticated:
+    path: /ping-authenticated
+    defaults: { _controller: 'WalletAccountant\Controller\PingController::pingAuthenticated' }
+
+user_recover_password:
+    path: /recover-password/{code}
+    methods: [POST]
+    defaults: { _controller: 'WalletAccountant\Controller\UserController::recoverPassword' }
+
+user_login:
+    path: /login
+    methods: [POST]
+    defaults: { _controller: 'WalletAccountant\Controller\SecurityController::login' }
+

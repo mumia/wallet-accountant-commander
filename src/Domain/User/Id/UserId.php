@@ -5,7 +5,7 @@ namespace WalletAccountant\Domain\User\Id;
 use WalletAccountant\Domain\Common\Id;
 use WalletAccountant\Domain\Common\ValueObjectInterface;
 use Ramsey\Uuid\Uuid;
-use WalletAccountant\Exceptions\InvalidArgumentException;
+use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 
 /**
  * UserId

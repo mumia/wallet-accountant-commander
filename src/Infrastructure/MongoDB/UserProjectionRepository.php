@@ -2,8 +2,11 @@
 
 namespace WalletAccountant\Infrastructure\MongoDB;
 
+use InvalidArgumentException as StandardInvalidArgumentException ;
 use WalletAccountant\Document\User;
 use WalletAccountant\Domain\User\UserProjectionRepositoryInterface;
+use WalletAccountant\Common\Exceptions\InvalidArgumentException;
+use WalletAccountant\Common\Exceptions\User\UserNotFoundException;
 
 /**
  * UserProjectionRepository
@@ -17,9 +20,13 @@ final class UserProjectionRepository extends AbstractProjectionRepository implem
      */
     public function persist(User $document): void
     {
-        $manager = $this->client->getManager();
-        $manager->persist($document);
-        $manager->flush();
+        try {
+            $manager = $this->client->getManager();
+            $manager->persist($document);
+            $manager->flush();
+        } catch (StandardInvalidArgumentException $exception) {
+            throw InvalidArgumentException::createFromStandardException($exception);
+        }
     }
 
     /**
@@ -27,9 +34,70 @@ final class UserProjectionRepository extends AbstractProjectionRepository implem
      */
     public function emailExists(string $email): bool
     {
+        return $this->getByEmailOrNull($email) instanceof User;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getByEmailOrNull(string $email): ?User
+    {
         $repository = $this->client->getRepository(User::class);
 
-        return $repository->find($email) instanceof User;
+        return $repository->find($email);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getByEmail(string $email): User
+    {
+        $user = $this->getByEmailOrNull($email);
+
+        if ($user instanceof User) {
+            throw UserNotFoundException::withEmail($email);
+        }
+
+        return $user;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getByAggregateIdOrNull(string $aggregateId): ?User
+    {
+        $repository = $this->client->getRepository(User::class);
+
+        return $repository->findOneBy(['aggregate_id' => $aggregateId]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getByAggregateId(string $aggregateId): User
+    {
+        $user = $this->getByAggregateIdOrNull($aggregateId);
+
+        if (!$user instanceof User) {
+            throw UserNotFoundException::withId($aggregateId);
+        }
+
+        return $user;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getByPasswordRecoveryCode(string $passwordRecoveryCode): User
+    {
+        $repository = $this->client->getRepository(User::class);
+        $user = $repository->findOneBy(['recovery.code' => $passwordRecoveryCode]);
+
+        if (!$user instanceof User) {
+            throw UserNotFoundException::withPasswordRecoveryCode($passwordRecoveryCode);
+        }
+
+        return $user;
     }
 
     /**

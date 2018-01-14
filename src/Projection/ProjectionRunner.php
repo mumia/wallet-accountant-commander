@@ -18,11 +18,6 @@ final class ProjectionRunner
     private $projection;
 
     /**
-     * @var Projector
-     */
-    private $projector;
-
-    /**
      * @param string              $projectionName
      * @param ReadModelProjection $projection
      * @param ProjectionManager   $projectionManager
@@ -34,13 +29,12 @@ final class ProjectionRunner
         ProjectionManager $projectionManager,
         ReadModel $readModel
     ) {
-        $this->projection = $projection;
-        $this->projector = $projectionManager->createReadModelProjection($projectionName, $readModel);
+        $projector = $projectionManager->createReadModelProjection($projectionName, $readModel);
+        $this->projection = $projection->project($projector);
     }
 
     public function run(): void
     {
-        $projection = $this->projection->project($this->projector);
-        $projection->run(false);
+        $this->projection->run(false);
     }
 }

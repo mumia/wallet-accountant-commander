@@ -2,13 +2,13 @@
 
 namespace WalletAccountant\Domain\User\Handler;
 
-use function sprintf;
+use Prooph\Common\Messaging\MessageFactory;
 use WalletAccountant\Domain\User\Command\CreateUser;
 use WalletAccountant\Domain\User\User;
 use WalletAccountant\Domain\User\UserProjectionRepositoryInterface;
 use WalletAccountant\Domain\User\UserRepositoryInterface;
-use WalletAccountant\Exceptions\InvalidArgumentException;
-use WalletAccountant\Exceptions\User\UserEmailNotUnique;
+use WalletAccountant\Common\Exceptions\InvalidArgumentException;
+use WalletAccountant\Common\Exceptions\User\UserEmailNotUniqueException;
 
 /**
  * CreateUserHandler
@@ -41,16 +41,18 @@ final class CreateUserHandler
      * @param CreateUser $command
      *
      * @throws InvalidArgumentException
-     * @throws UserEmailNotUnique
+     * @throws UserEmailNotUniqueException
      */
     public function __invoke(CreateUser $command): void
     {
         // Validate email is unique using projection
         if ($this->userProjectionRepository->emailExists($command->email()->toString())) {
-            throw new UserEmailNotUnique(sprintf('User with email "%s" already exists', $command->email()));
+            throw new UserEmailNotUniqueException($command->email()->toString());
         }
 
         $user = User::createUser($command->userId(), $command->email(), $command->name());
+
+        $user->initiatePasswordRecovery();
 
         $this->userRepository->save($user);
     }

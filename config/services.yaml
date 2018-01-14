@@ -15,7 +15,7 @@ services:
     # this creates a service per class whose id is the fully-qualified class name
     WalletAccountant\:
         resource: '../src/*'
-        exclude: '../src/{Entity,Migrations,Tests}'
+        exclude: '../src/{Common,Document,Tests}'
 
     # controllers are imported separately to make sure services can be injected
     # as action arguments even if you don't extend any base controller class
@@ -23,12 +23,24 @@ services:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
 
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
+    WalletAccountant\Controller\UserController:
+        arguments:
+            $commandBus: '@prooph_service_bus.user_command_bus'
+            $messageFactory: '@prooph_service_bus.message_factory.user_event_bus'
+
+    WalletAccountant\Command\:
+        resource: '../src/Command'
+        tags: ['console.command']
 
     WalletAccountant\Command\UserCreateCommand:
-        arguments: ['@prooph_service_bus.user_command_bus', '@prooph_service_bus.message_factory']
-        tags: ['console.command']
+        arguments:
+            $commandBus: '@prooph_service_bus.user_command_bus'
+            $messageFactory: '@prooph_service_bus.message_factory.user_event_bus'
+
+    WalletAccountant\Common\Authenticator\PasswordEncoder:
+
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones
 
     WalletAccountant\Domain\User\Handler\CreateUserHandler:
         arguments: ['@user_repository']
@@ -53,3 +65,15 @@ services:
             $projection: '@prooph_event_store.projection.user_projection'
             $projectionManager: '@prooph_event_store.projection.user_projection.projection_manager'
             $readModel: '@prooph_event_store.projection.user_projection.read_model'
+
+    # Authenticators
+    walletaccountant.authenticator.jwt:
+        class: WalletAccountant\Common\Authenticator\JwtAuthenticator
+        arguments:
+            $jwtEncoder: '@lexik_jwt_authentication.encoder.default'
+
+    walletaccountant.authenticator.login:
+        class: WalletAccountant\Common\Authenticator\LoginAuthenticator
+        arguments:
+            $jwtEncoder: '@lexik_jwt_authentication.encoder.default'
+            $userProjectionRepository: '@WalletAccountant\Infrastructure\MongoDB\UserProjectionRepository'

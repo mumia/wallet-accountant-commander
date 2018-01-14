@@ -4,7 +4,7 @@ namespace WalletAccountant\Domain\User\Name;
 
 use function get_class;
 use WalletAccountant\Domain\Common\ValueObjectInterface;
-use WalletAccountant\Exceptions\InvalidArgumentException;
+use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 use Respect\Validation\Validator;
 
 /**
@@ -31,11 +31,11 @@ class Name implements ValueObjectInterface
     public function __construct(string $first, string $last)
     {
         if (!Validator::stringType()->notEmpty()->validate($first)) {
-            throw new InvalidArgumentException(sprintf('Invalid first name (%s) found', $first));
+            throw new InvalidArgumentException(sprintf('Invalid first name "%s" found', $first));
         }
 
         if (!Validator::stringType()->notEmpty()->validate($last)) {
-            throw new InvalidArgumentException(sprintf('Invalid last name (%s) found', $last));
+            throw new InvalidArgumentException(sprintf('Invalid last name "%s" found', $last));
         }
 
         $this->first = $first;

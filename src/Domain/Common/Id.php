@@ -4,7 +4,7 @@ namespace WalletAccountant\Domain\Common;
 
 use function get_class;
 use Ramsey\Uuid\Uuid;
-use WalletAccountant\Exceptions\InvalidArgumentException;
+use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 
 /**
  * Id

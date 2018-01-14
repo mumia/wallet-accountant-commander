@@ -2,20 +2,26 @@
 
 namespace WalletAccountant\Domain\User;
 
+use function base64_encode;
+use function get_class;
 use Prooph\EventSourcing\AggregateChanged;
 use Prooph\EventSourcing\AggregateRoot;
-use Symfony\Component\Security\Core\User\AdvancedUserInterface;
+use function random_bytes;
+use WalletAccountant\Common\Exceptions\User\LogicException;
 use WalletAccountant\Domain\User\Email\Email;
+use WalletAccountant\Domain\User\Event\UserPasswordRecovered;
+use WalletAccountant\Domain\User\Event\UserPasswordRecoveryInitiated;
 use WalletAccountant\Domain\User\Event\UserWasCreated;
 use WalletAccountant\Domain\User\Id\UserId;
 use WalletAccountant\Domain\User\Name\Name;
-use Symfony\Component\Security\Core\User\UserInterface;
-use WalletAccountant\Exceptions\InvalidArgumentException;
+use WalletAccountant\Domain\User\Recovery\Recovery;
+use WalletAccountant\Domain\User\Status\Status;
+use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 
 /**
  * User
  */
-final class User extends AggregateRoot implements AdvancedUserInterface
+final class User extends AggregateRoot
 {
     /**
      * @var UserId
@@ -48,24 +54,14 @@ final class User extends AggregateRoot implements AdvancedUserInterface
     protected $roles;
 
     /**
-     * @param UserId $id
-     * @param Email  $email
-     * @param Name   $name
-     * @param string $password
-     * @param string $salt
-     * @param array  $roles
+     * @var Status
      */
-    protected function __construct(UserId $id, Email $email, Name $name, string $password, string $salt, array $roles)
-    {
-        parent::__construct();
+    protected $status;
 
-        $this->id = $id;
-        $this->email = $email;
-        $this->name = $name;
-        $this->password = $password;
-        $this->salt = $salt;
-        $this->roles = $roles;
-    }
+    /**
+     * @var Recovery
+     */
+    private $recovery;
 
     /**
      * @param UserId $id
@@ -79,15 +75,20 @@ final class User extends AggregateRoot implements AdvancedUserInterface
         Email $email,
         Name $name
     ): User {
-        $user = new self($id, $email, $name, '', '', []);
+        $user = new self();
 
-        $userCreated = new UserWasCreated(
-            $user->id()->toString(),
-            $user->email()->toString(),
-            $user->name()->first(),
-            $user->name()->last()
+        $user->recordThat(
+            new UserWasCreated(
+                $id->toString(),
+                $email->toString(),
+                $name->first(),
+                $name->last(),
+                '',
+                base64_encode(random_bytes(64)),
+                [],
+                Status::createDefault()
+            )
         );
-        $user->recordThat($userCreated);
 
         return $user;
     }
@@ -119,7 +120,7 @@ final class User extends AggregateRoot implements AdvancedUserInterface
     /**
      * {@inheritdoc}
      */
-    public function getRoles(): array
+    public function roles(): array
     {
         return $this->roles;
     }
@@ -127,7 +128,7 @@ final class User extends AggregateRoot implements AdvancedUserInterface
     /**
      * {@inheritdoc}
      */
-    public function getPassword(): string
+    public function password(): string
     {
         return $this->password;
     }
@@ -135,56 +136,86 @@ final class User extends AggregateRoot implements AdvancedUserInterface
     /**
      * {@inheritdoc}
      */
-    public function getSalt(): string
+    public function salt(): string
     {
         return $this->salt;
     }
 
     /**
-     * {@inheritdoc}
+     * @return Status
      */
-    public function getUsername(): string
+    public function status(): Status
     {
-        return $this->email->toString();
+        return $this->status;
     }
 
     /**
-     * {@inheritdoc}
+     * @return bool
      */
-    public function eraseCredentials(): void
+    public function hasRecovery(): bool
     {
+        return $this->recovery instanceof Recovery;
     }
 
     /**
-     * {@inheritdoc}
+     * @return null|Recovery
      */
-    public function isAccountNonExpired()
+    public function recovery(): ?Recovery
     {
-        // TODO: Implement isAccountNonExpired() method.
+        return $this->recovery;
     }
 
     /**
-     * {@inheritdoc}
+     * @param string|null $recoveryCode
+     *
+     * @throws InvalidArgumentException
      */
-    public function isAccountNonLocked()
+    public function initiatePasswordRecovery(string $recoveryCode = null): void
     {
-        // TODO: Implement isAccountNonLocked() method.
+        $this->status = new Status(
+            $this->status()->isAccountExpired(),
+            $this->status()->isAccountLocked(),
+            true,
+            $this->status()->isEnabled()
+        );
+
+        $recovery = Recovery::create($recoveryCode);
+
+        $this->recordThat(
+            new UserPasswordRecoveryInitiated(
+                $this->id()->toString(),
+                $recovery->code(),
+                $recovery->expiresOn()
+            )
+        );
     }
 
     /**
-     * {@inheritdoc}
+     * @param string $recoveryCode
+     * @param string $encodedPassword
+     *
+     * @throws LogicException
      */
-    public function isCredentialsNonExpired()
+    public function recoverPassword(string $recoveryCode, string $encodedPassword): void
     {
-        // TODO: Implement isCredentialsNonExpired() method.
-    }
+        if (!$this->hasRecovery()) {
+            throw new LogicException('user is not in password recovery mode');
+        }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function isEnabled()
-    {
-        // TODO: Implement isEnabled() method.
+        if (!$this->recovery()->validateRecovery($recoveryCode)) {
+            throw new LogicException(sprintf('user password recovery code "%s" does not match', $recoveryCode));
+        }
+
+        $this->password = $encodedPassword;
+        $this->status = new Status(
+            $this->status()->isAccountExpired(),
+            $this->status()->isAccountLocked(),
+            false,
+            $this->status()->isEnabled()
+        );
+        $this->recovery = null;
+
+        $this->recordThat(new UserPasswordRecovered($this->id()->toString(), $encodedPassword));
     }
 
     /**
@@ -205,6 +236,42 @@ final class User extends AggregateRoot implements AdvancedUserInterface
         $this->id = UserId::createFromString($event->id());
         $this->email = new Email($event->email());
         $this->name = new Name($event->firstName(), $event->lastName());
+        $this->password = $event->password();
+        $this->salt = $event->salt();
+        $this->roles = $event->roles();
+        $this->status = $event->status();
+    }
+
+    /**
+     * @param UserPasswordRecoveryInitiated $event
+     *
+     * @throws InvalidArgumentException
+     */
+    protected function whenUserPasswordRecoveryInitiated(UserPasswordRecoveryInitiated $event): void
+    {
+        $this->status = new Status(
+            $this->status()->isAccountExpired(),
+            $this->status()->isAccountLocked(),
+            true,
+            $this->status()->isEnabled()
+        );
+
+        $this->recovery = Recovery::whenUserPasswordRecoveryInitiated($event);
+    }
+
+    /**
+     * @param UserPasswordRecovered $event
+     */
+    protected function whenUserPasswordRecovered(UserPasswordRecovered $event): void
+    {
+        $this->password = $event->password();
+        $this->status = new Status(
+            $this->status()->isAccountExpired(),
+            $this->status()->isAccountLocked(),
+            false,
+            $this->status()->isEnabled()
+        );
+        $this->recovery = null;
     }
 
     /**
@@ -219,5 +286,21 @@ final class User extends AggregateRoot implements AdvancedUserInterface
 
             return;
         }
+
+        if ($event instanceof UserPasswordRecoveryInitiated) {
+            $this->whenUserPasswordRecoveryInitiated($event);
+
+            return;
+        }
+
+        if ($event instanceof UserPasswordRecovered) {
+            $this->whenUserPasswordRecovered($event);
+
+            return;
+        }
+
+        throw new InvalidArgumentException(
+            sprintf('event "%s" not supported', get_class($event))
+        );
     }
 }

@@ -4,7 +4,7 @@ namespace WalletAccountant\Domain\User\Email;
 
 use function get_class;
 use WalletAccountant\Domain\Common\ValueObjectInterface;
-use WalletAccountant\Exceptions\InvalidArgumentException;
+use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 use Respect\Validation\Validator;
 
 /**
@@ -25,10 +25,22 @@ class Email implements ValueObjectInterface
     public function __construct(string $email)
     {
         if (!Validator::email()->validate($email)) {
-            throw new InvalidArgumentException(sprintf('Invalid email (%s) found', $email));
+            throw new InvalidArgumentException(sprintf('Invalid email "%s" found', $email));
         }
 
         $this->email = $email;
+    }
+
+    /**
+     * @param string $email
+     *
+     * @return Email
+     *
+     * @throws InvalidArgumentException
+     */
+    public static function createFromString(string $email): self
+    {
+        return new self($email);
     }
 
     /**

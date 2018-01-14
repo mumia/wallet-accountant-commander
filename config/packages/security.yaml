@@ -1,0 +1,34 @@
+security:
+    encoders:
+        WalletAccountant\Document\User:
+            algorithm: sha512
+            iterations: 5000
+
+    providers:
+        in_memory: { memory: ~ }
+
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        ping:
+            pattern: ^/ping$
+            security: false
+
+        recover_password:
+            pattern: ^/recover-password
+            security: false
+
+        login:
+            pattern: ^/login
+            anonymous: false
+            guard:
+                authenticators:
+                    - walletaccountant.authenticator.login
+
+        main:
+            anonymous: false
+            guard:
+                authenticators:
+                    - walletaccountant.authenticator.jwt

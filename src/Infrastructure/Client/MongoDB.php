@@ -6,7 +6,6 @@ use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\MongoDB\Connection;
-use InvalidArgumentException;
 
 /**
  * Client
