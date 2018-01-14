@@ -28,6 +28,9 @@ prepare-test-database:
 tests: test test-integration
 .PHONY: tests
 
+tests-travis: test test-integration-travis
+.PHONY: tests-travis
+
 test: prepare-phpunit-config run-unit-test run-functional-test
 .PHONY: test
 
