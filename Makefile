@@ -2,10 +2,6 @@ PHPUNIT_CONFIG_PREPEND =
 MARIADB_HOST = mariadb
 MONGODB_HOST = mongo
 
-run-unit-test:
-	@./phpunit -c phpunit$(PHPUNIT_CONFIG_PREPEND).xml tests/Unit
-.PHONY: run-unit-test
-
 run-functional-test:
 	@./phpunit -c phpunit$(PHPUNIT_CONFIG_PREPEND).xml tests/Functional
 .PHONY: run-unit-test
@@ -31,7 +27,7 @@ tests: test test-integration
 tests-travis: test test-integration-travis
 .PHONY: tests-travis
 
-test: prepare-phpunit-config run-unit-test run-functional-test
+test: prepare-phpunit-config run-functional-test
 .PHONY: test
 
 test-integration: prepare-phpunit-config prepare-test-database run-integration-test
