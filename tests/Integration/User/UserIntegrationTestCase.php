@@ -89,7 +89,7 @@ abstract class UserIntegrationTestCase extends KernelTestCase
     {
         $registry = $this->container->get('doctrine_mongodb');
 
-        return $registry->getRepository(User::class);//getConnection($registry->getDefaultConnectionName());
+        return $registry->getRepository(User::class);
     }
 
     /**
@@ -168,7 +168,6 @@ abstract class UserIntegrationTestCase extends KernelTestCase
 
     protected function runProjection(): void
     {
-        // Run projection
         $projectionRunner = $this->container->get('walletaccountant.projection_runner.user');
         $projectionRunner->run();
     }

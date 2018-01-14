@@ -39,8 +39,7 @@ final class UserRepository extends AggregateRepository implements UserRepository
     {
         $user = $this->getOrNull($userId);
 
-        if (!$user instanceof User)
-        {
+        if (!$user instanceof User) {
             throw UserAggregateNotFoundException::withId($userId);
         }
 

@@ -15,7 +15,6 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Guard\AuthenticatorInterface;
 use Symfony\Component\Security\Guard\Token\PostAuthenticationGuardToken;
-use function var_dump;
 use WalletAccountant\Common\DateTime\DateTime;
 use WalletAccountant\Document\User;
 use WalletAccountant\Domain\User\UserProjectionRepositoryInterface;

@@ -57,7 +57,6 @@ abstract class FunctionalTestCase extends WebTestCase
      */
     protected function runProjection(string $projection): void
     {
-        // Run projection
         $projectionRunner = $this->container->get(sprintf('walletaccountant.projection_runner.%s', $projection));
         $projectionRunner->run();
     }

@@ -5,6 +5,7 @@ namespace WalletAccountant\Tests\Functional\Fixtures\Authenticator;
 use Doctrine\DBAL\Connection as DBALConnection;
 use Doctrine\DBAL\DBALException;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
 use Prooph\EventSourcing\Aggregate\AggregateRepository;
 use WalletAccountant\Common\Authenticator\PasswordEncoder;
 use WalletAccountant\Document\User;
@@ -104,7 +105,7 @@ class AuthenticatorFixtures extends AbstractFixtures
      *
      * @return array
      *
-     * @throws \Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException
+     * @throws JWTDecodeFailureException
      */
     public function decodeJWToken(string $token): array
     {
