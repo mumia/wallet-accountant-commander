@@ -85,7 +85,7 @@ class AuthenticatorFixtures extends AbstractFixtures
 
         $user = $this->userProjectionRepository->getByAggregateId($userDomain->id());
 
-        $userDomain->recoverPassword('myrecoverycode', $this->getEncodedPassword($user));
+        $userDomain->recoverPassword($this->getEncodedPassword($user));
 
         $this->runEvents($userDomain);
     }

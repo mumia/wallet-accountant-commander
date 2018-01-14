@@ -28,6 +28,8 @@ class LoginAuthenticatorTest extends FunctionalTestCase
 
         $token = json_decode($response->getContent(), true);
 
+        $this->assertFalse(isset($token['error']));
+
         $decodedToken = $fixtures->decodeJWToken($token['token']);
 
         $expectedToken = [

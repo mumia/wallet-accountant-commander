@@ -172,13 +172,6 @@ final class User extends AggregateRoot
      */
     public function initiatePasswordRecovery(string $recoveryCode = null): void
     {
-        $this->status = new Status(
-            $this->status()->isAccountExpired(),
-            $this->status()->isAccountLocked(),
-            true,
-            $this->status()->isEnabled()
-        );
-
         $recovery = Recovery::create($recoveryCode);
 
         $this->recordThat(
@@ -191,30 +184,12 @@ final class User extends AggregateRoot
     }
 
     /**
-     * @param string $recoveryCode
      * @param string $encodedPassword
      *
      * @throws LogicException
      */
-    public function recoverPassword(string $recoveryCode, string $encodedPassword): void
+    public function recoverPassword(string $encodedPassword): void
     {
-        if (!$this->hasRecovery()) {
-            throw new LogicException('user is not in password recovery mode');
-        }
-
-        if (!$this->recovery()->validateRecovery($recoveryCode)) {
-            throw new LogicException(sprintf('user password recovery code "%s" does not match', $recoveryCode));
-        }
-
-        $this->password = $encodedPassword;
-        $this->status = new Status(
-            $this->status()->isAccountExpired(),
-            $this->status()->isAccountLocked(),
-            false,
-            $this->status()->isEnabled()
-        );
-        $this->recovery = null;
-
         $this->recordThat(new UserPasswordRecovered($this->id()->toString(), $encodedPassword));
     }
 

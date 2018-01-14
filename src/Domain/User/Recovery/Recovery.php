@@ -67,6 +67,8 @@ final class Recovery implements ValueObjectInterface
      * @param UserPasswordRecoveryInitiated $event
      *
      * @return Recovery
+     *
+     * @throws InvalidArgumentException
      */
     public static function whenUserPasswordRecoveryInitiated(UserPasswordRecoveryInitiated $event): self
     {

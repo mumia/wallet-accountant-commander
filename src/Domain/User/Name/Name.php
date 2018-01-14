@@ -63,7 +63,7 @@ class Name implements ValueObjectInterface
      */
     public function sameValueAs(ValueObjectInterface $that): bool
     {
-        return $that instanceof Name
+        return $that instanceof self
             && get_class($this) === get_class($that)
             && $this->first() === $that->first()
             && $this->last() === $that->last();

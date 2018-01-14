@@ -71,11 +71,19 @@ final class RecoverUserPasswordHandler
         $this->validateInputs($code, $password, $repeatPassword);
 
         $user = $this->userProjectionRepository->getByPasswordRecoveryCode($code);
-        $encodedPassword = $this->passwordEncoder->encodeUserPassword($user, $password);
-
         $id = $user->getAggregateId();
         $userDomain = $this->userRepository->get(UserId::createFromString($id));
-        $userDomain->recoverPassword($code, $encodedPassword);
+
+        if (!$userDomain->hasRecovery()) {
+            throw new LogicException('user is not in password recovery mode');
+        }
+
+        if (!$userDomain->recovery()->validateRecovery($code)) {
+            throw new LogicException(sprintf('user password recovery code "%s" does not match', $code));
+        }
+
+        $encodedPassword = $this->passwordEncoder->encodeUserPassword($user, $password);
+        $userDomain->recoverPassword($encodedPassword);
 
         $this->userRepository->save($userDomain);
     }
