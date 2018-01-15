@@ -6,17 +6,17 @@ use WalletAccountant\Domain\Common\Command;
 use WalletAccountant\Domain\User\Email\Email;
 use WalletAccountant\Domain\User\Id\UserId;
 use WalletAccountant\Domain\User\Name\Name;
-use WalletAccountant\Exceptions\InvalidArgumentException;
+use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 
 /**
  * CreateUser
  */
-class CreateUser extends Command
+final class CreateUser extends Command
 {
-    const ID = 'id';
-    const EMAIL = 'email';
-    const FIRST_NAME = 'first_name';
-    const LAST_NAME = 'last_name';
+    private const ID = 'id';
+    private const EMAIL = 'email';
+    private const FIRST_NAME = 'first_name';
+    private const LAST_NAME = 'last_name';
 
     /**
      * @return UserId

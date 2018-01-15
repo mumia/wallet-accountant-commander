@@ -2,12 +2,15 @@
 
 namespace WalletAccountant\Tests\Integration\User;
 
+use Doctrine\Common\Persistence\ObjectRepository;
+use function sprintf;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Doctrine\DBAL\Connection;
-use Doctrine\MongoDB\Connection as MongoDBConnection;
 use Doctrine\DBAL\DBALException;
+use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\DependencyInjection\Container;
-use WalletAccountant\Domain\User\UserProjectionRepositoryInterface;
+use WalletAccountant\Document\User;
+use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 
 /**
  * UserIntegrationTestCase
@@ -29,9 +32,9 @@ abstract class UserIntegrationTestCase extends KernelTestCase
     protected $eventStreamConnection;
 
     /**
-     * @var MongoDBConnection
+     * @var ObjectRepository
      */
-    protected $projectionConnection;
+    protected $projectionRepository;
 
     /**
      * @param string|null $name
@@ -47,7 +50,7 @@ abstract class UserIntegrationTestCase extends KernelTestCase
 
         $this->eventStreamConnection = $this->getEventStreamDatabaseConnection();
 
-        $this->projectionConnection = $this->getProjectionDatabaseConnection();
+        $this->projectionRepository = $this->getProjectionRepository();
     }
 
     /**
@@ -61,38 +64,11 @@ abstract class UserIntegrationTestCase extends KernelTestCase
     }
 
     /**
-     * @throws DBALException
+     * @param User $expectedProjection
      */
-    protected function assertExists(): void
+    protected function assertProjectionIsExpected(User $expectedProjection): void
     {
-        $streams = $this->getAllStreams();
-
-        $this->assertCount(1, $streams);
-
-        $streamName = $streams[0]['stream_name'];
-
-        $statement = $this->eventStreamConnection->prepare(sprintf('SELECT * FROM %s', $streamName));
-        $statement->execute();
-
-        $value = $statement->fetch();
-
-        $expectedPayload = [
-            'email' => self::EMAIL,
-            'first_name' => self::FIRST_NAME,
-            'last_name' => self::LAST_NAME
-        ];
-
-        $this->assertEquals(json_encode($expectedPayload), $value['payload']);
-    }
-
-    /**
-     * @param array $expectedProjection
-     */
-    protected function assertProjectionIsExpected(array $expectedProjection): void
-    {
-        $collection = $this->projectionConnection->selectCollection('walletaccountant_test', 'User');
-        $actualProjection = $collection->findOne(['_id' => self::EMAIL]);
-
+        $actualProjection = $this->projectionRepository->find(self::EMAIL);
         $this->assertEquals($expectedProjection, $actualProjection);
     }
 
@@ -107,13 +83,13 @@ abstract class UserIntegrationTestCase extends KernelTestCase
     }
 
     /**
-     * @return Connection
+     * @return ObjectRepository
      */
-    protected function getProjectionDatabaseConnection(): MongoDBConnection
+    protected function getProjectionRepository(): ObjectRepository
     {
         $registry = $this->container->get('doctrine_mongodb');
 
-        return $registry->getConnection($registry->getDefaultConnectionName());
+        return $registry->getRepository(User::class);
     }
 
     /**
@@ -127,5 +103,72 @@ abstract class UserIntegrationTestCase extends KernelTestCase
         $statement->execute();
 
         return $statement->fetchAll();
+    }
+
+    /**
+     * @param string $aggregateId
+     *
+     * @return array
+     *
+     * @throws DBALException
+     */
+    protected function getStreamEvents(string $aggregateId): array
+    {
+        $statement = $this->eventStreamConnection->prepare('SELECT * FROM event_streams WHERE real_stream_name=?');
+        $statement->bindValue(1, sprintf('user-%s', $aggregateId));
+        $statement->execute();
+
+        $stream = $statement->fetch();
+
+        $statement = $this->eventStreamConnection->prepare(sprintf('SELECT * FROM %s', $stream['stream_name']));
+        $statement->execute();
+
+        return $statement->fetchAll();
+    }
+
+    /**
+     * @param string $aggregateId
+     * @param int    $version
+     *
+     * @return array
+     *
+     * @throws DBALException
+     * @throws InvalidArgumentException
+     */
+    protected function getEventVersion(string $aggregateId, int $version): array
+    {
+        $streamEvents = $this->getStreamEvents($aggregateId);
+
+        foreach ($streamEvents as $event) {
+            if ($event['no'] === (string)$version) {
+                return $event;
+            }
+        }
+
+        throw new InvalidArgumentException('Version not found');
+    }
+
+    /**
+     * @return CommandTester
+     */
+    protected function createUser(): CommandTester
+    {
+        $command = $this->container->get('console.command.walletaccountant_command_usercreatecommand');
+        $commandTester = new CommandTester($command);
+        $commandTester->execute(
+            [
+                'email' => self::EMAIL,
+                'first name' => self::FIRST_NAME,
+                'last name' => self::LAST_NAME
+            ]
+        );
+
+        return $commandTester;
+    }
+
+    protected function runProjection(): void
+    {
+        $projectionRunner = $this->container->get('walletaccountant.projection_runner.user');
+        $projectionRunner->run();
     }
 }

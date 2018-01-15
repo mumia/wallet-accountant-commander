@@ -30,18 +30,6 @@ class TestController extends Controller
      */
     public function test(): Response
     {
-        $val = time();
-        $val = sprintf('teste_%d@email.com', $val);
-
-        $this->userRepository->emailExists($val);
-
-        $email = new User();
-        $email->email = $val;
-
-        $this->userRepository->persist($email);
-
-        $this->userRepository->emailExists($val);
-
         return new Response('Tested!');
     }
 }

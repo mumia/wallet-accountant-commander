@@ -1,0 +1,11 @@
+services:
+    fixtures.loader.authenticator:
+        public: true
+        class: WalletAccountant\Tests\Functional\Fixtures\Authenticator\AuthenticatorFixtures
+        arguments:
+            $aggregateRepository: '@user_repository'
+            $projectionRunner: '@walletaccountant.projection_runner.user'
+            $dbalConnection: '@doctrine.dbal.default_connection'
+            $userProjectionRepository: '@WalletAccountant\Infrastructure\MongoDB\UserProjectionRepository'
+            $passwordEncoder: '@WalletAccountant\Common\Authenticator\PasswordEncoder'
+            $jwtEncoder: '@lexik_jwt_authentication.encoder.default'

@@ -3,10 +3,16 @@
 namespace WalletAccountant\Tests\Integration\User;
 
 use function get_class;
+use function json_decode;
 use function sprintf;
 use Exception;
 use Doctrine\DBAL\DBALException;
-use Symfony\Component\Console\Tester\CommandTester;
+use WalletAccountant\Common\DateTime\DateTime;
+use WalletAccountant\Document\User;
+use WalletAccountant\Document\User\Status;
+use WalletAccountant\Document\User\Recovery;
+use WalletAccountant\Domain\User\Event\UserPasswordRecoveryInitiated;
+use WalletAccountant\Common\Exceptions\User\UserEmailNotUniqueException;
 
 /**
  * UserCreateTest
@@ -18,6 +24,8 @@ class UserCreateTest extends UserIntegrationTestCase
      */
     public function testCreate()
     {
+        DateTime::setTestNow(DateTime::now());
+
         $this->assertNotExists();
 
         $commandTester = $this->createUser();
@@ -27,10 +35,24 @@ class UserCreateTest extends UserIntegrationTestCase
         $expectedSuccessMessage = sprintf('User created %s %s %s', self::EMAIL, self::FIRST_NAME, self::LAST_NAME);
         $this->assertContains($expectedSuccessMessage, $output);
 
-        $this->assertExists();
+        list($aggregateId, $salt) = $this->assertExistsAndReturnAggregateId();
+        $event = $this->getEventVersion($aggregateId, 2);
+        $this->assertEquals(UserPasswordRecoveryInitiated::class, $event['event_name']);
+        $payload = json_decode($event['payload'], true);
+
+        $this->runProjection();
 
         $this->assertProjectionIsExpected(
-            ['_id' => self::EMAIL, 'name' => ['first' => 'firstname', 'last' => 'lastname']]
+            new User(
+                self::EMAIL,
+                $aggregateId,
+                new User\Name('firstname', 'lastname'),
+                [],
+                '',
+                $salt,
+                new Status(false, false, true, true),
+                new Recovery($payload['code'], DateTime::now()->addHours(360))
+            )
         );
     }
 
@@ -39,10 +61,10 @@ class UserCreateTest extends UserIntegrationTestCase
      */
     public function testCreateWithExistingEmail()
     {
-        $expectedException = 'WalletAccountant\Exceptions\User\UserEmailNotUnique';
+        $expectedException = UserEmailNotUniqueException::class;
         $expectedExceptionMessage = sprintf('User with email "%s" already exists', self::EMAIL);
 
-        $this->assertExists();
+        $this->assertExistsAndReturnAggregateId();
 
         try {
             $this->createUser();
@@ -57,24 +79,44 @@ class UserCreateTest extends UserIntegrationTestCase
     }
 
     /**
-     * @return CommandTester
+     * @return array Aggregate id, salt
+     *
+     * @throws DBALException
      */
-    private function createUser(): CommandTester
+    protected function assertExistsAndReturnAggregateId(): array
     {
-        $command = $this->container->get('console.command.walletaccountant_command_usercreatecommand');
-        $commandTester = new CommandTester($command);
-        $commandTester->execute(
-            [
-                'email' => self::EMAIL,
-                'first name' => self::FIRST_NAME,
-                'last name' => self::LAST_NAME
+        $streams = $this->getAllStreams();
+
+        $this->assertCount(1, $streams);
+
+        $streamName = $streams[0]['stream_name'];
+
+        $statement = $this->eventStreamConnection->prepare(sprintf('SELECT * FROM %s', $streamName));
+        $statement->execute();
+
+        $value = $statement->fetch();
+        $payload = json_decode($value['payload'], true);
+        $metadata = json_decode($value['metadata'], true);
+
+        $this->assertNotSame('', $payload['salt']);
+
+        $expectedPayload = [
+            'email' => self::EMAIL,
+            'first_name' => self::FIRST_NAME,
+            'last_name' => self::LAST_NAME,
+            'password' => '',
+            'salt' => $payload['salt'], // Ignored field, it is randomly generated
+            'roles' => [],
+            'status' => [
+                'account_expired' => false,
+                'account_locked' => false,
+                'credentials_expired' => true,
+                'enabled' => true
             ]
-        );
+        ];
 
-        // Run projection
-        $projectionRunner = $this->container->get('walletaccountant.projection_runner.user');
-        $projectionRunner->run();
+        $this->assertEquals($expectedPayload, $payload);
 
-        return $commandTester;
+        return [$metadata['_aggregate_id'], $payload['salt']];
     }
 }

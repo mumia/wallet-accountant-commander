@@ -41,7 +41,7 @@ RUN echo "realpath_cache_ttl=600" >> /usr/local/etc/php/conf.d/php.ini
 # phpunit
 RUN wget https://phar.phpunit.de/phpunit.phar
 RUN chmod +x phpunit.phar
-RUN mv phpunit.phar /usr/local/bin/phpunit
+RUN mv phpunit.phar phpunit
 
 # mariadb client
 RUN apk add mysql-client
@@ -49,9 +49,9 @@ RUN apk add mysql-client
 WORKDIR /srv/walletaccountantcommander
 
 COPY start.sh /usr/local/bin/docker-app-start
-COPY boot_db.sh /root/boot_db.sh
+#COPY boot_db.sh /root/boot_db.sh
 COPY install_db.sql /root/install_db.sql
-RUN chmod +x /root/boot_db.sh
+#RUN chmod +x /root/boot_db.sh
 RUN chmod +x /usr/local/bin/docker-app-start
 
 CMD ["docker-app-start"]

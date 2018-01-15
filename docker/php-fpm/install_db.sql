@@ -1,5 +1,5 @@
-CREATE DATABASE events CHARACTER SET utf8 COLLATE utf8_bin;
-CREATE USER 'evtstr'@'%' IDENTIFIED BY 'mynormalpw';
-CREATE USER 'evtstr'@'localhost' IDENTIFIED BY 'mynormalpw';
+CREATE DATABASE IF NOT EXISTS events CHARACTER SET utf8 COLLATE utf8_bin;
+CREATE USER IF NOT EXISTS 'evtstr'@'%' IDENTIFIED BY 'mynormalpw';
+CREATE USER IF NOT EXISTS 'evtstr'@'localhost' IDENTIFIED BY 'mynormalpw';
 GRANT ALL PRIVILEGES ON events.* TO 'evtstr'@'%';
 FLUSH PRIVILEGES;

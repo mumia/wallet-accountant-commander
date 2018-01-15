@@ -3,7 +3,6 @@
 namespace WalletAccountant\Domain\Common;
 
 use Prooph\Common\Messaging\Command as ProophCommand;
-use WalletAccountant\Exceptions\CommandShouldBeImmutable;
 
 /**
  * Command
