@@ -44,7 +44,6 @@ class SendPasswordRecoveryInitiatedEmailProcessManager
      */
     public function __invoke(UserPasswordRecoveryInitiated $event): void
     {
-var_dump('mail triggered');
         $message = (new Swift_Message('Password recovery initiated'))
             ->setFrom('wlltccntnt@gmail.com')
             ->setTo($event->email())
