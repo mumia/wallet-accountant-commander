@@ -3,6 +3,7 @@
 namespace WalletAccountant\Document\User;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use function sprintf;
 use WalletAccountant\Domain\User\Status\Status as StatusDomain;
 
 /**
@@ -99,5 +100,30 @@ class Status
     public function isEnabled(): bool
     {
         return $this->enabled;
+    }
+
+    /**
+     * @return bool
+     */
+    public function canLogin(): bool
+    {
+        return !$this->isAccountExpired()
+            && !$this->isAccountLocked()
+            && !$this->isCredentialsExpired()
+            && $this->isEnabled();
+    }
+
+    /**
+     * @return string
+     */
+    public function toString(): string
+    {
+        return sprintf(
+            'acct_expired: %d, acct_locker: %d, credentials_expired: %d, enabled: %d',
+            (int)$this->isAccountExpired(),
+            (int)$this->isAccountLocked(),
+            (int)$this->isCredentialsExpired(),
+            (int)$this->isEnabled()
+        );
     }
 }

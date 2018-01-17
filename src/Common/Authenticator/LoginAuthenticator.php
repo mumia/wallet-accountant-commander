@@ -88,6 +88,12 @@ final class LoginAuthenticator implements AuthenticatorInterface
             );
         }
 
+        if (!$user->getStatus()->canLogin()) {
+            throw new CustomUserMessageAuthenticationException(
+                sprintf('User email "%s" cannot login (%s)', $user->getEmail(), $user->getStatus()->toString())
+            );
+        }
+
         return $user;
     }
 
