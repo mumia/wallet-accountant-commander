@@ -8,11 +8,8 @@ prooph_service_bus:
         user_event_bus:
             plugins:
                 - 'prooph_service_bus.on_event_invoke_strategy'
-#            router:
-#                type: 'prooph_service_bus.event_bus_router'
-#                routes:
-#                    'Prooph\ProophessorDo\Model\Todo\Event\TodoAssigneeWasReminded':
-#                        - 'Prooph\ProophessorDo\ProcessManager\SendTodoReminderMailSubscriber'
-#
-#                    'Prooph\ProophessorDo\Model\Todo\Event\TodoWasMarkedAsExpired':
-#                        - 'Prooph\ProophessorDo\ProcessManager\SendTodoDeadlineExpiredMailSubscriber'
+            router:
+                type: 'prooph_service_bus.event_bus_router'
+                routes:
+                    'WalletAccountant\Domain\User\Event\UserPasswordRecoveryInitiated':
+                        - '@WalletAccountant\ProcessManager\SendPasswordRecoveryInitiatedEmailProcessManager'
