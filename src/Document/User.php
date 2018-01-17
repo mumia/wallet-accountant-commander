@@ -4,6 +4,7 @@ namespace WalletAccountant\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Symfony\Component\Security\Core\User\AdvancedUserInterface;
+use WalletAccountant\Common\DateTime\DateTime;
 use WalletAccountant\Document\User\Name;
 use WalletAccountant\Document\User\Recovery;
 use WalletAccountant\Document\User\Status;
@@ -189,11 +190,19 @@ final class User implements AdvancedUserInterface
     }
 
     /**
-     * @param Recovery $recovery
+     * @param string   $recoveryCode
+     * @param DateTime $expiresOn
      */
-    public function setRecovery(Recovery $recovery): void
+    public function initiatePasswordRecovery(string $recoveryCode, DateTime $expiresOn): void
     {
-        $this->recovery = $recovery;
+        $this->status = new Status(
+            $this->getStatus()->isAccountExpired(),
+            $this->getStatus()->isAccountLocked(),
+            true,
+            $this->getStatus()->isEnabled()
+        );
+
+        $this->recovery = new Recovery($recoveryCode, $expiresOn);
     }
 
     /**

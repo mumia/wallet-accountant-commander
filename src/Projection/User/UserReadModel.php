@@ -80,7 +80,7 @@ final class UserReadModel extends AbstractReadModel
             throw UserNotFoundException::withId($id);
         }
 
-        $user->setRecovery(new Recovery($code, $expiresOn));
+        $user->initiatePasswordRecovery($code, $expiresOn);
 
         $this->userRepository->persist($user);
     }
