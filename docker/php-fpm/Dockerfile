@@ -44,7 +44,7 @@ RUN chmod +x phpunit.phar
 RUN mv phpunit.phar phpunit
 
 # mariadb client
-RUN apk add mysql-client
+RUN apk add mysql-client mongodb
 
 WORKDIR /srv/walletaccountantcommander
 
