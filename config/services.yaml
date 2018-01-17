@@ -32,6 +32,12 @@ services:
         resource: '../src/Command'
         tags: ['console.command']
 
+    WalletAccountant\Domain\User\Handler\:
+        resource: '../src/Domain/User/Handler'
+        public: true
+        tags:
+            - { name: 'prooph_service_bus.user_command_bus.route_target', message_detection: true }
+
     WalletAccountant\Command\UserCreateCommand:
         arguments:
             $commandBus: '@prooph_service_bus.user_command_bus'
@@ -42,11 +48,8 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
-    WalletAccountant\Domain\User\Handler\CreateUserHandler:
-        arguments: ['@user_repository']
-        public: true
-        tags:
-            - { name: 'prooph_service_bus.user_command_bus.route_target', message_detection: true }
+    WalletAccountant\Domain\User\UserRepositoryInterface:
+        alias: user_repository
 
     WalletAccountant\Infrastructure\MongoDB\UserProjectionRepository:
         arguments:
