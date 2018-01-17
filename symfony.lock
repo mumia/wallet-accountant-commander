@@ -350,11 +350,26 @@
             "ref": "3db029c03e452b4a23f7fc45cec7c922c2247eb8"
         }
     },
+    "symfony/twig-bridge": {
+        "version": "v3.4.3"
+    },
+    "symfony/twig-bundle": {
+        "version": "3.3",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "3.3",
+            "ref": "f75ac166398e107796ca94cc57fa1edaa06ec47f"
+        }
+    },
     "symfony/yaml": {
         "version": "v3.4.1"
     },
     "theseer/tokenizer": {
         "version": "1.1.0"
+    },
+    "twig/twig": {
+        "version": "v2.4.4"
     },
     "webmozart/assert": {
         "version": "1.2.0"
