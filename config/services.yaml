@@ -57,6 +57,14 @@ services:
     WalletAccountant\Domain\User\UserRepositoryInterface:
         alias: user_repository
 
+    WalletAccountant\Domain\User\Handler\UserInitiatePasswordRecoveryHandler:
+        arguments:
+            $userRepository: '@user_repository'
+            $userProjectionRepository: '@WalletAccountant\Infrastructure\MongoDB\UserProjectionRepository'
+        public: true
+        tags:
+            - { name: 'prooph_service_bus.user_command_bus.route_target', message_detection: true }
+
     WalletAccountant\Infrastructure\MongoDB\UserProjectionRepository:
         arguments:
             $databaseName: '%env(MONGODB_DB)%'

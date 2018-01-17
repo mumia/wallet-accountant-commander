@@ -9,9 +9,9 @@ use WalletAccountant\Domain\Common\Command;
  */
 final class RecoverUserPassword extends Command
 {
-    private const CODE = 'code';
-    private const PASSWORD = 'password';
-    private const REPEAT_PASSWORD = 'repeat_password';
+    public const CODE = 'code';
+    public const PASSWORD = 'password';
+    public const REPEAT_PASSWORD = 'repeat_password';
 
     /**
      * @return string

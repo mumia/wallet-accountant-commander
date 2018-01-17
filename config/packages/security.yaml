@@ -16,6 +16,10 @@ security:
             pattern: ^/ping$
             security: false
 
+        initiate_password_recovery:
+            pattern: ^/initiate-password-recovery$
+            security: false
+
         recover_password:
             pattern: ^/recover-password
             security: false

@@ -14,6 +14,11 @@ ping_authenticated:
     path: /ping-authenticated
     defaults: { _controller: 'WalletAccountant\Controller\PingController::pingAuthenticated' }
 
+user_initiate_password_recovery:
+    path: /initiate-password-recovery
+    methods: [POST]
+    defaults: { _controller: 'WalletAccountant\Controller\UserController::initiatePasswordRecovery' }
+
 user_recover_password:
     path: /recover-password/{code}
     methods: [POST]
