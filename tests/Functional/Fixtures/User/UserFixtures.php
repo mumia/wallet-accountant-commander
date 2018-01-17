@@ -121,4 +121,12 @@ class UserFixtures extends AbstractFixtures
     {
         return $this->jwtEncoder->decode($token);
     }
+
+    /**
+     * @return UserProjectionRepositoryInterface
+     */
+    public function getUserProjectionRepository(): UserProjectionRepositoryInterface
+    {
+        return $this->userProjectionRepository;
+    }
 }
