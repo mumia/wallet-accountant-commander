@@ -1,7 +1,7 @@
 services:
-    fixtures.loader.authenticator:
+    fixtures.loader.user:
         public: true
-        class: WalletAccountant\Tests\Functional\Fixtures\Authenticator\AuthenticatorFixtures
+        class: WalletAccountant\Tests\Functional\Fixtures\User\UserFixtures
         arguments:
             $aggregateRepository: '@user_repository'
             $projectionRunner: '@walletaccountant.projection_runner.user'
