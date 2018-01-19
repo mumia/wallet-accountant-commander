@@ -32,6 +32,12 @@ services:
         resource: '../src/Command'
         tags: ['console.command']
 
+    WalletAccountant\Infrastructure\MongoDB\:
+        resource: '../src/Infrastructure/MongoDB'
+        exclude: '../src/Infrastructure/MongoDB/{Annotations,Types}'
+        arguments:
+            $databaseName: '%env(MONGODB_DB)%'
+
     WalletAccountant\Domain\User\Handler\:
         resource: '../src/Domain/User/Handler'
         public: true
@@ -64,10 +70,6 @@ services:
         public: true
         tags:
             - { name: 'prooph_service_bus.user_command_bus.route_target', message_detection: true }
-
-    WalletAccountant\Infrastructure\MongoDB\UserProjectionRepository:
-        arguments:
-            $databaseName: '%env(MONGODB_DB)%'
 
     WalletAccountant\Infrastructure\Client\MongoDB:
         arguments:

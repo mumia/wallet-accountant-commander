@@ -9,7 +9,7 @@ use WalletAccountant\Domain\User\User;
 use WalletAccountant\Domain\User\UserRepositoryInterface;
 
 /**
- * UserProjectionRepository
+ * UserRepository
  */
 final class UserRepository extends AggregateRepository implements UserRepositoryInterface
 {

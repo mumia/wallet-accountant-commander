@@ -9,49 +9,34 @@ use WalletAccountant\Document\User;
 use WalletAccountant\Document\User\Recovery;
 use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 use WalletAccountant\Common\Exceptions\User\UserNotFoundException;
+use WalletAccountant\Infrastructure\MongoDB\DroppableRepositoryInterface;
 use WalletAccountant\Infrastructure\MongoDB\UserProjectionRepository;
+use WalletAccountant\Projection\AbstractMongoDBReadModel;
 
 /**
  * UserReadModel
  */
-final class UserReadModel extends AbstractReadModel
+final class UserReadModel extends AbstractMongoDBReadModel
 {
     /**
      * @var UserProjectionRepository
      */
-    private $userRepository;
+    private $userProjectionRepository;
 
     /**
-     * @param UserProjectionRepository $userRepository
+     * @param UserProjectionRepository $userProjectionRepository
      */
-    public function __construct(UserProjectionRepository $userRepository)
+    public function __construct(UserProjectionRepository $userProjectionRepository)
     {
-        $this->userRepository = $userRepository;
-    }
-
-    public function init(): void
-    {
-        // MongoDB collection will be created automatically
+        $this->userProjectionRepository = $userProjectionRepository;
     }
 
     /**
-     * @return bool
+     * {@inheritdoc}
      */
-    public function isInitialized(): bool
+    public function getRepository(): DroppableRepositoryInterface
     {
-        // MongoDB collection will be initialized automatically
-
-        return true;
-    }
-
-    public function reset(): void
-    {
-        $this->userRepository->dropCollection();
-    }
-
-    public function delete(): void
-    {
-        $this->userRepository->dropCollection();
+        return $this->userProjectionRepository;
     }
 
     /**
@@ -61,7 +46,7 @@ final class UserReadModel extends AbstractReadModel
      */
     public function insert(User $user): void
     {
-        $this->userRepository->persist($user);
+        $this->userProjectionRepository->persist($user);
     }
 
     /**
@@ -74,7 +59,7 @@ final class UserReadModel extends AbstractReadModel
      */
     public function passwordRecovery(string $id, string $code, DateTime $expiresOn): void
     {
-        $user = $this->userRepository->getByAggregateIdOrNull($id);
+        $user = $this->userProjectionRepository->getByAggregateIdOrNull($id);
 
         if (!$user instanceof User) {
             throw UserNotFoundException::withId($id);
@@ -82,7 +67,7 @@ final class UserReadModel extends AbstractReadModel
 
         $user->initiatePasswordRecovery($code, $expiresOn);
 
-        $this->userRepository->persist($user);
+        $this->userProjectionRepository->persist($user);
     }
 
     /**
@@ -94,10 +79,10 @@ final class UserReadModel extends AbstractReadModel
      */
     public function passwordRecovered(string $id, string $password): void
     {
-        $user = $this->userRepository->getByAggregateId($id);
+        $user = $this->userProjectionRepository->getByAggregateId($id);
 
         $user->recoverPassword($password);
 
-        $this->userRepository->persist($user);
+        $this->userProjectionRepository->persist($user);
     }
 }
