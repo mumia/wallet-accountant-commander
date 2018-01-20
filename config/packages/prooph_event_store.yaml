@@ -10,6 +10,16 @@ prooph_event_store:
                     snapshot_store: null
                     stream_name: user
                     one_stream_per_aggregate: true
+        bank_store:
+            event_store: Prooph\EventStore\Pdo\MariaDbEventStore
+            repositories:
+                bank_repository:
+                    repository_class: WalletAccountant\Infrastructure\EventStore\BankRepository
+                    aggregate_type: WalletAccountant\Domain\Bank\Bank
+                    aggregate_translator: prooph_event_sourcing.aggregate_translator
+                    snapshot_store: null
+                    stream_name: bank
+                    one_stream_per_aggregate: true
     projection_managers:
         user_projection_manager:
             event_store: Prooph\EventStore\Pdo\MariaDbEventStore # event store
@@ -18,6 +28,13 @@ prooph_event_store:
                 user_projection:
                     read_model: WalletAccountant\Projection\User\UserReadModel
                     projection: WalletAccountant\Projection\User\UserProjection
+        bank_projection_manager:
+            event_store: Prooph\EventStore\Pdo\MariaDbEventStore # event store
+            connection: 'doctrine.pdo.connection'
+            projections:
+                bank_projection:
+                    read_model: WalletAccountant\Projection\Bank\BankReadModel
+                    projection: WalletAccountant\Projection\Bank\BankProjection
 
 services:
     Prooph\EventStore\Pdo\MariaDbEventStore:

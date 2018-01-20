@@ -29,3 +29,12 @@ user_login:
     methods: [POST]
     defaults: { _controller: 'WalletAccountant\Controller\SecurityController::login' }
 
+bank_create:
+    path: /bank
+    methods: [POST]
+    defaults: { _controller: 'WalletAccountant\Controller\BankController::createBank' }
+
+bank_update:
+    path: /bank/{id}
+    methods: [PUT]
+    defaults: { _controller: 'WalletAccountant\Controller\BankController::updateBank' }
