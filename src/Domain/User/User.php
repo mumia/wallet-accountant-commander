@@ -26,37 +26,37 @@ final class User extends AggregateRoot
     /**
      * @var UserId
      */
-    protected $id;
+    private $id;
 
     /**
      * @var Email
      */
-    protected $email;
+    private $email;
 
     /**
      * @var Name
      */
-    protected $name;
+    private $name;
 
     /**
      * @var string
      */
-    protected $password;
+    private $password;
 
     /**
      * @var string
      */
-    protected $salt;
+    private $salt;
 
     /**
      * @var array
      */
-    protected $roles;
+    private $roles;
 
     /**
      * @var Status
      */
-    protected $status;
+    private $status;
 
     /**
      * @var Recovery
