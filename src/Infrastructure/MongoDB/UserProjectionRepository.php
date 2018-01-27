@@ -54,7 +54,7 @@ final class UserProjectionRepository extends AbstractProjectionRepository implem
     {
         $user = $this->getByEmailOrNull($email);
 
-        if ($user instanceof User) {
+        if (!$user instanceof User) {
             throw UserNotFoundException::withEmail($email);
         }
 

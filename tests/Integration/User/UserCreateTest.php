@@ -9,6 +9,7 @@ use Exception;
 use Doctrine\DBAL\DBALException;
 use WalletAccountant\Common\DateTime\DateTime;
 use WalletAccountant\Document\User;
+use WalletAccountant\Document\User\Name;
 use WalletAccountant\Document\User\Status;
 use WalletAccountant\Document\User\Recovery;
 use WalletAccountant\Domain\User\Event\UserPasswordRecoveryInitiated;
@@ -46,7 +47,7 @@ class UserCreateTest extends UserIntegrationTestCase
             new User(
                 self::EMAIL,
                 $aggregateId,
-                new User\Name('firstname', 'lastname'),
+                new Name('firstname', 'lastname'),
                 [],
                 '',
                 $salt,

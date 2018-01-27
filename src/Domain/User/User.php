@@ -177,6 +177,7 @@ final class User extends AggregateRoot
         $this->recordThat(
             new UserPasswordRecoveryInitiated(
                 $this->id()->toString(),
+                $this->email(),
                 $recovery->code(),
                 $recovery->expiresOn()
             )

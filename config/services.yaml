@@ -48,8 +48,22 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
+    prooph_event_store_bus_bridge.user_event_publisher:
+        class: Prooph\EventStoreBusBridge\EventPublisher
+        arguments: ['@prooph_service_bus.user_event_bus']
+        public: true
+        tags:
+          - { name: 'prooph_event_store.user_store.plugin' }
     WalletAccountant\Domain\User\UserRepositoryInterface:
         alias: user_repository
+
+    WalletAccountant\Domain\User\Handler\UserInitiatePasswordRecoveryHandler:
+        arguments:
+            $userRepository: '@user_repository'
+            $userProjectionRepository: '@WalletAccountant\Infrastructure\MongoDB\UserProjectionRepository'
+        public: true
+        tags:
+            - { name: 'prooph_service_bus.user_command_bus.route_target', message_detection: true }
 
     WalletAccountant\Infrastructure\MongoDB\UserProjectionRepository:
         arguments:
@@ -58,6 +72,9 @@ services:
     WalletAccountant\Infrastructure\Client\MongoDB:
         arguments:
             - '@doctrine_mongodb'
+
+    WalletAccountant\ProcessManager\SendPasswordRecoveryInitiatedEmailProcessManager:
+        public: true
 
     # Projection runners
     walletaccountant.projection_runner.user:

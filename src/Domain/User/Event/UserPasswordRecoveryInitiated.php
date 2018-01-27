@@ -11,22 +11,26 @@ use WalletAccountant\Common\Exceptions\InvalidArgumentException;
  */
 final class UserPasswordRecoveryInitiated extends AggregateChanged
 {
+    private const EMAIL = 'email';
     private const CODE = 'code';
     private const EXPIRES_ON = 'expires_on';
 
     /**
      * @param string   $id
+     * @param string   $email
      * @param string   $code
      * @param DateTime $expiresOn
      */
     public function __construct(
         string $id,
+        string $email,
         string $code,
         DateTime $expiresOn
     ) {
         parent::__construct(
             $id,
             [
+                self::EMAIL => $email,
                 self::CODE => $code,
                 self::EXPIRES_ON => $expiresOn->toDateTimeMicro()
             ]
@@ -39,6 +43,14 @@ final class UserPasswordRecoveryInitiated extends AggregateChanged
     public function id(): string
     {
         return $this->aggregateId();
+    }
+
+    /**
+     * @return string
+     */
+    public function email(): string
+    {
+        return $this->payload()[self::EMAIL];
     }
 
     /**

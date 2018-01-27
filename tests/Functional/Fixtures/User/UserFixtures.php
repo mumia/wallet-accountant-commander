@@ -1,6 +1,6 @@
 <?php
 
-namespace WalletAccountant\Tests\Functional\Fixtures\Authenticator;
+namespace WalletAccountant\Tests\Functional\Fixtures\User;
 
 use Doctrine\DBAL\Connection as DBALConnection;
 use Doctrine\DBAL\DBALException;
@@ -18,9 +18,9 @@ use WalletAccountant\Projection\ProjectionRunner;
 use WalletAccountant\Tests\Functional\Fixtures\AbstractFixtures;
 
 /**
- * AuthenticatorFixtures
+ * UserFixtures
  */
-class AuthenticatorFixtures extends AbstractFixtures
+class UserFixtures extends AbstractFixtures
 {
     public const ID = 'c2660624-aa84-41f6-885f-4edc35777dd8';
     public const EMAIL = 'fakeemail@faketestdomain.tld';
@@ -73,6 +73,20 @@ class AuthenticatorFixtures extends AbstractFixtures
     {
         $this->resetDatabase();
 
+        $userDomain = $this->createUser();
+
+        $user = $this->userProjectionRepository->getByAggregateId($userDomain->id()->toString());
+
+        $userDomain->recoverPassword($this->getEncodedPassword($user));
+
+        $this->runEvents($userDomain);
+    }
+
+    /**
+     * @return UserDomain
+     */
+    public function createUser(): UserDomain
+    {
         $userDomain = UserDomain::createUser(
             UserId::createFromString(self::ID),
             EmailDomain::createFromString(self::EMAIL),
@@ -83,11 +97,7 @@ class AuthenticatorFixtures extends AbstractFixtures
 
         $this->runEvents($userDomain);
 
-        $user = $this->userProjectionRepository->getByAggregateId($userDomain->id());
-
-        $userDomain->recoverPassword($this->getEncodedPassword($user));
-
-        $this->runEvents($userDomain);
+        return $userDomain;
     }
 
     /**
@@ -110,5 +120,13 @@ class AuthenticatorFixtures extends AbstractFixtures
     public function decodeJWToken(string $token): array
     {
         return $this->jwtEncoder->decode($token);
+    }
+
+    /**
+     * @return UserProjectionRepositoryInterface
+     */
+    public function getUserProjectionRepository(): UserProjectionRepositoryInterface
+    {
+        return $this->userProjectionRepository;
     }
 }

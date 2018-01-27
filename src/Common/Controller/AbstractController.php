@@ -39,7 +39,7 @@ class AbstractController extends Controller
      *
      * @throws CommandDispatchException
      */
-    public function dispatchCommand(string $class, array $payload)
+    public function dispatchCommand(string $class, array $payload = [])
     {
         $command = $this->messageFactory->createMessageFromArray($class, ['payload' => $payload]);
 

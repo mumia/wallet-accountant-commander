@@ -12,11 +12,11 @@
         "doctrine/mongodb-odm-bundle": "^3.4",
         "lexik/jwt-authentication-bundle": "^2.4",
         "prooph/event-sourcing": "^5.3",
-        "prooph/event-store-bus-bridge": "^3.0",
-        "prooph/event-store-symfony-bundle": "^0.3.0",
+        "prooph/event-store-bus-bridge": "^3.1",
+        "prooph/event-store-symfony-bundle": "^0.3",
         "prooph/pdo-event-store": "^1.6",
         "prooph/service-bus": "^6.2",
-        "prooph/service-bus-symfony-bundle": "^0.5.1",
+        "prooph/service-bus-symfony-bundle": "^0.6",
         "respect/validation": "^1.1",
         "symfony/console": "^3.4",
         "symfony/flex": "^1.0",
@@ -25,6 +25,8 @@
         "symfony/monolog-bundle": "^3.1",
         "symfony/security": "^3.4",
         "symfony/security-bundle": "^3.4",
+        "symfony/swiftmailer-bundle": "^3.1",
+        "symfony/twig-bundle": "^3.4",
         "symfony/yaml": "^3.4"
     },
     "require-dev": {
@@ -32,6 +34,7 @@
         "symfony/browser-kit": "^3.4",
         "symfony/dotenv": "^3.4",
         "symfony/phpunit-bridge": "^3.4",
+        "symfony/profiler-pack": "^1.0",
         "symfony/stopwatch": "^3.4"
     },
     "config": {
