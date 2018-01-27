@@ -86,7 +86,15 @@ final class JwtAuthenticator implements AuthenticatorInterface
         $user = $this->userProjectionRepository->getByEmailOrNull($data['email']);
 
         if (!$user instanceof UserInterface) {
-            throw new CustomUserMessageAuthenticationException('Invalid user account');
+            throw new CustomUserMessageAuthenticationException(
+                sprintf('Invalid user account for email "%s"', $data['email'])
+            );
+        }
+
+        if (!$user->getStatus()->canLogin()) {
+            throw new CustomUserMessageAuthenticationException(
+                sprintf('User email "%s" cannot login (%s)', $data['email'], $user->getStatus()->toString())
+            );
         }
 
         return $user;
