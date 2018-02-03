@@ -2,17 +2,14 @@
 
 namespace WalletAccountant\Domain\User\Command;
 
-use Respect\Validation\Validator;
-use function sprintf;
-use WalletAccountant\Domain\Common\Command;
+use WalletAccountant\Domain\Common\AbstractCommand;
 use WalletAccountant\Domain\User\Email\Email;
-use WalletAccountant\Domain\User\Id\UserId;
 use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 
 /**
  * UserInitiatePasswordRecovery
  */
-final class UserInitiatePasswordRecovery extends Command
+final class UserInitiatePasswordRecovery extends AbstractCommand
 {
     public const EMAIL = 'email';
 

@@ -2,12 +2,12 @@
 
 namespace WalletAccountant\Domain\Bank\Event;
 
-use Prooph\EventSourcing\AggregateChanged;
+use WalletAccountant\Domain\Common\AbstractAggregateChanged;
 
 /**
  * BankWasCreated
  */
-class BankWasCreated extends AggregateChanged
+class BankWasCreated extends AbstractAggregateChanged
 {
     private const NAME = 'name';
 

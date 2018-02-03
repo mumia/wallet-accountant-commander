@@ -12,11 +12,12 @@ use WalletAccountant\Common\Exceptions\User\UserNotFoundException;
 interface UserProjectionRepositoryInterface
 {
     /**
-     * @param UserDocument $document
+     * @param UserDocument      $newDocument
+     * @param null|UserDocument $oldDocument
      *
      * @throws InvalidArgumentException
      */
-    public function persist(UserDocument $document): void;
+    public function persist(UserDocument $newDocument, ?UserDocument $oldDocument): void;
 
     /**
      * @param string $email

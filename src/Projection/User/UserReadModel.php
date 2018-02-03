@@ -46,7 +46,7 @@ final class UserReadModel extends AbstractMongoDBReadModel
      */
     public function insert(User $user): void
     {
-        $this->userProjectionRepository->persist($user);
+        $this->userProjectionRepository->persist($user, null);
     }
 
     /**
@@ -67,7 +67,7 @@ final class UserReadModel extends AbstractMongoDBReadModel
 
         $user->initiatePasswordRecovery($code, $expiresOn);
 
-        $this->userProjectionRepository->persist($user);
+        $this->userProjectionRepository->persist($user, null);
     }
 
     /**
@@ -83,6 +83,6 @@ final class UserReadModel extends AbstractMongoDBReadModel
 
         $user->recoverPassword($password);
 
-        $this->userProjectionRepository->persist($user);
+        $this->userProjectionRepository->persist($user, null);
     }
 }

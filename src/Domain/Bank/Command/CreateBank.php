@@ -4,12 +4,12 @@ namespace WalletAccountant\Domain\Bank\Command;
 
 use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 use WalletAccountant\Domain\Bank\Id\BankId;
-use WalletAccountant\Domain\Common\Command;
+use WalletAccountant\Domain\Common\AbstractCommand;
 
 /**
  * CreateBank
  */
-class CreateBank extends Command
+class CreateBank extends AbstractCommand
 {
     public const ID = 'id';
     public const NAME = 'name';

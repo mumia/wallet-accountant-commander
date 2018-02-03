@@ -2,14 +2,14 @@
 
 namespace WalletAccountant\Domain\User\Event;
 
-use Prooph\EventSourcing\AggregateChanged;
 use WalletAccountant\Common\DateTime\DateTime;
 use WalletAccountant\Common\Exceptions\InvalidArgumentException;
+use WalletAccountant\Domain\Common\AbstractAggregateChanged;
 
 /**
  * UserPasswordRecoveryInitiated
  */
-final class UserPasswordRecoveryInitiated extends AggregateChanged
+final class UserPasswordRecoveryInitiated extends AbstractAggregateChanged
 {
     private const EMAIL = 'email';
     private const CODE = 'code';
@@ -32,7 +32,7 @@ final class UserPasswordRecoveryInitiated extends AggregateChanged
             [
                 self::EMAIL => $email,
                 self::CODE => $code,
-                self::EXPIRES_ON => $expiresOn->toDateTimeMicro()
+                self::EXPIRES_ON => $expiresOn->toDateTimeMicroFull()
             ]
         );
     }
@@ -68,6 +68,6 @@ final class UserPasswordRecoveryInitiated extends AggregateChanged
      */
     public function expiresOn(): DateTime
     {
-        return DateTime::createFromDateTimeMicroFormat($this->payload()[self::EXPIRES_ON]);
+        return DateTime::createFromDateTimeMicroFullFormat($this->payload()[self::EXPIRES_ON]);
     }
 }

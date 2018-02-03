@@ -2,14 +2,12 @@
 
 namespace WalletAccountant\Domain\User\Event;
 
-use Prooph\EventSourcing\AggregateChanged;
-use WalletAccountant\Common\DateTime\DateTime;
-use WalletAccountant\Common\Exceptions\InvalidArgumentException;
+use WalletAccountant\Domain\Common\AbstractAggregateChanged;
 
 /**
  * UserPasswordRecovered
  */
-final class UserPasswordRecovered extends AggregateChanged
+final class UserPasswordRecovered extends AbstractAggregateChanged
 {
     private const PASSWORD = 'password';
 

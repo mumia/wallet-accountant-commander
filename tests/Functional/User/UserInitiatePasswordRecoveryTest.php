@@ -3,15 +3,17 @@
 namespace WalletAccountant\Tests\Functional\User;
 
 use Doctrine\DBAL\DBALException;
+use function sprintf;
 use Swift_Message;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\SwiftmailerBundle\DataCollector\MessageDataCollector;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use WalletAccountant\Common\DateTime\DateTime;
+use WalletAccountant\Document\User\Recovery;
 use WalletAccountant\Document\User\Status;
 use WalletAccountant\Infrastructure\MongoDB\UserProjectionRepository;
-use WalletAccountant\Tests\Functional\Fixtures\User\UserFixtures;
+use WalletAccountant\Tests\Functional\Fixtures\User\UserWithPassword;
 use WalletAccountant\Tests\Functional\FunctionalTestCase;
 
 /**
@@ -26,31 +28,40 @@ class UserInitiatePasswordRecoveryTest extends FunctionalTestCase
     {
         DateTime::setTestNow(DateTime::now());
 
-        $fixtures = $this->container->get('fixtures.loader.user');
-        $fixtures->userWithPassword();
+        $this->loadFixtures();
 
         $client = static::createClient();
         $client->enableProfiler();
-        $client->request(Request::METHOD_POST, '/initiate-password-recovery', ['email' => UserFixtures::EMAIL]);
+        $client->request(Request::METHOD_POST, '/initiate-password-recovery', ['email' => UserWithPassword::EMAIL]);
 
         // Make sure projection is updated with the new event
         $this->runProjection('user');
 
         $response = $client->getResponse();
-        $this->assertInstanceOf(Response::class, $response);
+
+        if (!$response instanceof Response) {
+            $this->fail(sprintf('response in not an %s object', Response::class));
+        }
+
         $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
         $this->assertEquals('{"message":"user password recovery initiated"}', $response->getContent());
 
-        $userProjectionRepository = $fixtures->getUserProjectionRepository();
+        $userProjectionRepository = $this->container->get('test.user_projection_repository');
 
-        $actualUser = $userProjectionRepository->getByEmail(UserFixtures::EMAIL);
+        $actualUser = $userProjectionRepository->getByEmail(UserWithPassword::EMAIL);
 
         $expectedStatus = new Status(false, false, true, true);
         $expectedExpiresOn = DateTime::now()->addHours(360);
 
         $this->assertEquals($expectedStatus, $actualUser->getStatus());
         $this->assertTrue($actualUser->hasRecovery());
-        $this->assertTrue($expectedExpiresOn->sameValueAs($actualUser->getRecovery()->getExpiresOn()));
+
+        $recovery = $actualUser->getRecovery();
+        if (!$recovery instanceof Recovery) {
+            $this->fail(sprintf('recovery in not an %s object', Recovery::class));
+        }
+
+        $this->assertTrue($expectedExpiresOn->sameValueAs($recovery->getExpiresOn()));
 
         $this->validateEmailWasSent($client);
     }
@@ -72,6 +83,6 @@ class UserInitiatePasswordRecoveryTest extends FunctionalTestCase
         $this->assertInstanceOf(Swift_Message::class, $message);
         $this->assertSame('Password recovery initiated', $message->getSubject());
         $this->assertSame('wlltccntnt@gmail.com', key($message->getFrom()));
-        $this->assertSame(UserFixtures::EMAIL, key($message->getTo()));
+        $this->assertSame(UserWithPassword::EMAIL, key($message->getTo()));
     }
 }

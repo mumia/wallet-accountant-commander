@@ -35,7 +35,7 @@ class BankController extends AbstractController
             ]
         );
 
-        return new JsonResponse(['message' => 'bank created', CreateBank::ID => $id]);
+        return new JsonResponse(['message' => 'bank created', CreateBank::ID => $id], Response::HTTP_CREATED);
     }
 
     /**

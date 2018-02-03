@@ -23,8 +23,8 @@ use WalletAccountant\Domain\User\UserProjectionRepositoryInterface;
  */
 final class JwtAuthenticator implements AuthenticatorInterface
 {
-    private const AUTHORIZATION_HEADER_KEY = 'Authorization';
-    private const AUTHORIZATION_TOKEN_PREFIX = 'Bearer';
+    public const AUTHORIZATION_HEADER_KEY = 'Authorization';
+    public const AUTHORIZATION_TOKEN_PREFIX = 'Bearer';
 
     /**
      * @var JWTEncoderInterface

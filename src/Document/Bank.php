@@ -3,6 +3,8 @@
 namespace WalletAccountant\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use WalletAccountant\Document\Common\Authored;
+use WalletAccountant\Domain\User\Id\UserId;
 
 /**
  * Bank
@@ -26,13 +28,31 @@ final class Bank
     private $name;
 
     /**
-     * @param string $aggregateId
-     * @param string $name
+     * @var Authored
+     *
+     * @MongoDB\EmbedOne(targetDocument="WalletAccountant\Document\Common\Authored")
      */
-    public function __construct(string $aggregateId, string $name)
+    private $created;
+
+    /**
+     * @var Authored
+     *
+     * @MongoDB\EmbedOne(targetDocument="WalletAccountant\Document\Common\Authored")
+     */
+    private $updated;
+
+    /**
+     * @param string   $aggregateId
+     * @param string   $name
+     * @param Authored $created
+     * @param Authored $updated
+     */
+    public function __construct(string $aggregateId, string $name, Authored $created, Authored $updated)
     {
         $this->aggregateId = $aggregateId;
         $this->name = $name;
+        $this->created = $created;
+        $this->updated = $updated;
     }
 
     /**
@@ -49,5 +69,21 @@ final class Bank
     public function getName(): string
     {
         return $this->name;
+    }
+
+    /**
+     * @return Authored
+     */
+    public function getCreated(): Authored
+    {
+        return $this->created;
+    }
+
+    /**
+     * @return Authored
+     */
+    public function getUpdated(): Authored
+    {
+        return $this->updated;
     }
 }

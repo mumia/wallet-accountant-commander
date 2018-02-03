@@ -12,11 +12,12 @@ use WalletAccountant\Document\Bank;
 interface BankProjectionRepositoryInterface
 {
     /**
-     * @param Bank $document
+     * @param Bank      $newDocument
+     * @param null|Bank $oldDocument
      *
      * @throws InvalidArgumentException
      */
-    public function persist(Bank $document): void;
+    public function persist(Bank $newDocument, ?Bank $oldDocument): void;
 
     /**
      * @param string $aggregateId

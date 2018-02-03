@@ -18,12 +18,16 @@ final class UserProjectionRepository extends AbstractProjectionRepository implem
     /**
      * {@inheritdoc}
      */
-    public function persist(User $document): void
+    public function persist(User $newDocument, ?User $oldDocument): void
     {
         try {
             $manager = $this->client->getManager();
-            $manager->persist($document);
+            $manager->persist($newDocument);
             $manager->flush();
+
+            if ($oldDocument instanceof User) {
+                $manager->refresh($oldDocument);
+            }
         } catch (StandardInvalidArgumentException $exception) {
             throw InvalidArgumentException::createFromStandardException($exception);
         }

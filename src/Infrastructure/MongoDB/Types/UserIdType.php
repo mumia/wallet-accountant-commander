@@ -6,11 +6,12 @@ use Doctrine\ODM\MongoDB\Types\Type;
 use InvalidArgumentException as StandardInvalidArgumentException;
 use WalletAccountant\Common\DateTime\DateTime;
 use WalletAccountant\Common\Exceptions\InvalidArgumentException;
+use WalletAccountant\Document\User\UserId;
 
 /**
- * DateTimeType
+ * UserIdType
  */
-class DateTimeType extends Type
+class UserIdType extends Type
 {
     /**
      * @param mixed $value
@@ -19,29 +20,29 @@ class DateTimeType extends Type
      */
     public function convertToDatabaseValue($value): string
     {
-        /** @var DateTime $value */
+        /** @var UserId $value */
         if ($value === null) {
             return $value;
         }
 
-        return $value->toDateTimeMicroFull();
+        return $value->toString();
     }
 
     /**
      * @param mixed $value
      *
-     * @return null|DateTime
+     * @return null|UserId
      *
      * @throws InvalidArgumentException
      */
-    public function convertToPHPValue($value): ?DateTime
+    public function convertToPHPValue($value): ?UserId
     {
         try {
             if ($value === null) {
                 return null;
             }
 
-            return DateTime::createFromDateTimeMicroFullFormat($value);
+            return UserId::createFromString($value);
         } catch (StandardInvalidArgumentException $exception) {
             throw InvalidArgumentException::createFromStandardException($exception);
         }
@@ -53,7 +54,7 @@ class DateTimeType extends Type
     public function closureToMongo(): string
     {
         return 'if ($value === null || $value instanceof \MongoDate) { $return = $value; } ' .
-            'else { $return $value->toDateTimeMicroFull(); }';
+            'else { $return $value->toString(); }';
     }
 
     /**
@@ -62,6 +63,6 @@ class DateTimeType extends Type
     public function closureToPHP(): string
     {
         return 'if ($value === null) { $return = null; } ' .
-            'else { $return = \WalletAccountant\Common\DateTime\DateTime::createFromDateTimeMicroFullFormat($value); }';
+            'else { $return = \WalletAccountant\Document\User\UserId::createFromString($value); }';
     }
 }

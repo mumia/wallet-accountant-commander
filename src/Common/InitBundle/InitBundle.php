@@ -18,6 +18,7 @@ use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use WalletAccountant\Infrastructure\MongoDB\Types\DateTimeType;
+use WalletAccountant\Infrastructure\MongoDB\Types\UserIdType;
 
 /**
  * InitBundle
@@ -32,5 +33,6 @@ class InitBundle extends Bundle
     public function boot()
     {
         Type::registerType('datetime', DateTimeType::class);
+        Type::registerType('userid', UserIdType::class);
     }
 }

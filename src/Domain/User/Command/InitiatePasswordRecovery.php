@@ -2,14 +2,14 @@
 
 namespace WalletAccountant\Domain\User\Command;
 
-use WalletAccountant\Domain\Common\Command;
+use WalletAccountant\Domain\Common\AbstractCommand;
 use WalletAccountant\Domain\User\Id\UserId;
 use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 
 /**
  * InitiatePasswordRecovery
  */
-final class InitiatePasswordRecovery extends Command
+final class InitiatePasswordRecovery extends AbstractCommand
 {
     public const ID = 'id';
 

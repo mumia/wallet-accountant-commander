@@ -5,11 +5,8 @@ namespace WalletAccountant\Infrastructure\MongoDB;
 use InvalidArgumentException as StandardInvalidArgumentException ;
 use WalletAccountant\Common\Exceptions\Bank\BankNotFoundException;
 use WalletAccountant\Document\Bank;
-use WalletAccountant\Document\User;
 use WalletAccountant\Domain\Bank\BankProjectionRepositoryInterface;
-use WalletAccountant\Domain\User\UserProjectionRepositoryInterface;
 use WalletAccountant\Common\Exceptions\InvalidArgumentException;
-use WalletAccountant\Common\Exceptions\User\UserNotFoundException;
 
 /**
  * BankProjectionRepository
@@ -21,12 +18,17 @@ final class BankProjectionRepository extends AbstractProjectionRepository implem
     /**
      * {@inheritdoc}
      */
-    public function persist(Bank $document): void
+    public function persist(Bank $newDocument, ?Bank $oldDocument): void
     {
         try {
             $manager = $this->client->getManager();
-            $manager->persist($document);
+            $manager->persist($newDocument);
             $manager->flush();
+
+            if ($oldDocument instanceof Bank) {
+                $manager->refresh($oldDocument);
+            }
+
         } catch (StandardInvalidArgumentException $exception) {
             throw InvalidArgumentException::createFromStandardException($exception);
         }

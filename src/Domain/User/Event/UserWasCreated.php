@@ -2,14 +2,14 @@
 
 namespace WalletAccountant\Domain\User\Event;
 
-use Prooph\EventSourcing\AggregateChanged;
 use function sprintf;
+use WalletAccountant\Domain\Common\AbstractAggregateChanged;
 use WalletAccountant\Domain\User\Status\Status;
 
 /**
  * UserWasCreated
  */
-final class UserWasCreated extends AggregateChanged
+final class UserWasCreated extends AbstractAggregateChanged
 {
     private const EMAIL = 'email';
     private const FIRST_NAME = 'first_name';

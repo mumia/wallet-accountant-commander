@@ -5,7 +5,8 @@ namespace WalletAccountant\Tests\Functional\Authenticator;
 use Doctrine\DBAL\DBALException;
 use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
 use WalletAccountant\Common\DateTime\DateTime;
-use WalletAccountant\Tests\Functional\Fixtures\User\UserFixtures;
+use WalletAccountant\Tests\Functional\Fixtures\Authenticator\AuthenticatorFixtures;
+use WalletAccountant\Tests\Functional\Fixtures\User\UserWithPassword;
 use WalletAccountant\Tests\Functional\FunctionalTestCase;
 
 /**
@@ -21,23 +22,23 @@ class LoginAuthenticatorTest extends FunctionalTestCase
     {
         DateTime::setTestNow(DateTime::now());
 
-        $fixtures = $this->container->get('fixtures.loader.user');
-        $fixtures->userWithPassword();
+        $this->loadFixtures();
 
-        $response = $this->login(UserFixtures::EMAIL, UserFixtures::PASSWORD);
+        $response = $this->login(UserWithPassword::EMAIL, UserWithPassword::PASSWORD);
 
         $token = json_decode($response->getContent(), true);
 
         $this->assertFalse(isset($token['error']));
 
-        $decodedToken = $fixtures->decodeJWToken($token['token']);
+        $encoder = $this->container->get('test.jwt.encoder');
+        $decodedToken = $encoder->decode($token['token']);
 
         $expectedToken = [
             'exp' => DateTime::now()->addDays(10)->getTimestamp(),
-            'email' => UserFixtures::EMAIL,
+            'email' => UserWithPassword::EMAIL,
             'name' => [
-                'first' => UserFixtures::FIRST_NAME,
-                'last' => UserFixtures::LAST_NAME
+                'first' => UserWithPassword::FIRST_NAME,
+                'last' => UserWithPassword::LAST_NAME
             ],
             'iat' => DateTime::now()->getTimestamp()
         ];
