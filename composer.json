@@ -18,6 +18,7 @@
         "prooph/service-bus": "^6.2",
         "prooph/service-bus-symfony-bundle": "^0.6",
         "respect/validation": "^1.1",
+        "ronanguilloux/isocodes": "^2.1",
         "symfony/console": "^3.4",
         "symfony/flex": "^1.0",
         "symfony/framework-bundle": "^3.4",
