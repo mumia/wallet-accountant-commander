@@ -2,7 +2,9 @@
 
 namespace WalletAccountant\Domain\User\Event;
 
+use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 use WalletAccountant\Domain\Common\AbstractAggregateChanged;
+use WalletAccountant\Domain\User\Id\UserId;
 
 /**
  * UserPasswordRecovered
@@ -12,20 +14,22 @@ final class UserPasswordRecovered extends AbstractAggregateChanged
     private const PASSWORD = 'password';
 
     /**
-     * @param string $id
+     * @param UserId $id
      * @param string $password
      */
-    public function __construct(string $id, string $password)
+    public function __construct(UserId $id, string $password)
     {
-        parent::__construct($id, [self::PASSWORD => $password]);
+        parent::__construct($id->toString(), [self::PASSWORD => $password]);
     }
 
     /**
-     * @return string
+     * @return UserId
+     *
+     * @throws InvalidArgumentException
      */
-    public function id(): string
+    public function id(): UserId
     {
-        return $this->aggregateId();
+        return UserId::createFromString($this->aggregateId());
     }
 
     /**

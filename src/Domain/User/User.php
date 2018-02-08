@@ -79,7 +79,7 @@ final class User extends AggregateRoot
 
         $user->recordThat(
             new UserWasCreated(
-                $id->toString(),
+                $id,
                 $email->toString(),
                 $name->first(),
                 $name->last(),
@@ -176,7 +176,7 @@ final class User extends AggregateRoot
 
         $this->recordThat(
             new UserPasswordRecoveryInitiated(
-                $this->id()->toString(),
+                $this->id(),
                 $this->email(),
                 $recovery->code(),
                 $recovery->expiresOn()
@@ -191,7 +191,7 @@ final class User extends AggregateRoot
      */
     public function recoverPassword(string $encodedPassword): void
     {
-        $this->recordThat(new UserPasswordRecovered($this->id()->toString(), $encodedPassword));
+        $this->recordThat(new UserPasswordRecovered($this->id(), $encodedPassword));
     }
 
     /**

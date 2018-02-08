@@ -24,7 +24,7 @@ abstract class AbstractReadModelProjection implements ReadModelProjection
     public static function createAuthored(AbstractAggregateChanged $event): Authored
     {
         return new Authored(
-            UserId::createFromUserIdDomain($event->getCreatedBy()),
+            $event->getCreatedBy(),
             DateTime::createFromDateImmutable($event->createdAt())
         );
     }

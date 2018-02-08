@@ -7,6 +7,7 @@ use WalletAccountant\Common\Exceptions\Bank\BankNotFoundException;
 use WalletAccountant\Document\Bank;
 use WalletAccountant\Domain\Bank\BankProjectionRepositoryInterface;
 use WalletAccountant\Common\Exceptions\InvalidArgumentException;
+use WalletAccountant\Domain\Bank\Id\BankId;
 
 /**
  * BankProjectionRepository
@@ -37,22 +38,22 @@ final class BankProjectionRepository extends AbstractProjectionRepository implem
     /**
      * {@inheritdoc}
      */
-    public function getByAggregateIdOrNull(string $aggregateId): ?Bank
+    public function getByIdOrNull(BankId $id): ?Bank
     {
         $repository = $this->client->getRepository(Bank::class);
 
-        return $repository->find($aggregateId);
+        return $repository->find($id->toString());
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getByAggregateId(string $aggregateId): Bank
+    public function getById(BankId $id): Bank
     {
-        $bank = $this->getByAggregateIdOrNull($aggregateId);
+        $bank = $this->getByIdOrNull($id);
 
         if (!$bank instanceof Bank) {
-            throw BankNotFoundException::withId($aggregateId);
+            throw BankNotFoundException::withId($id);
         }
 
         return $bank;

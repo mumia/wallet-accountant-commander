@@ -6,7 +6,7 @@ use Prooph\Common\Messaging\Message;
 use Prooph\EventStore\Metadata\MetadataEnricher;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Guard\Token\PostAuthenticationGuardToken;
-use function var_dump;
+use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 use WalletAccountant\Document\User;
 
 /**
@@ -33,6 +33,8 @@ class CreatedByMetadataEnricher implements MetadataEnricher
      * @param Message $message
      *
      * @return Message
+     *
+     * @throws InvalidArgumentException
      */
     public function enrich(Message $message): Message
     {
@@ -45,6 +47,6 @@ class CreatedByMetadataEnricher implements MetadataEnricher
         /** @var User $user */
         $user = $token->getUser();
 
-        return $message->withAddedMetadata(self::METADATA_CREATED_BY, $user->getAggregateId());
+        return $message->withAddedMetadata(self::METADATA_CREATED_BY, $user->getId()->toString());
     }
 }

@@ -4,7 +4,8 @@ namespace WalletAccountant\Document\Common;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use WalletAccountant\Common\DateTime\DateTime;
-use WalletAccountant\Document\User\UserId;
+use WalletAccountant\Common\Exceptions\InvalidArgumentException;
+use WalletAccountant\Domain\User\Id\UserId;
 
 /**
  * Authored
@@ -14,9 +15,9 @@ use WalletAccountant\Document\User\UserId;
 class Authored
 {
     /**
-     * @var UserId
+     * @var string
      *
-     * @MongoDB\Field(type="userid")
+     * @MongoDB\Field(type="string")
      */
     private $by;
 
@@ -33,16 +34,18 @@ class Authored
      */
     public function __construct(UserId $by, DateTime $on)
     {
-        $this->by = $by;
+        $this->by = $by->toString();
         $this->on = $on;
     }
 
     /**
      * @return UserId
+     *
+     * @throws InvalidArgumentException
      */
     public function getBy(): UserId
     {
-        return $this->by;
+        return UserId::createFromString($this->by);
     }
 
     /**

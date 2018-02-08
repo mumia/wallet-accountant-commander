@@ -4,7 +4,8 @@ namespace WalletAccountant\Domain\Bank;
 
 use WalletAccountant\Common\Exceptions\Bank\BankNotFoundException;
 use WalletAccountant\Common\Exceptions\InvalidArgumentException;
-use WalletAccountant\Document\Bank;
+use WalletAccountant\Document\Bank as BankDocument;
+use WalletAccountant\Domain\Bank\Id\BankId;
 
 /**
  * BankProjectionRepositoryInterface
@@ -12,26 +13,26 @@ use WalletAccountant\Document\Bank;
 interface BankProjectionRepositoryInterface
 {
     /**
-     * @param Bank      $newDocument
-     * @param null|Bank $oldDocument
+     * @param BankDocument      $newDocument
+     * @param null|BankDocument $oldDocument
      *
      * @throws InvalidArgumentException
      */
-    public function persist(Bank $newDocument, ?Bank $oldDocument): void;
+    public function persist(BankDocument $newDocument, ?BankDocument $oldDocument): void;
 
     /**
-     * @param string $aggregateId
+     * @param BankId $id
      *
-     * @return null|Bank
+     * @return null|BankDocument
      */
-    public function getByAggregateIdOrNull(string $aggregateId): ?Bank;
+    public function getByIdOrNull(BankId $id): ?BankDocument;
 
     /**
-     * @param string $aggregateId
+     * @param BankId $id
      *
-     * @return Bank
+     * @return BankDocument
      *
      * @throws BankNotFoundException
      */
-    public function getByAggregateId(string $aggregateId): Bank;
+    public function getById(BankId $id): BankDocument;
 }

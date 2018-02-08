@@ -14,6 +14,7 @@ use WalletAccountant\Common\DateTime\DateTime;
 use WalletAccountant\Document\User\Recovery;
 use WalletAccountant\Document\User\Status;
 use WalletAccountant\Domain\User\Command\RecoverUserPassword;
+use WalletAccountant\Domain\User\Email\Email;
 use WalletAccountant\Infrastructure\MongoDB\UserProjectionRepository;
 use WalletAccountant\Tests\Functional\Fixtures\User\UserWithPassword;
 use WalletAccountant\Tests\Functional\Fixtures\User\UserWithPasswordRecoveryInitiated;
@@ -59,7 +60,9 @@ class UserPasswordRecoveryTest extends FunctionalTestCase
 
         $userProjectionRepository = $this->container->get('test.user_projection_repository');
 
-        $actualUser = $userProjectionRepository->getByEmail(UserWithPasswordRecoveryInitiated::EMAIL);
+        $actualUser = $userProjectionRepository->getByEmail(
+            Email::createFromString(UserWithPasswordRecoveryInitiated::EMAIL)
+        );
 
         $expectedStatus = new Status(false, false, false, true);
 

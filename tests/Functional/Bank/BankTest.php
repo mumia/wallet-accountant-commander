@@ -8,7 +8,8 @@ use function sprintf;
 use WalletAccountant\Common\DateTime\DateTime;
 use WalletAccountant\Document\Bank;
 use WalletAccountant\Document\Common\Authored;
-use WalletAccountant\Document\User\UserId;
+use WalletAccountant\Domain\Bank\Id\BankId;
+use WalletAccountant\Domain\User\Id\UserId;
 use WalletAccountant\Tests\Functional\Fixtures\Bank\Bank as BankFixture;
 use WalletAccountant\Tests\Functional\Fixtures\User\UserWithPassword;
 use WalletAccountant\Tests\Functional\FunctionalTestCase;
@@ -36,10 +37,10 @@ class BankTest extends FunctionalTestCase
 
         $this->assertTrue($client->isCreatedAndJson());
 
-        $bankId = json_decode($client->getContent(), true)['id'];
+        $bankId = BankId::createFromString(json_decode($client->getContent(), true)['id']);
 
         $bankProjectionRepository = $this->container->get('test.bank_projection_repository');
-        $actualBank = $bankProjectionRepository->getByAggregateId($bankId);
+        $actualBank = $bankProjectionRepository->getById($bankId);
 
         $authoredBy = UserId::createFromString('6eeaf6b5-ce76-4d15-b370-5e148b93c8db');
         $expectedAuthored = new Authored($authoredBy, DateTime::now());
@@ -60,7 +61,9 @@ class BankTest extends FunctionalTestCase
         $response = $this->login(UserWithPassword::EMAIL, UserWithPassword::PASSWORD);
 
         $bankProjectionRepository = $this->container->get('test.bank_projection_repository');
-        $previousBank = $bankProjectionRepository->getByAggregateId(BankFixture::EVENT_AGGREGATE_ID);
+        $previousBank = $bankProjectionRepository->getById(
+            BankId::createFromString(BankFixture::EVENT_AGGREGATE_ID)
+        );
         $this->assertEquals(BankFixture::NAME, $previousBank->getName());
 
         $client = self::createClient();
@@ -70,13 +73,15 @@ class BankTest extends FunctionalTestCase
 
         $this->assertTrue($client->isOkAndJson());
 
-        $actualBank = $bankProjectionRepository->getByAggregateId(BankFixture::EVENT_AGGREGATE_ID);
+        $actualBank = $bankProjectionRepository->getById(
+            BankId::createFromString(BankFixture::EVENT_AGGREGATE_ID)
+        );
 
         $authoredBy = UserId::createFromString(UserWithPassword::EVENT_AGGREGATE_ID);
         $expectedAuthoredCreated = new Authored($authoredBy, DateTime::now()->subHours(10));
         $expectedAuthoredUpdated = new Authored($authoredBy, DateTime::now());
         $expectedBank = new Bank(
-            BankFixture::EVENT_AGGREGATE_ID,
+            BankId::createFromString(BankFixture::EVENT_AGGREGATE_ID),
             $bankNameUpdate,
             $expectedAuthoredCreated,
             $expectedAuthoredUpdated

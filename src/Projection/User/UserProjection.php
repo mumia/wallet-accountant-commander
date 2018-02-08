@@ -4,6 +4,7 @@ namespace WalletAccountant\Projection\User;
 
 use Prooph\Bundle\EventStore\Projection\ReadModelProjection;
 use Prooph\EventStore\Projection\ReadModelProjector;
+use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 use WalletAccountant\Document\User;
 use WalletAccountant\Document\User\Name;
 use WalletAccountant\Document\User\Status;
@@ -40,6 +41,8 @@ final class UserProjection implements ReadModelProjection
      * @param ReadModelProjector $projector
      *
      * @return callable
+     *
+     * @throws InvalidArgumentException
      */
     private function userWasCreatedHandler(ReadModelProjector $projector): callable
     {
@@ -47,8 +50,8 @@ final class UserProjection implements ReadModelProjection
             $name = new Name($event->firstName(), $event->lastName());
 
             $user = new User(
+                $event->id(),
                 $event->email(),
-                $event->aggregateId(),
                 $name,
                 $event->roles(),
                 $event->password(),
@@ -65,6 +68,8 @@ final class UserProjection implements ReadModelProjection
      * @param ReadModelProjector $projector
      *
      * @return callable
+     *
+     * @throws InvalidArgumentException
      */
     private function userPasswordRecoveryInitiatedHandler(ReadModelProjector $projector): callable
     {
@@ -78,6 +83,8 @@ final class UserProjection implements ReadModelProjection
      * @param ReadModelProjector $projector
      *
      * @return callable
+     *
+     * @throws InvalidArgumentException
      */
     private function userPasswordRecoveredHandler(ReadModelProjector $projector): callable
     {

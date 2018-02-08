@@ -5,13 +5,13 @@ namespace WalletAccountant\Infrastructure\MongoDB\Annotations;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\AbstractField;
 
 /**
- * UserIdAnnotation
+ * IbanAnnotation
  *
  * @Annotation
  */
-class UserIdAnnotation extends AbstractField
+class IbanAnnotation extends AbstractField
 {
-    const TYPE = 'userid';
+    const TYPE = 'iban';
 
     public $type = self::TYPE;
 }

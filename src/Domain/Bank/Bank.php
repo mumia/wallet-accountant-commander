@@ -60,7 +60,7 @@ final class Bank extends AggregateRoot
      */
     public function setName(string $name): void
     {
-        $this->recordThat(new BankWasUpdated($this->aggregateId(), $name));
+        $this->recordThat(new BankWasUpdated($this->id(), $name));
     }
 
     /**

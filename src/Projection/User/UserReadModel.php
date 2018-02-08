@@ -2,13 +2,11 @@
 
 namespace WalletAccountant\Projection\User;
 
-use Prooph\EventStore\Projection\AbstractReadModel;
-use function var_dump;
 use WalletAccountant\Common\DateTime\DateTime;
 use WalletAccountant\Document\User;
-use WalletAccountant\Document\User\Recovery;
 use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 use WalletAccountant\Common\Exceptions\User\UserNotFoundException;
+use WalletAccountant\Domain\User\Id\UserId;
 use WalletAccountant\Infrastructure\MongoDB\DroppableRepositoryInterface;
 use WalletAccountant\Infrastructure\MongoDB\UserProjectionRepository;
 use WalletAccountant\Projection\AbstractMongoDBReadModel;
@@ -50,16 +48,16 @@ final class UserReadModel extends AbstractMongoDBReadModel
     }
 
     /**
-     * @param string   $id
+     * @param UserId   $id
      * @param string   $code
      * @param DateTime $expiresOn
      *
      * @throws UserNotFoundException
      * @throws InvalidArgumentException
      */
-    public function passwordRecovery(string $id, string $code, DateTime $expiresOn): void
+    public function passwordRecovery(UserId $id, string $code, DateTime $expiresOn): void
     {
-        $user = $this->userProjectionRepository->getByAggregateIdOrNull($id);
+        $user = $this->userProjectionRepository->getByIdOrNull($id);
 
         if (!$user instanceof User) {
             throw UserNotFoundException::withId($id);
@@ -71,15 +69,15 @@ final class UserReadModel extends AbstractMongoDBReadModel
     }
 
     /**
-     * @param string   $id
-     * @param string   $password
+     * @param UserId $id
+     * @param string $password
      *
      * @throws UserNotFoundException
      * @throws InvalidArgumentException
      */
-    public function passwordRecovered(string $id, string $password): void
+    public function passwordRecovered(UserId $id, string $password): void
     {
-        $user = $this->userProjectionRepository->getByAggregateId($id);
+        $user = $this->userProjectionRepository->getById($id);
 
         $user->recoverPassword($password);
 

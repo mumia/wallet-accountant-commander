@@ -5,9 +5,12 @@ namespace WalletAccountant\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Symfony\Component\Security\Core\User\AdvancedUserInterface;
 use WalletAccountant\Common\DateTime\DateTime;
+use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 use WalletAccountant\Document\User\Name;
 use WalletAccountant\Document\User\Recovery;
 use WalletAccountant\Document\User\Status;
+use WalletAccountant\Domain\User\Email\Email;
+use WalletAccountant\Domain\User\Id\UserId;
 
 /**
  * User
@@ -17,18 +20,18 @@ use WalletAccountant\Document\User\Status;
 final class User implements AdvancedUserInterface
 {
     /**
-     * @var string
+     * @var UserId
      *
-     * @MongoDB\Id(strategy="none")
+     * @MongoDB\Id(strategy="none", type="userid")
      */
-    private $email;
+    private $id;
 
     /**
-     * @var string
+     * @var Email
      *
-     * @MongoDB\Field(type="string", name="aggregate_id")
+     * @MongoDB\Field(type="email")
      */
-    private $aggregateId;
+    private $email;
 
     /**
      * @var Name
@@ -73,8 +76,8 @@ final class User implements AdvancedUserInterface
     private $recovery;
 
     /**
-     * @param string        $email
-     * @param string        $aggregateId
+     * @param UserId        $id
+     * @param Email         $email
      * @param Name          $name
      * @param array         $roles
      * @param string        $password
@@ -83,8 +86,8 @@ final class User implements AdvancedUserInterface
      * @param Recovery|null $recovery
      */
     public function __construct(
-        string $email,
-        string $aggregateId,
+        UserId $id,
+        Email $email,
         Name $name,
         array $roles,
         string $password,
@@ -92,8 +95,8 @@ final class User implements AdvancedUserInterface
         Status $status,
         Recovery $recovery = null
     ) {
+        $this->id = $id;
         $this->email = $email;
-        $this->aggregateId = $aggregateId;
         $this->name = $name;
         $this->roles = $roles;
         $this->password = $password;
@@ -103,19 +106,23 @@ final class User implements AdvancedUserInterface
     }
 
     /**
-     * @return string
+     * @return UserId
+     *
+     * @throws InvalidArgumentException
      */
-    public function getEmail(): string
+    public function getId(): UserId
     {
-        return $this->email;
+        return $this->id;
     }
 
     /**
-     * @return string
+     * @return Email
+     *
+     * @throws InvalidArgumentException
      */
-    public function getAggregateId(): string
+    public function getEmail(): Email
     {
-        return $this->aggregateId;
+        return $this->email;
     }
 
     /**
@@ -210,7 +217,7 @@ final class User implements AdvancedUserInterface
      */
     public function getUsername(): string
     {
-        return $this->email;
+        return $this->getEmail()->toString();
     }
 
     public function eraseCredentials(): void

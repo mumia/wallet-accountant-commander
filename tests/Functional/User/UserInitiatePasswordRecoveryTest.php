@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use WalletAccountant\Common\DateTime\DateTime;
 use WalletAccountant\Document\User\Recovery;
 use WalletAccountant\Document\User\Status;
+use WalletAccountant\Domain\User\Email\Email;
 use WalletAccountant\Infrastructure\MongoDB\UserProjectionRepository;
 use WalletAccountant\Tests\Functional\Fixtures\User\UserWithPassword;
 use WalletAccountant\Tests\Functional\FunctionalTestCase;
@@ -48,7 +49,7 @@ class UserInitiatePasswordRecoveryTest extends FunctionalTestCase
 
         $userProjectionRepository = $this->container->get('test.user_projection_repository');
 
-        $actualUser = $userProjectionRepository->getByEmail(UserWithPassword::EMAIL);
+        $actualUser = $userProjectionRepository->getByEmail(Email::createFromString(UserWithPassword::EMAIL));
 
         $expectedStatus = new Status(false, false, true, true);
         $expectedExpiresOn = DateTime::now()->addHours(360);

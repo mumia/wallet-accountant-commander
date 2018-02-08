@@ -2,20 +2,13 @@
 
 namespace WalletAccountant\Projection\Bank;
 
-use Prooph\EventStore\Projection\AbstractReadModel;
-use function var_dump;
-use WalletAccountant\Common\DateTime\DateTime;
 use WalletAccountant\Common\Exceptions\Bank\BankNotFoundException;
 use WalletAccountant\Document\Bank;
 use WalletAccountant\Document\Common\Authored;
-use WalletAccountant\Document\User;
-use WalletAccountant\Document\User\Recovery;
 use WalletAccountant\Common\Exceptions\InvalidArgumentException;
-use WalletAccountant\Common\Exceptions\User\UserNotFoundException;
 use WalletAccountant\Domain\Bank\BankProjectionRepositoryInterface;
-use WalletAccountant\Infrastructure\MongoDB\BankProjectionRepository;
+use WalletAccountant\Domain\Bank\Id\BankId;
 use WalletAccountant\Infrastructure\MongoDB\DroppableRepositoryInterface;
-use WalletAccountant\Infrastructure\MongoDB\UserProjectionRepository;
 use WalletAccountant\Projection\AbstractMongoDBReadModel;
 
 /**
@@ -63,18 +56,18 @@ final class BankReadModel extends AbstractMongoDBReadModel
     }
 
     /**
-     * @param string   $aggregateId
+     * @param BankId   $id
      * @param string   $name
      * @param Authored $updated
      *
      * @throws InvalidArgumentException
      * @throws BankNotFoundException
      */
-    public function update(string $aggregateId, string $name, Authored $updated): void
+    public function update(BankId $id, string $name, Authored $updated): void
     {
-        $oldBank = $this->bankProjectionRepository->getByAggregateId($aggregateId);
+        $oldBank = $this->bankProjectionRepository->getById($id);
 
-        $newBank = new Bank($oldBank->getAggregateId(), $name, $oldBank->getCreated(), $updated);
+        $newBank = new Bank($oldBank->getId(), $name, $oldBank->getCreated(), $updated);
 
         $this->bankProjectionRepository->persist($newBank, $oldBank);
     }

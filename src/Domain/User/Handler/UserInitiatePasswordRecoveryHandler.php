@@ -4,9 +4,7 @@ namespace WalletAccountant\Domain\User\Handler;
 
 use WalletAccountant\Common\Exceptions\User\UserAggregateNotFoundException;
 use WalletAccountant\Common\Exceptions\User\UserNotFoundException;
-use WalletAccountant\Domain\User\Command\InitiatePasswordRecovery;
 use WalletAccountant\Domain\User\Command\UserInitiatePasswordRecovery;
-use WalletAccountant\Domain\User\Id\UserId;
 use WalletAccountant\Domain\User\UserProjectionRepositoryInterface;
 use WalletAccountant\Domain\User\UserRepositoryInterface;
 use WalletAccountant\Common\Exceptions\InvalidArgumentException;
@@ -47,9 +45,9 @@ final class UserInitiatePasswordRecoveryHandler
      */
     public function __invoke(UserInitiatePasswordRecovery $command): void
     {
-        $user = $this->userProjectionRepository->getByEmail($command->email()->toString());
+        $user = $this->userProjectionRepository->getByEmail($command->email());
 
-        $userDomain = $this->userRepository->get(UserId::createFromString($user->getAggregateId()));
+        $userDomain = $this->userRepository->get($user->getId());
 
         $userDomain->initiatePasswordRecovery();
 

@@ -5,6 +5,7 @@ namespace WalletAccountant\Domain\User\Event;
 use WalletAccountant\Common\DateTime\DateTime;
 use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 use WalletAccountant\Domain\Common\AbstractAggregateChanged;
+use WalletAccountant\Domain\User\Id\UserId;
 
 /**
  * UserPasswordRecoveryInitiated
@@ -16,19 +17,19 @@ final class UserPasswordRecoveryInitiated extends AbstractAggregateChanged
     private const EXPIRES_ON = 'expires_on';
 
     /**
-     * @param string   $id
+     * @param UserId   $id
      * @param string   $email
      * @param string   $code
      * @param DateTime $expiresOn
      */
     public function __construct(
-        string $id,
+        UserId $id,
         string $email,
         string $code,
         DateTime $expiresOn
     ) {
         parent::__construct(
-            $id,
+            $id->toString(),
             [
                 self::EMAIL => $email,
                 self::CODE => $code,
@@ -38,11 +39,13 @@ final class UserPasswordRecoveryInitiated extends AbstractAggregateChanged
     }
 
     /**
-     * @return string
+     * @return UserId
+     *
+     * @throws InvalidArgumentException
      */
-    public function id(): string
+    public function id(): UserId
     {
-        return $this->aggregateId();
+        return UserId::createFromString($this->aggregateId());
     }
 
     /**

@@ -6,13 +6,16 @@ use Prooph\Bundle\EventStore\Projection\ReadModelProjection;
 use Prooph\EventStore\Projection\ReadModelProjector;
 use WalletAccountant\Common\DateTime\DateTime;
 use WalletAccountant\Common\Exceptions\InvalidArgumentException;
+use WalletAccountant\Document\Account;
 use WalletAccountant\Document\Bank;
 use WalletAccountant\Document\Common\Authored;
 use WalletAccountant\Document\User;
 use WalletAccountant\Document\User\Name;
 use WalletAccountant\Document\User\Status;
+use WalletAccountant\Domain\Account\Id\AccountId;
 use WalletAccountant\Domain\Bank\Event\BankWasCreated;
 use WalletAccountant\Domain\Bank\Event\BankWasUpdated;
+use WalletAccountant\Domain\Bank\Id\BankId;
 use WalletAccountant\Domain\User\Event\UserPasswordRecovered;
 use WalletAccountant\Domain\User\Event\UserPasswordRecoveryInitiated;
 use WalletAccountant\Domain\User\Event\UserWasCreated;
@@ -54,7 +57,7 @@ final class BankProjection extends AbstractReadModelProjection
         return function (array $state, BankWasCreated $event) use ($projector): void {
             $authored = AbstractReadModelProjection::createAuthored($event);
 
-            $bank = new Bank($event->aggregateId(), $event->name(), $authored, $authored);
+            $bank = new Bank(BankId::createFromString($event->aggregateId()), $event->name(), $authored, $authored);
 
             $readModel = $projector->readModel();
             $readModel->stack('insert', $bank);

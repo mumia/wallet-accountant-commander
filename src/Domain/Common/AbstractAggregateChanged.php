@@ -3,7 +3,6 @@
 namespace WalletAccountant\Domain\Common;
 
 use Prooph\EventSourcing\AggregateChanged;
-use Ramsey\Uuid\Uuid;
 use WalletAccountant\Common\DateTime\DateTime;
 use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 use WalletAccountant\Common\MetadataEnricher\CreatedByMetadataEnricher;

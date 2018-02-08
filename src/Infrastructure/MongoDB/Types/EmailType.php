@@ -2,31 +2,30 @@
 
 namespace WalletAccountant\Infrastructure\MongoDB\Types;
 
-use function var_dump;
 use WalletAccountant\Common\Exceptions\InvalidArgumentException;
-use WalletAccountant\Domain\User\Id\UserId;
 use InvalidArgumentException as StandardInvalidArgumentException;
+use WalletAccountant\Domain\User\Email\Email;
 
 /**
- * UserIdType
+ * EmailType
  */
-class UserIdType extends AbstractStringableType
+class EmailType extends AbstractStringableType
 {
     /**
      * @param mixed $value
      *
-     * @return null|UserId
+     * @return null|Email
      *
      * @throws InvalidArgumentException
      */
-    public function convertToPHPValue($value): ?UserId
+    public function convertToPHPValue($value): ?Email
     {
         try {
             if ($value === null) {
                 return null;
             }
 
-            return UserId::createFromString($value);
+            return Email::createFromString($value);
         } catch (StandardInvalidArgumentException $exception) {
             throw InvalidArgumentException::createFromStandardException($exception);
         }
@@ -37,6 +36,6 @@ class UserIdType extends AbstractStringableType
      */
     protected function getClass(): string
     {
-        return UserId::class;
+        return Email::class;
     }
 }

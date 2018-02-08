@@ -10,7 +10,6 @@ use WalletAccountant\Common\Exceptions\User\UserAggregateNotFoundException;
 use WalletAccountant\Common\Exceptions\User\UserNotFoundException;
 use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 use WalletAccountant\Domain\User\Command\RecoverUserPassword;
-use WalletAccountant\Domain\User\Id\UserId;
 use WalletAccountant\Domain\User\UserProjectionRepositoryInterface;
 use WalletAccountant\Domain\User\UserRepositoryInterface;
 
@@ -68,8 +67,7 @@ final class RecoverUserPasswordHandler
         $this->validateInputs($code, $password, $repeatPassword);
 
         $user = $this->userProjectionRepository->getByPasswordRecoveryCode($code);
-        $id = $user->getAggregateId();
-        $userDomain = $this->userRepository->get(UserId::createFromString($id));
+        $userDomain = $this->userRepository->get($user->getId());
 
         if (!$userDomain->hasRecovery()) {
             throw new LogicException('user is not in password recovery mode');

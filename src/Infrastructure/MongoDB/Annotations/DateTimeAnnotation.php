@@ -11,5 +11,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\AbstractField;
  */
 class DateTimeAnnotation extends AbstractField
 {
-    public $type = 'datetime';
+    const TYPE = 'datetime';
+
+    public $type = self::TYPE;
 }

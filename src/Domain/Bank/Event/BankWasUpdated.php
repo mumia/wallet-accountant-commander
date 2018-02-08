@@ -2,6 +2,7 @@
 
 namespace WalletAccountant\Domain\Bank\Event;
 
+use WalletAccountant\Domain\Bank\Id\BankId;
 use WalletAccountant\Domain\Common\AbstractAggregateChanged;
 
 /**
@@ -12,20 +13,20 @@ class BankWasUpdated extends AbstractAggregateChanged
     private const NAME = 'name';
 
     /**
-     * @param string $id
+     * @param BankId $id
      * @param string $name
      */
-    public function __construct(string $id, string $name)
+    public function __construct(BankId $id, string $name)
     {
         parent::__construct($id, [self::NAME => $name]);
     }
 
     /**
-     * @return string
+     * @return BankId
      */
-    public function id(): string
+    public function id(): BankId
     {
-        return $this->aggregateId();
+        return BankId::createFromString($this->aggregateId());
     }
 
     /**
