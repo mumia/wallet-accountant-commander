@@ -31,7 +31,7 @@ before_script:
  - sudo apt-get update
  - sudo apt-get install mariadb-server mongodb
  - phpenv config-rm xdebug.ini
- - wget https://phar.phpunit.de/phpunit.phar; mv phpunit.phar phpunit; chmod 755 phpunit;
+ - wget https://phar.phpunit.de/phpunit-6.phar; mv phpunit-6.phar phpunit; chmod 755 phpunit;
  - composer self-update
  - composer global require "hirak/prestissimo:^0.3" --prefer-dist --no-progress --no-suggest --optimize-autoloader --classmap-authoritative
  - composer clear-cache
