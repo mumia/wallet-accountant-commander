@@ -32,12 +32,9 @@ before_script:
  - sudo apt-get install mariadb-server mongodb
  - phpenv config-rm xdebug.ini
  - wget https://phar.phpunit.de/phpunit.phar; mv phpunit.phar phpunit; chmod 755 phpunit;
- - cp phpunit.xml.dist phpunit.xml
  - composer self-update
  - composer global require "hirak/prestissimo:^0.3" --prefer-dist --no-progress --no-suggest --optimize-autoloader --classmap-authoritative
  - composer clear-cache
- #- sudo apt-get install php-pear libcurl3-openssl-dev
- #- pecl install mongodb
  - echo "extension=mongodb.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
  - composer install
 
