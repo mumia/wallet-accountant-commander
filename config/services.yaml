@@ -33,6 +33,11 @@ services:
             $commandBus: '@prooph_service_bus.bank_command_bus'
             $messageFactory: '@prooph_service_bus.message_factory.bank_event_bus'
 
+    WalletAccountant\Controller\AccountController:
+        arguments:
+            $commandBus: '@prooph_service_bus.account_command_bus'
+            $messageFactory: '@prooph_service_bus.message_factory.account_event_bus'
+
     WalletAccountant\Command\:
         resource: '../src/Command'
         tags: ['console.command']
@@ -48,6 +53,12 @@ services:
         public: true
         tags:
             - { name: 'prooph_service_bus.bank_command_bus.route_target', message_detection: true }
+
+    WalletAccountant\Domain\Account\Handler\:
+        resource: '../src/Domain/Account/Handler'
+        public: true
+        tags:
+            - { name: 'prooph_service_bus.account_command_bus.route_target', message_detection: true }
 
     WalletAccountant\Infrastructure\MongoDB\:
         resource: '../src/Infrastructure/MongoDB'
@@ -83,6 +94,9 @@ services:
     WalletAccountant\Domain\Bank\BankRepositoryInterface:
         alias: bank_repository
 
+    WalletAccountant\Domain\Account\AccountRepositoryInterface:
+        alias: account_repository
+
     WalletAccountant\Infrastructure\Client\MongoDB:
         arguments:
             - '@doctrine_mongodb'
@@ -108,6 +122,15 @@ services:
             $projection: '@prooph_event_store.projection.bank_projection'
             $projectionManager: '@prooph_event_store.projection.bank_projection.projection_manager'
             $readModel: '@prooph_event_store.projection.bank_projection.read_model'
+
+    walletaccountant.projection_runner.account:
+        class: WalletAccountant\Projection\ProjectionRunner
+        public: true
+        arguments:
+            $projectionName: 'account_projection'
+            $projection: '@prooph_event_store.projection.account_projection'
+            $projectionManager: '@prooph_event_store.projection.account_projection.projection_manager'
+            $readModel: '@prooph_event_store.projection.account_projection.read_model'
 
     # Authenticators
     walletaccountant.authenticator.jwt:

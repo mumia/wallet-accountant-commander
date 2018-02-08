@@ -6,6 +6,9 @@ prooph_service_bus:
         bank_command_bus:
             router:
                 type: 'prooph_service_bus.command_bus_router'
+        account_command_bus:
+            router:
+                type: 'prooph_service_bus.command_bus_router'
 
     event_buses:
         user_event_bus:
@@ -17,5 +20,8 @@ prooph_service_bus:
                     'WalletAccountant\Domain\User\Event\UserPasswordRecoveryInitiated':
                         - '@WalletAccountant\ProcessManager\SendPasswordRecoveryInitiatedEmailProcessManager'
         bank_event_bus:
+            plugins:
+                - 'prooph_service_bus.on_event_invoke_strategy'
+        account_event_bus:
             plugins:
                 - 'prooph_service_bus.on_event_invoke_strategy'

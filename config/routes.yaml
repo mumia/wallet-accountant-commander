@@ -38,3 +38,13 @@ bank_update:
     path: /bank/{id}
     methods: [PUT]
     defaults: { _controller: 'WalletAccountant\Controller\BankController::updateBank' }
+
+account_create:
+    path: /account
+    methods: [POST]
+    defaults: { _controller: 'WalletAccountant\Controller\AccountController::createAccount' }
+
+account_update_owner:
+    path: /account/{id}/owner
+    methods: [PUT]
+    defaults: { _controller: 'WalletAccountant\Controller\AccountController::updateAccountOwner' }
