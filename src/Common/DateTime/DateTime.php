@@ -23,6 +23,8 @@ class DateTime extends Chronos implements ValueObjectInterface
      * @param DateTimeImmutable $dateTimeImmutable
      *
      * @return DateTime
+     *
+     * @throws InvalidArgumentException
      */
     public static function createFromDateImmutable(DateTimeImmutable $dateTimeImmutable): self
     {
@@ -98,6 +100,22 @@ class DateTime extends Chronos implements ValueObjectInterface
         } catch (StandardInvalidArgumentException $exception) {
             throw InvalidArgumentException::createFromStandardException($exception);
         }
+    }
+
+    /**
+     * @return string
+     */
+    public function toDate(): string
+    {
+        return $this->format(self::DATE_FORMAT);
+    }
+
+    /**
+     * @return string
+     */
+    public function toDateTime(): string
+    {
+        return $this->format(self::DATE_TIME_FORMAT);
     }
 
     /**

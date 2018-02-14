@@ -3,29 +3,29 @@
 namespace WalletAccountant\Infrastructure\MongoDB\Types;
 
 use WalletAccountant\Common\Exceptions\InvalidArgumentException;
-use WalletAccountant\Domain\User\Id\UserId;
 use InvalidArgumentException as StandardInvalidArgumentException;
+use WalletAccountant\Domain\Account\Ledger\Id\MovementId;
 
 /**
- * UserIdType
+ * MovementIdType
  */
-class UserIdType extends AbstractStringableType
+class MovementIdType extends AbstractStringableType
 {
     /**
      * @param mixed $value
      *
-     * @return null|UserId
+     * @return null|MovementId
      *
      * @throws InvalidArgumentException
      */
-    public function convertToPHPValue($value): ?UserId
+    public function convertToPHPValue($value): ?MovementId
     {
         try {
             if ($value === null) {
                 return null;
             }
 
-            return UserId::createFromString($value);
+            return MovementId::createFromString($value);
         } catch (StandardInvalidArgumentException $exception) {
             throw InvalidArgumentException::createFromStandardException($exception);
         }
@@ -36,6 +36,6 @@ class UserIdType extends AbstractStringableType
      */
     protected function getClass(): string
     {
-        return UserId::class;
+        return MovementId::class;
     }
 }

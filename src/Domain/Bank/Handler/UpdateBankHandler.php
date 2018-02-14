@@ -2,7 +2,6 @@
 
 namespace WalletAccountant\Domain\Bank\Handler;
 
-use function var_dump;
 use WalletAccountant\Common\Exceptions\Bank\BankAggregateNotFoundException;
 use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 use WalletAccountant\Domain\Bank\BankRepositoryInterface;

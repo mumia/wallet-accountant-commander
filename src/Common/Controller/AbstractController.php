@@ -6,6 +6,7 @@ use Prooph\Bundle\ServiceBus\CommandBus;
 use Prooph\Common\Messaging\MessageFactory;
 use Prooph\ServiceBus\Exception\CommandDispatchException as BaseCommandDispatchException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
 use WalletAccountant\Common\Exceptions\CommandDispatchException;
 
 /**
@@ -39,7 +40,7 @@ class AbstractController extends Controller
      *
      * @throws CommandDispatchException
      */
-    public function dispatchCommand(string $class, array $payload = [])
+    protected function dispatchCommand(string $class, array $payload = [])
     {
         $command = $this->messageFactory->createMessageFromArray($class, ['payload' => $payload]);
 
@@ -52,5 +53,21 @@ class AbstractController extends Controller
                 $exception->getPrevious()
             );
         }
+    }
+
+    /**
+     * @param Request $request
+     * @param array   $data
+     * @param array   $keys
+     *
+     * @return array
+     */
+    protected function extractPayloadFromRequest(Request $request, array $data, array $keys): array
+    {
+        foreach ($keys as $key) {
+            $data[$key] = $request->request->get($key);
+        }
+
+        return $data;
     }
 }

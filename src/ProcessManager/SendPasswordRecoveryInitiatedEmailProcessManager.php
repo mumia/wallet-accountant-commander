@@ -8,7 +8,6 @@ use Twig_Environment;
 use Twig_Error_Loader;
 use Twig_Error_Runtime;
 use Twig_Error_Syntax;
-use function var_dump;
 use WalletAccountant\Domain\User\Event\UserPasswordRecoveryInitiated;
 
 /**

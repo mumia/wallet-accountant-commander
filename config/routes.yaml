@@ -48,3 +48,8 @@ account_update_owner:
     path: /account/{id}/owner
     methods: [PUT]
     defaults: { _controller: 'WalletAccountant\Controller\AccountController::updateAccountOwner' }
+
+account_add_movement_to_ledger:
+    path: /account/{id}/movement
+    methods: [PUT]
+    defaults: { _controller: 'WalletAccountant\Controller\AccountController::addMovementToLedger' }
