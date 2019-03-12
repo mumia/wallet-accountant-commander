@@ -5,9 +5,9 @@ namespace WalletAccountant\Domain\Common;
 use Prooph\Common\Messaging\Command as ProophCommand;
 
 /**
- * Command
+ * AbstractCommand
  */
-abstract class Command extends ProophCommand
+abstract class AbstractCommand extends ProophCommand
 {
     /**
      * @var array

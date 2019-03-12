@@ -4,7 +4,6 @@ namespace WalletAccountant\Projection;
 
 use Prooph\Bundle\EventStore\Projection\ReadModelProjection;
 use Prooph\EventStore\Projection\ProjectionManager;
-use Prooph\EventStore\Projection\Projector;
 use Prooph\EventStore\Projection\ReadModel;
 
 /**

@@ -7,7 +7,7 @@ use WalletAccountant\Infrastructure\Client\MongoDB;
 /**
  * AbstractProjectionRepository
  */
-abstract class AbstractProjectionRepository
+abstract class AbstractProjectionRepository implements DroppableRepositoryInterface
 {
     /**
      * @var MongoDB

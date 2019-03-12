@@ -2,7 +2,7 @@
 
 namespace WalletAccountant\Domain\User\Command;
 
-use WalletAccountant\Domain\Common\Command;
+use WalletAccountant\Domain\Common\AbstractCommand;
 use WalletAccountant\Domain\User\Email\Email;
 use WalletAccountant\Domain\User\Id\UserId;
 use WalletAccountant\Domain\User\Name\Name;
@@ -11,7 +11,7 @@ use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 /**
  * CreateUser
  */
-final class CreateUser extends Command
+final class CreateUser extends AbstractCommand
 {
     private const ID = 'id';
     private const EMAIL = 'email';

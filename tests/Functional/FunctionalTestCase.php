@@ -2,12 +2,13 @@
 
 namespace WalletAccountant\Tests\Functional;
 
-use function json_decode;
-use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
+use Doctrine\DBAL\DBALException;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use WalletAccountant\Common\DateTime\DateTime;
+use WalletAccountant\Projection\ProjectionRunner;
+use WalletAccountant\Tests\Functional\Fixtures\FixturesLoader;
 
 /**
  * FunctionalTestCase
@@ -20,6 +21,11 @@ abstract class FunctionalTestCase extends WebTestCase
     protected $container;
 
     /**
+     * @var FixturesLoader
+     */
+    private $fixturesLoader;
+
+    /**
      * @param string|null $name
      * @param array       $data
      * @param string      $dataName
@@ -30,26 +36,47 @@ abstract class FunctionalTestCase extends WebTestCase
 
         $kernel = self::bootKernel();
         $this->container = $kernel->getContainer();
+        $this->fixturesLoader = $this->container->get('fixtures.loader');
+    }
+
+    /**
+     * @throws DBALException
+     */
+    public function loadFixtures(): void
+    {
+        $this->fixturesLoader->loadAll();
     }
 
     /**
      * @param string $email
      * @param string $password
      *
-     * @return JsonResponse
+     * @return Response
      */
-    public function login(string $email, string $password): JsonResponse
+    public function login(string $email, string $password): Response
     {
-        $client = static::createClient();
-        $client->request(Request::METHOD_POST, '/login', ['email' => $email, 'password' => $password]);
+        $client = self::createClient();
+        $client->post('/login', ['email' => $email, 'password' => $password]);
 
-        $response = $client->getResponse();
+        $this->assertTrue($client->isOkAndJson());
 
-        if (!$response instanceof JsonResponse) {
-            $this->fail('Did not receive a login response');
-        }
+        return $client->getResponse();
+    }
 
-        return $response;
+    /**
+     * @param array $options
+     * @param array $server
+     *
+     * @return TestClient
+     */
+    protected static function createClient(array $options = [], array $server = []): TestClient
+    {
+        static::bootKernel($options);
+
+        $client = static::$kernel->getContainer()->get('walletaccountant.test.client');
+        $client->setServerParameters($server);
+
+        return $client;
     }
 
     /**
@@ -57,6 +84,7 @@ abstract class FunctionalTestCase extends WebTestCase
      */
     protected function runProjection(string $projection): void
     {
+        /** @var ProjectionRunner $projectionRunner */
         $projectionRunner = $this->container->get(sprintf('walletaccountant.projection_runner.%s', $projection));
         $projectionRunner->run();
     }

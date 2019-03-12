@@ -27,7 +27,7 @@ RUN apk add --no-cache --virtual .build-deps \
         icu-dev \
         zlib-dev \
         libxml2-dev \
-        && docker-php-ext-install intl soap pdo_mysql
+        && docker-php-ext-install intl soap pdo_mysql bcmath
 
 RUN pecl install mongodb
 

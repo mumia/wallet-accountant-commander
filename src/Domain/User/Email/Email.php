@@ -3,6 +3,7 @@
 namespace WalletAccountant\Domain\User\Email;
 
 use function get_class;
+use WalletAccountant\Common\Stringable\StringableInterface;
 use WalletAccountant\Domain\Common\ValueObjectInterface;
 use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 use Respect\Validation\Validator;
@@ -10,7 +11,7 @@ use Respect\Validation\Validator;
 /**
  * Email
  */
-class Email implements ValueObjectInterface
+class Email implements ValueObjectInterface, StringableInterface
 {
     /**
      * @var string

@@ -6,6 +6,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use WalletAccountant\Common\Controller\AbstractController;
 use WalletAccountant\Common\Exceptions\CommandDispatchException;
+use WalletAccountant\Domain\User\Command\ChangeName;
 use WalletAccountant\Domain\User\Command\RecoverUserPassword;
 use WalletAccountant\Domain\User\Command\UserInitiatePasswordRecovery;
 
@@ -53,5 +54,27 @@ class UserController extends AbstractController
         );
 
         return new JsonResponse(['message' => 'user password recovered']);
+    }
+
+    /**
+     * @param Request $request
+     * @param string  $id
+     *
+     * @return JsonResponse
+     *
+     * @throws CommandDispatchException
+     */
+    public function changeName(Request $request, string $id): JsonResponse
+    {
+        $this->dispatchCommand(
+            ChangeName::class,
+            [
+                ChangeName::ID => $id,
+                ChangeName::FIRST_NAME => $request->request->get(ChangeName::FIRST_NAME),
+                ChangeName::LAST_NAME => $request->request->get(ChangeName::LAST_NAME)
+            ]
+        );
+
+        return new JsonResponse(['message' => 'user name changed']);
     }
 }

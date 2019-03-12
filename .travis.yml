@@ -31,19 +31,16 @@ before_script:
  - sudo apt-get update
  - sudo apt-get install mariadb-server mongodb
  - phpenv config-rm xdebug.ini
- - wget https://phar.phpunit.de/phpunit.phar; mv phpunit.phar phpunit; chmod 755 phpunit;
- - cp phpunit.xml.dist phpunit.xml
+ - wget https://phar.phpunit.de/phpunit-6.phar; mv phpunit-6.phar phpunit; chmod 755 phpunit;
  - composer self-update
  - composer global require "hirak/prestissimo:^0.3" --prefer-dist --no-progress --no-suggest --optimize-autoloader --classmap-authoritative
  - composer clear-cache
- #- sudo apt-get install php-pear libcurl3-openssl-dev
- #- pecl install mongodb
  - echo "extension=mongodb.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
  - composer install
 
 # omitting "script:" will default to phpunit
 # use the $DB env variable to determine the phpunit.xml to use
-script: make test-travis && make test-integration-travis
+script: make test-travis
 
 # configure notifications (email, IRC, campfire etc)
 #notifications:

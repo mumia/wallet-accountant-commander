@@ -1,6 +1,7 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
+    jms_serializer.json_serialization_visitor.class: 'WalletAccountant\Common\Serializer\SideLoadJsonSerializationVisitor'
 
 services:
     # default configuration for services in *this* file
@@ -28,6 +29,16 @@ services:
             $commandBus: '@prooph_service_bus.user_command_bus'
             $messageFactory: '@prooph_service_bus.message_factory.user_event_bus'
 
+    WalletAccountant\Controller\BankController:
+        arguments:
+            $commandBus: '@prooph_service_bus.bank_command_bus'
+            $messageFactory: '@prooph_service_bus.message_factory.bank_event_bus'
+
+    WalletAccountant\Controller\AccountController:
+        arguments:
+            $commandBus: '@prooph_service_bus.account_command_bus'
+            $messageFactory: '@prooph_service_bus.message_factory.account_event_bus'
+
     WalletAccountant\Command\:
         resource: '../src/Command'
         tags: ['console.command']
@@ -38,12 +49,35 @@ services:
         tags:
             - { name: 'prooph_service_bus.user_command_bus.route_target', message_detection: true }
 
+    WalletAccountant\Domain\Bank\Handler\:
+        resource: '../src/Domain/Bank/Handler'
+        public: true
+        tags:
+            - { name: 'prooph_service_bus.bank_command_bus.route_target', message_detection: true }
+
+    WalletAccountant\Domain\Account\Handler\:
+        resource: '../src/Domain/Account/Handler'
+        public: true
+        tags:
+            - { name: 'prooph_service_bus.account_command_bus.route_target', message_detection: true }
+
+    WalletAccountant\Infrastructure\MongoDB\:
+        resource: '../src/Infrastructure/MongoDB'
+        exclude: '../src/Infrastructure/MongoDB/{Annotations,Types}'
+        arguments:
+            $databaseName: '%env(MONGODB_DB)%'
+
     WalletAccountant\Command\UserCreateCommand:
         arguments:
             $commandBus: '@prooph_service_bus.user_command_bus'
             $messageFactory: '@prooph_service_bus.message_factory.user_event_bus'
 
     WalletAccountant\Common\Authenticator\PasswordEncoder:
+
+    WalletAccountant\Common\MetadataEnricher\:
+        resource: '../src/Common/MetadataEnricher'
+        tags:
+            - { name: 'prooph_event_store.metadata_enricher' }
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
@@ -54,20 +88,15 @@ services:
         public: true
         tags:
           - { name: 'prooph_event_store.user_store.plugin' }
+
     WalletAccountant\Domain\User\UserRepositoryInterface:
         alias: user_repository
 
-    WalletAccountant\Domain\User\Handler\UserInitiatePasswordRecoveryHandler:
-        arguments:
-            $userRepository: '@user_repository'
-            $userProjectionRepository: '@WalletAccountant\Infrastructure\MongoDB\UserProjectionRepository'
-        public: true
-        tags:
-            - { name: 'prooph_service_bus.user_command_bus.route_target', message_detection: true }
+    WalletAccountant\Domain\Bank\BankRepositoryInterface:
+        alias: bank_repository
 
-    WalletAccountant\Infrastructure\MongoDB\UserProjectionRepository:
-        arguments:
-            $databaseName: '%env(MONGODB_DB)%'
+    WalletAccountant\Domain\Account\AccountRepositoryInterface:
+        alias: account_repository
 
     WalletAccountant\Infrastructure\Client\MongoDB:
         arguments:
@@ -85,6 +114,24 @@ services:
             $projection: '@prooph_event_store.projection.user_projection'
             $projectionManager: '@prooph_event_store.projection.user_projection.projection_manager'
             $readModel: '@prooph_event_store.projection.user_projection.read_model'
+
+    walletaccountant.projection_runner.bank:
+        class: WalletAccountant\Projection\ProjectionRunner
+        public: true
+        arguments:
+            $projectionName: 'bank_projection'
+            $projection: '@prooph_event_store.projection.bank_projection'
+            $projectionManager: '@prooph_event_store.projection.bank_projection.projection_manager'
+            $readModel: '@prooph_event_store.projection.bank_projection.read_model'
+
+    walletaccountant.projection_runner.account:
+        class: WalletAccountant\Projection\ProjectionRunner
+        public: true
+        arguments:
+            $projectionName: 'account_projection'
+            $projection: '@prooph_event_store.projection.account_projection'
+            $projectionManager: '@prooph_event_store.projection.account_projection.projection_manager'
+            $readModel: '@prooph_event_store.projection.account_projection.read_model'
 
     # Authenticators
     walletaccountant.authenticator.jwt:

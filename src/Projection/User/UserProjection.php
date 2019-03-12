@@ -4,9 +4,11 @@ namespace WalletAccountant\Projection\User;
 
 use Prooph\Bundle\EventStore\Projection\ReadModelProjection;
 use Prooph\EventStore\Projection\ReadModelProjector;
+use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 use WalletAccountant\Document\User;
 use WalletAccountant\Document\User\Name;
 use WalletAccountant\Document\User\Status;
+use WalletAccountant\Domain\User\Event\UserNameChanged;
 use WalletAccountant\Domain\User\Event\UserPasswordRecovered;
 use WalletAccountant\Domain\User\Event\UserPasswordRecoveryInitiated;
 use WalletAccountant\Domain\User\Event\UserWasCreated;
@@ -20,6 +22,8 @@ final class UserProjection implements ReadModelProjection
      * @param ReadModelProjector $projector
      *
      * @return ReadModelProjector
+     *
+     * @throws InvalidArgumentException
      */
     public function project(ReadModelProjector $projector): ReadModelProjector
     {
@@ -29,7 +33,8 @@ final class UserProjection implements ReadModelProjection
                 [
                     UserWasCreated::class => $this->userWasCreatedHandler($projector),
                     UserPasswordRecoveryInitiated::class => $this->userPasswordRecoveryInitiatedHandler($projector),
-                    UserPasswordRecovered::class => $this->userPasswordRecoveredHandler($projector)
+                    UserPasswordRecovered::class => $this->userPasswordRecoveredHandler($projector),
+                    UserNameChanged::class => $this->userUserNameChangedHandler($projector)
                 ]
             );
 
@@ -40,6 +45,8 @@ final class UserProjection implements ReadModelProjection
      * @param ReadModelProjector $projector
      *
      * @return callable
+     *
+     * @throws InvalidArgumentException
      */
     private function userWasCreatedHandler(ReadModelProjector $projector): callable
     {
@@ -47,8 +54,8 @@ final class UserProjection implements ReadModelProjection
             $name = new Name($event->firstName(), $event->lastName());
 
             $user = new User(
+                $event->id(),
                 $event->email(),
-                $event->aggregateId(),
                 $name,
                 $event->roles(),
                 $event->password(),
@@ -65,6 +72,8 @@ final class UserProjection implements ReadModelProjection
      * @param ReadModelProjector $projector
      *
      * @return callable
+     *
+     * @throws InvalidArgumentException
      */
     private function userPasswordRecoveryInitiatedHandler(ReadModelProjector $projector): callable
     {
@@ -78,12 +87,29 @@ final class UserProjection implements ReadModelProjection
      * @param ReadModelProjector $projector
      *
      * @return callable
+     *
+     * @throws InvalidArgumentException
      */
     private function userPasswordRecoveredHandler(ReadModelProjector $projector): callable
     {
         return function (array $state, UserPasswordRecovered $event) use ($projector): void {
             $readModel = $projector->readModel();
             $readModel->stack('passwordRecovered', $event->id(), $event->password());
+        };
+    }
+
+    /**
+     * @param ReadModelProjector $projector
+     *
+     * @return callable
+     *
+     * @throws InvalidArgumentException
+     */
+    private function userUserNameChangedHandler(ReadModelProjector $projector): callable
+    {
+        return function (array $state, UserNameChanged $event) use ($projector): void {
+            $readModel = $projector->readModel();
+            $readModel->stack('nameChanged', $event->id(), $event->name());
         };
     }
 }
