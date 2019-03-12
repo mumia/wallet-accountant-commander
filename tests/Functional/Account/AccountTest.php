@@ -2,7 +2,6 @@
 
 namespace WalletAccountant\Tests\Functional\Account;
 
-use function var_dump;
 use WalletAccountant\Document\Account;
 use WalletAccountant\Document\Account\Ledger;
 use WalletAccountant\Domain\Account\Command\CreateAccount;

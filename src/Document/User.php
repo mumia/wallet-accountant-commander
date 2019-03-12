@@ -152,7 +152,7 @@ final class User implements AdvancedUserInterface
     /**
      * @param string $password
      */
-    public function recoverPassword(string $password)
+    public function recoverPassword(string $password): void
     {
         $this->password = $password;
         $this->status = new Status(
@@ -213,7 +213,17 @@ final class User implements AdvancedUserInterface
     }
 
     /**
+     * @param Name $name
+     */
+    public function replaceName(Name $name): void
+    {
+        $this->name = $name;
+    }
+
+    /**
      * {@inheritdoc}
+     *
+     * @throws InvalidArgumentException
      */
     public function getUsername(): string
     {

@@ -25,8 +25,8 @@ class AbstractController extends Controller
     private $messageFactory;
 
     /**
-     * @param CommandBus     $commandBus
-     * @param MessageFactory $messageFactory
+     * @param CommandBus        $commandBus
+     * @param MessageFactory    $messageFactory
      */
     public function __construct(CommandBus $commandBus, MessageFactory $messageFactory)
     {

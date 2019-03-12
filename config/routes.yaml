@@ -24,10 +24,20 @@ user_recover_password:
     methods: [POST]
     defaults: { _controller: 'WalletAccountant\Controller\UserController::recoverPassword' }
 
+user_update_name:
+    path: /users/{id}/name
+    methods: [PUT]
+    defaults: { _controller: 'WalletAccountant\Controller\UserController::changeName' }
+
 user_login:
     path: /login
     methods: [POST]
     defaults: { _controller: 'WalletAccountant\Controller\SecurityController::login' }
+
+user_get_by_id:
+    path: /users/{id}
+    methods: [GET]
+    defaults: { _controller: 'WalletAccountant\Controller\Query\UserQueryController::getById' }
 
 bank_create:
     path: /bank

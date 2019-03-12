@@ -3,7 +3,6 @@
 namespace WalletAccountant\Tests\Functional\Account;
 
 use function sprintf;
-use function var_dump;
 use WalletAccountant\Common\DateTime\DateTime;
 use WalletAccountant\Document\Account;
 use WalletAccountant\Document\Account\Ledger;

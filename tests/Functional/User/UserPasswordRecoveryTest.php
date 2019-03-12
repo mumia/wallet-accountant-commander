@@ -4,19 +4,12 @@ namespace WalletAccountant\Tests\Functional\User;
 
 use Doctrine\DBAL\DBALException;
 use function sprintf;
-use Swift_Message;
-use Symfony\Bundle\FrameworkBundle\Client;
-use Symfony\Bundle\SwiftmailerBundle\DataCollector\MessageDataCollector;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use function var_dump;
 use WalletAccountant\Common\DateTime\DateTime;
-use WalletAccountant\Document\User\Recovery;
 use WalletAccountant\Document\User\Status;
 use WalletAccountant\Domain\User\Command\RecoverUserPassword;
 use WalletAccountant\Domain\User\Email\Email;
-use WalletAccountant\Infrastructure\MongoDB\UserProjectionRepository;
-use WalletAccountant\Tests\Functional\Fixtures\User\UserWithPassword;
 use WalletAccountant\Tests\Functional\Fixtures\User\UserWithPasswordRecoveryInitiated;
 use WalletAccountant\Tests\Functional\FunctionalTestCase;
 

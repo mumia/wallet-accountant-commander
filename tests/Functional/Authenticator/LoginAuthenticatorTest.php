@@ -40,7 +40,8 @@ class LoginAuthenticatorTest extends FunctionalTestCase
                 'first' => UserWithPassword::FIRST_NAME,
                 'last' => UserWithPassword::LAST_NAME
             ],
-            'iat' => DateTime::now()->getTimestamp()
+            'iat' => DateTime::now()->getTimestamp(),
+            'sub' => UserWithPassword::EVENT_AGGREGATE_ID
         ];
 
         $this->assertEquals($expectedToken, $decodedToken);
