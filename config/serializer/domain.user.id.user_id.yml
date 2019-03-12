@@ -1,8 +1,0 @@
-mapping:
-    class: WalletAccountant\Domain\User\Id\UserId
-    aliased_properties: []
-    hide_properties: []
-    id_properties:
-        - id
-    urls:
-        self: user_get_by_id
