@@ -9,6 +9,7 @@ use Prooph\EventSourcing\AggregateRoot;
 use function random_bytes;
 use WalletAccountant\Common\Exceptions\User\LogicException;
 use WalletAccountant\Domain\User\Email\Email;
+use WalletAccountant\Domain\User\Event\UserNameChanged;
 use WalletAccountant\Domain\User\Event\UserPasswordRecovered;
 use WalletAccountant\Domain\User\Event\UserPasswordRecoveryInitiated;
 use WalletAccountant\Domain\User\Event\UserWasCreated;
@@ -195,6 +196,14 @@ final class User extends AggregateRoot
     }
 
     /**
+     * @param Name $name
+     */
+    public function replaceName(Name $name): void
+    {
+        $this->recordThat(new UserNameChanged($this->id(), $name));
+    }
+
+    /**
      * @return string
      */
     protected function aggregateId(): string
@@ -251,6 +260,14 @@ final class User extends AggregateRoot
     }
 
     /**
+     * @param UserNameChanged $event
+     */
+    protected function whenUserNameChanged(UserNameChanged $event): void
+    {
+        $this->name = $event->name();
+    }
+
+    /**
      * @param AggregateChanged $event
      *
      * @throws InvalidArgumentException
@@ -271,6 +288,12 @@ final class User extends AggregateRoot
 
         if ($event instanceof UserPasswordRecovered) {
             $this->whenUserPasswordRecovered($event);
+
+            return;
+        }
+
+        if ($event instanceof UserNameChanged) {
+            $this->whenUserNameChanged($event);
 
             return;
         }

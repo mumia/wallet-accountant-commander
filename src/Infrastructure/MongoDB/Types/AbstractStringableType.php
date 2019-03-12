@@ -3,7 +3,7 @@
 namespace WalletAccountant\Infrastructure\MongoDB\Types;
 
 use Doctrine\ODM\MongoDB\Types\Type;
-use Respect\Validation\Validator;
+use function is_string;
 use WalletAccountant\Common\Stringable\StringableInterface;
 
 /**
@@ -22,7 +22,7 @@ abstract class AbstractStringableType extends Type
         }
 
         // Not really sure why this value would ever be a string, but it is...
-        if (Validator::stringType()->validate($value)) {
+        if (is_string($value)) {
             return $value;
         }
 

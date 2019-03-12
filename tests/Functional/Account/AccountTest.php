@@ -2,49 +2,36 @@
 
 namespace WalletAccountant\Tests\Functional\Account;
 
-use Doctrine\DBAL\DBALException;
-use function var_dump;
-use WalletAccountant\Common\DateTime\DateTime;
 use WalletAccountant\Document\Account;
+use WalletAccountant\Document\Account\Ledger;
 use WalletAccountant\Domain\Account\Command\CreateAccount;
 use WalletAccountant\Domain\Account\Command\UpdateAccountOwner;
 use WalletAccountant\Domain\Account\Iban\Iban;
 use WalletAccountant\Domain\Account\Id\AccountId;
 use WalletAccountant\Domain\Bank\Id\BankId;
 use WalletAccountant\Domain\User\Id\UserId;
-use WalletAccountant\Tests\Functional\Fixtures\User\UserWithPassword;
-use WalletAccountant\Tests\Functional\FunctionalTestCase;
 use WalletAccountant\Tests\Functional\Fixtures\Account\Account as AccountFixture;
 
 /**
  * AccountTest
  */
-class AccountTest extends FunctionalTestCase
+class AccountTest extends AccountTestCase
 {
-    /**
-     * @throws DBALException
-     */
     public function testCreateAccount()
     {
-        DateTime::setTestNow(DateTime::now());
         $bankId = 'f9145a03-69f7-4852-88d6-dedd330f839a';
         $ownerId = '6eeaf6b5-ce76-4d15-b370-5e148b93c8db';
         $iban = 'AD1200012030200359100100';
 
-        $this->loadFixtures();
-        $response = $this->login(UserWithPassword::EMAIL, UserWithPassword::PASSWORD);
-
-        $client = self::createClient();
-        $client->setAuthorizationTokenFromResponse($response);
-        $client->post(
+        $this->client->post(
             '/account',
             [CreateAccount::BANK_ID => $bankId, CreateAccount::OWNER_ID => $ownerId, CreateAccount::IBAN => $iban]
         );
         $this->runProjection('account');
 
-        $this->assertTrue($client->isCreatedAndJson());
+        $this->assertTrue($this->client->isCreatedAndJson());
 
-        $accountId = AccountId::createFromString(json_decode($client->getContent(), true)['id']);
+        $accountId = AccountId::createFromString(json_decode($this->client->getContent(), true)['id']);
 
         $accountProjectionRepository = $this->container->get('test.account_projection_repository');
         $actualAccount = $accountProjectionRepository->getById($accountId);
@@ -53,22 +40,16 @@ class AccountTest extends FunctionalTestCase
             $accountId,
             BankId::createFromString($bankId),
             UserId::createFromString($ownerId),
-            new Iban($iban)
+            new Iban($iban),
+            new Ledger()
         );
 
-        $this->assertEquals($expectedAccount, $actualAccount);
+        $this->assertEqualAccountProjections($expectedAccount, $actualAccount);
     }
 
-    /**
-     * @throws DBALException
-     */
     public function testUpdateAccountOwner(): void
     {
-        DateTime::setTestNow(DateTime::now());
         $newOwnerId = '0960f730-824b-4253-ba32-43e508833733';
-
-        $this->loadFixtures();
-        $response = $this->login(UserWithPassword::EMAIL, UserWithPassword::PASSWORD);
 
         $accountProjectionRepository = $this->container->get('test.account_projection_repository');
         $previousAccount = $accountProjectionRepository->getById(
@@ -76,15 +57,13 @@ class AccountTest extends FunctionalTestCase
         );
         $this->assertEquals(AccountFixture::OWNER_ID, $previousAccount->getOwnerId());
 
-        $client = self::createClient();
-        $client->setAuthorizationTokenFromResponse($response);
-        $client->put(
+        $this->client->put(
             sprintf('/account/%s/owner', AccountFixture::EVENT_AGGREGATE_ID),
             [UpdateAccountOwner::OWNER_ID => $newOwnerId]
         );
         $this->runProjection('account');
 
-        $this->assertTrue($client->isOkAndJson());
+        $this->assertTrue($this->client->isOkAndJson());
 
         $actualAccount = $accountProjectionRepository->getById(
             AccountId::createFromString(AccountFixture::EVENT_AGGREGATE_ID)
@@ -94,9 +73,10 @@ class AccountTest extends FunctionalTestCase
             $previousAccount->getId(),
             $previousAccount->getBankId(),
             UserId::createFromString($newOwnerId),
-            $previousAccount->getIban()
+            $previousAccount->getIban(),
+            $previousAccount->getLedger()
         );
 
-        $this->assertEquals($expectedAccount, $actualAccount);
+        $this->assertEqualAccountProjections($expectedAccount, $actualAccount);
     }
 }

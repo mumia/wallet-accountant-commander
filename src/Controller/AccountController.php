@@ -6,13 +6,11 @@ use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use function var_dump;
 use WalletAccountant\Common\Controller\AbstractController;
 use WalletAccountant\Common\Exceptions\CommandDispatchException;
+use WalletAccountant\Domain\Account\Command\AddMovementToLedger;
 use WalletAccountant\Domain\Account\Command\CreateAccount;
 use WalletAccountant\Domain\Account\Command\UpdateAccountOwner;
-use WalletAccountant\Domain\Bank\Command\CreateBank;
-use WalletAccountant\Domain\Bank\Command\UpdateBank;
 
 /**
  * AccountController
@@ -32,12 +30,11 @@ class AccountController extends AbstractController
 
         $this->dispatchCommand(
             CreateAccount::class,
-            [
-                CreateAccount::ID => $id,
-                CreateAccount::BANK_ID => $request->request->get(CreateAccount::BANK_ID),
-                CreateAccount::OWNER_ID => $request->request->get(CreateAccount::OWNER_ID),
-                CreateAccount::IBAN => $request->request->get(CreateAccount::IBAN)
-            ]
+            $this->extractPayloadFromRequest(
+                $request,
+                [CreateAccount::ID => $id],
+                [CreateAccount::BANK_ID , CreateAccount::OWNER_ID , CreateAccount::IBAN]
+            )
         );
 
         return new JsonResponse(['message' => 'account created', CreateAccount::ID => $id], Response::HTTP_CREATED);
@@ -55,12 +52,40 @@ class AccountController extends AbstractController
     {
         $this->dispatchCommand(
             UpdateAccountOwner::class,
-            [
-                UpdateAccountOwner::ID => $id,
-                UpdateAccountOwner::OWNER_ID => $request->request->get(UpdateAccountOwner::OWNER_ID)
-            ]
+            $this->extractPayloadFromRequest(
+                $request,
+                [UpdateAccountOwner::ID => $id],
+                [UpdateAccountOwner::OWNER_ID]
+            )
         );
 
         return new JsonResponse(['message' => 'account owner updated']);
+    }
+
+    /**
+     * @param Request $request
+     * @param string  $id
+     *
+     * @return Response
+     *
+     * @throws CommandDispatchException
+     */
+    public function addMovementToLedger(Request $request, string $id): Response
+    {
+        $this->dispatchCommand(
+            AddMovementToLedger::class,
+            $this->extractPayloadFromRequest(
+                $request,
+                [AddMovementToLedger::ACCOUNT_ID => $id, AddMovementToLedger::ID => Uuid::uuid4()->toString()],
+                [
+                    AddMovementToLedger::TYPE,
+                    AddMovementToLedger::AMOUNT,
+                    AddMovementToLedger::DESCRIPTION,
+                    AddMovementToLedger::PROCESSED_ON
+                ]
+            )
+        );
+
+        return new JsonResponse(['message' => 'movement added to account ledger']);
     }
 }

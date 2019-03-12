@@ -4,9 +4,11 @@ namespace WalletAccountant\Projection\Account;
 
 use WalletAccountant\Common\Exceptions\Account\AccountNotFoundException;
 use WalletAccountant\Document\Account;
+use WalletAccountant\Document\Account\Movement as MovementDocument;
 use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 use WalletAccountant\Domain\Account\AccountProjectionRepositoryInterface;
 use WalletAccountant\Domain\Account\Id\AccountId;
+use WalletAccountant\Domain\Account\Ledger\Movement;
 use WalletAccountant\Domain\User\Id\UserId;
 use WalletAccountant\Infrastructure\MongoDB\DroppableRepositoryInterface;
 use WalletAccountant\Projection\AbstractMongoDBReadModel;
@@ -66,7 +68,35 @@ final class AccountReadModel extends AbstractMongoDBReadModel
     {
         $oldAccount = $this->accountProjectionRepository->getById($id);
 
-        $newAccount = new Account($oldAccount->getId(), $oldAccount->getBankId(), $ownerId, $oldAccount->getIban());
+        $newAccount = new Account(
+            $oldAccount->getId(),
+            $oldAccount->getBankId(),
+            $ownerId,
+            $oldAccount->getIban(),
+            $oldAccount->getLedger()
+        );
+
+        $this->accountProjectionRepository->persist($newAccount, $oldAccount);
+    }
+
+    /**
+     * @param AccountId $id
+     * @param Movement  $movement
+     *
+     * @throws InvalidArgumentException
+     * @throws AccountNotFoundException
+     */
+    public function addMovementToLedger(AccountId $id, Movement $movement): void
+    {
+        $oldAccount = $this->accountProjectionRepository->getById($id);
+
+        $newAccount = new Account(
+            $oldAccount->getId(),
+            $oldAccount->getBankId(),
+            $oldAccount->getOwnerId(),
+            $oldAccount->getIban(),
+            $oldAccount->getLedger()->addMovement(MovementDocument::createFromDomain($movement))
+        );
 
         $this->accountProjectionRepository->persist($newAccount, $oldAccount);
     }

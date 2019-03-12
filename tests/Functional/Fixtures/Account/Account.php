@@ -2,7 +2,6 @@
 
 namespace WalletAccountant\Tests\Functional\Fixtures\Account;
 
-use function var_dump;
 use WalletAccountant\Common\DateTime\DateTime;
 use WalletAccountant\Domain\Account\Event\AccountWasCreated;
 use WalletAccountant\Domain\Account\Iban\Iban;

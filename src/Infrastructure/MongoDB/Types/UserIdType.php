@@ -2,7 +2,6 @@
 
 namespace WalletAccountant\Infrastructure\MongoDB\Types;
 
-use function var_dump;
 use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 use WalletAccountant\Domain\User\Id\UserId;
 use InvalidArgumentException as StandardInvalidArgumentException;

@@ -139,13 +139,14 @@ final class LoginAuthenticator implements AuthenticatorInterface
         //Generate JWT token
         $jWToken = $this->jwtEncoder->encode(
             [
+                'sub' => $user->getId()->toString(),
+                'iat' => DateTime::now()->getTimestamp(),
                 'exp' => DateTime::now()->addDays(self::JWT_EXPIRE_DAYS)->getTimestamp(),
                 'email' => $user->getEmail()->toString(),
                 'name' => [
                     'first' => $user->getName()->getFirst(),
                     'last' => $user->getName()->getLast()
-                ],
-                'iat' => DateTime::now()->getTimestamp()
+                ]
             ]
         );
 

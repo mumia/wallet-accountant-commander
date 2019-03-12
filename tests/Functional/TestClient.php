@@ -5,6 +5,7 @@ namespace WalletAccountant\Tests\Functional;
 use function json_decode;
 use function sprintf;
 use Symfony\Bundle\FrameworkBundle\Client;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\DomCrawler\Crawler;;
 use WalletAccountant\Common\Authenticator\JwtAuthenticator;
@@ -27,7 +28,7 @@ class TestClient extends Client
      */
     public function get(string $uri, array $options = []): Crawler
     {
-        return $this->sendRequest('GET', $uri, $options);
+        return $this->sendRequest(Request::METHOD_GET, $uri, $options);
     }
 
     /**
@@ -41,7 +42,7 @@ class TestClient extends Client
     {
         $options['parameters'] = $parameters;
 
-        return $this->sendRequest('POST', $uri, $options);
+        return $this->sendRequest(Request::METHOD_POST, $uri, $options);
     }
 
     /**
@@ -55,7 +56,21 @@ class TestClient extends Client
     {
         $options['parameters'] = $parameters;
 
-        return $this->sendRequest('PUT', $uri, $options);
+        return $this->sendRequest(Request::METHOD_PUT, $uri, $options);
+    }
+
+    /**
+     * @param string $uri
+     * @param array  $parameters
+     * @param array  $options
+     *
+     * @return Crawler
+     */
+    public function patch(string $uri, array $parameters = [], array $options = []): Crawler
+    {
+        $options['parameters'] = $parameters;
+
+        return $this->sendRequest(Request::METHOD_PATCH, $uri, $options);
     }
 
     /**
@@ -69,7 +84,7 @@ class TestClient extends Client
     {
         $options['parameters'] = $parameters;
 
-        return $this->sendRequest('DELETE', $uri, $options);
+        return $this->sendRequest(Request::METHOD_DELETE, $uri, $options);
     }
 
     /**

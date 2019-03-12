@@ -5,8 +5,10 @@ namespace WalletAccountant\Projection\Account;
 use Prooph\EventStore\Projection\ReadModelProjector;
 use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 use WalletAccountant\Document\Account;
+use WalletAccountant\Document\Account\Ledger;
 use WalletAccountant\Domain\Account\Event\AccountOwnerWasUpdated;
 use WalletAccountant\Domain\Account\Event\AccountWasCreated;
+use WalletAccountant\Domain\Account\Event\MovementAddedToLedger;
 use WalletAccountant\Projection\AbstractReadModelProjection;
 
 /**
@@ -28,7 +30,8 @@ final class AccountProjection extends AbstractReadModelProjection
             ->when(
                 [
                     AccountWasCreated::class => $this->accountWasCreatedHandler($projector),
-                    AccountOwnerWasUpdated::class => $this->accountOwnerWasUpdatedHandler($projector)
+                    AccountOwnerWasUpdated::class => $this->accountOwnerWasUpdatedHandler($projector),
+                    MovementAddedToLedger::class => $this->movementAddedToLedgerHandler($projector)
                 ]
             );
 
@@ -45,7 +48,7 @@ final class AccountProjection extends AbstractReadModelProjection
     private function accountWasCreatedHandler(ReadModelProjector $projector): callable
     {
         return function (array $state, AccountWasCreated $event) use ($projector): void {
-            $account = new Account($event->id(), $event->bankId(), $event->ownerId(), $event->iban());
+            $account = new Account($event->id(), $event->bankId(), $event->ownerId(), $event->iban(), New Ledger());
 
             $readModel = $projector->readModel();
             $readModel->stack('insert', $account);
@@ -67,6 +70,25 @@ final class AccountProjection extends AbstractReadModelProjection
                 'updateOwner',
                 $event->id(),
                 $event->ownerId()
+            );
+        };
+    }
+
+    /**
+     * @param ReadModelProjector $projector
+     *
+     * @return callable
+     *
+     * @throws InvalidArgumentException
+     */
+    private function movementAddedToLedgerHandler(ReadModelProjector $projector): callable
+    {
+        return function (array $state, MovementAddedToLedger $event) use ($projector): void {
+            $readModel = $projector->readModel();
+            $readModel->stack(
+                'addMovementToLedger',
+                $event->id(),
+                $event->movement()
             );
         };
     }

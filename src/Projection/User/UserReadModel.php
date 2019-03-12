@@ -4,9 +4,11 @@ namespace WalletAccountant\Projection\User;
 
 use WalletAccountant\Common\DateTime\DateTime;
 use WalletAccountant\Document\User;
+use WalletAccountant\Document\User\Name;
 use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 use WalletAccountant\Common\Exceptions\User\UserNotFoundException;
 use WalletAccountant\Domain\User\Id\UserId;
+use WalletAccountant\Domain\User\Name\Name as NameDomain;
 use WalletAccountant\Infrastructure\MongoDB\DroppableRepositoryInterface;
 use WalletAccountant\Infrastructure\MongoDB\UserProjectionRepository;
 use WalletAccountant\Projection\AbstractMongoDBReadModel;
@@ -80,6 +82,22 @@ final class UserReadModel extends AbstractMongoDBReadModel
         $user = $this->userProjectionRepository->getById($id);
 
         $user->recoverPassword($password);
+
+        $this->userProjectionRepository->persist($user, null);
+    }
+
+    /**
+     * @param UserId     $id
+     * @param NameDomain $name
+     *
+     * @throws UserNotFoundException
+     * @throws InvalidArgumentException
+     */
+    public function nameChanged(UserId $id, NameDomain $name): void
+    {
+        $user = $this->userProjectionRepository->getById($id);
+
+        $user->replaceName(Name::createFromDomain($name));
 
         $this->userProjectionRepository->persist($user, null);
     }
