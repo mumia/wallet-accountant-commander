@@ -1,6 +1,6 @@
 doctrine_mongodb:
-    auto_generate_proxy_classes: true
-    auto_generate_hydrator_classes: true
+    auto_generate_proxy_classes: '%kernel.debug%'
+    auto_generate_hydrator_classes: '%kernel.debug%'
     connections:
         default:
             server: '%env(resolve:MONGODB_URL)%'
@@ -14,5 +14,5 @@ doctrine_mongodb:
                     is_bundle: false
                     type: annotation
                     dir: '%kernel.project_dir%/src/Document'
-                    prefix: 'App\Document'
+                    prefix: WalletAccountant\Document
                     alias: App

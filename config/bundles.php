@@ -12,4 +12,7 @@ return [
     Symfony\Bundle\TwigBundle\TwigBundle::class => ['all' => true],
     Prooph\Bundle\ServiceBus\ProophServiceBusBundle::class => ['all' => true],
     Prooph\Bundle\EventStore\ProophEventStoreBundle::class => ['all' => true],
+    Symfony\Bundle\WebProfilerBundle\WebProfilerBundle::class => ['dev' => true, 'test' => true],
+
+    WalletAccountant\Common\InitBundle\InitBundle::class => ['all' => true],
 ];

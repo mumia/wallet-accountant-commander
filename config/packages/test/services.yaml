@@ -1,0 +1,20 @@
+services:
+    fixtures.loader.user:
+        public: true
+        class: WalletAccountant\Tests\Functional\Fixtures\User\UserFixtures
+        arguments:
+            $aggregateRepository: '@user_repository'
+            $projectionRunner: '@walletaccountant.projection_runner.user'
+            $dbalConnection: '@doctrine.dbal.default_connection'
+            $userProjectionRepository: '@WalletAccountant\Infrastructure\MongoDB\UserProjectionRepository'
+            $passwordEncoder: '@WalletAccountant\Common\Authenticator\PasswordEncoder'
+            $jwtEncoder: '@lexik_jwt_authentication.encoder.lcobucci'
+
+    fixtures.loader.bank:
+        public: true
+        class: WalletAccountant\Tests\Functional\Fixtures\Bank\BankFixtures
+        arguments:
+            $aggregateRepository: '@bank_repository'
+            $projectionRunner: '@walletaccountant.projection_runner.bank'
+            $dbalConnection: '@doctrine.dbal.default_connection'
+            $bankProjectionRepository: '@WalletAccountant\Infrastructure\MongoDB\BankProjectionRepository'

@@ -4,12 +4,12 @@ MONGODB_HOST = mongo
 
 run-functional-test:
 	@echo "Running functional tests" \
-	&& ./phpunit -c phpunit$(PHPUNIT_CONFIG_PREPEND).xml tests/Functional
+	&& ./vendor/bin/phpunit -c phpunit$(PHPUNIT_CONFIG_PREPEND).xml tests/Functional
 .PHONY: run-unit-test
 
 run-integration-test:
 	@echo "Running integration tests" \
-	&& ./phpunit -c phpunit$(PHPUNIT_CONFIG_PREPEND).xml tests/Integration
+	&& ./vendor/bin/phpunit -c phpunit$(PHPUNIT_CONFIG_PREPEND).xml tests/Integration
 .PHONY: run-integration-test
 
 prepare-phpunit-config:

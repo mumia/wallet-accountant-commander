@@ -4,20 +4,21 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
-    env(MONGODB_URL): ''
-    env(MONGODB_DB): ''
 
 services:
     # default configuration for services in *this* file
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        public: false       # Allows optimizing the container by removing unused services; this also means
+                            # fetching services directly from the container via $container->get() won't work.
+                            # The best practice is to be explicit about your dependencies anyway.
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
     WalletAccountant\:
         resource: '../src/*'
-        exclude: '../src/{DependencyInjection,Entity,Migrations,Tests,Kernel.php}'
+        exclude: '../src/{Common,Document,tests,Kernel.php}'
 
     # controllers are imported separately to make sure services can be injected
     # as action arguments even if you don't extend any base controller class
@@ -25,5 +26,117 @@ services:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
 
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
+    WalletAccountant\Command\:
+        resource: '../src/Command'
+        tags: ['console.command']
+
+    ########
+    # User #
+    ########
+    WalletAccountant\Controller\UserController:
+        arguments:
+            $commandBus: '@prooph_service_bus.user_command_bus'
+            $messageFactory: '@prooph_service_bus.message_factory.user_event_bus'
+
+    WalletAccountant\Domain\User\Handler\:
+        resource: '../src/Domain/User/Handler'
+        public: true
+        tags:
+            - { name: 'prooph_service_bus.user_command_bus.route_target', message_detection: true }
+
+    WalletAccountant\Command\UserCreateCommand:
+        arguments:
+            $commandBus: '@prooph_service_bus.user_command_bus'
+            $messageFactory: '@prooph_service_bus.message_factory.user_event_bus'
+
+    prooph_event_store_bus_bridge.user_event_publisher:
+        class: Prooph\EventStoreBusBridge\EventPublisher
+        arguments: ['@prooph_service_bus.user_event_bus']
+        public: true
+        tags:
+            - { name: 'prooph_event_store.user_store.plugin' }
+
+    WalletAccountant\Domain\User\UserRepositoryInterface:
+        alias: user_repository
+
+    WalletAccountant\Domain\User\Handler\UserInitiatePasswordRecoveryHandler:
+        arguments:
+            $userRepository: '@user_repository'
+            $userProjectionRepository: '@WalletAccountant\Infrastructure\MongoDB\UserProjectionRepository'
+        public: true
+        tags:
+            - { name: 'prooph_service_bus.user_command_bus.route_target', message_detection: true }
+
+    WalletAccountant\Infrastructure\MongoDB\UserProjectionRepository:
+        arguments:
+            $databaseName: '%env(MONGODB_DB)%'
+
+    ########
+    # Bank #
+    ########
+    WalletAccountant\Controller\BankController:
+        arguments:
+            $commandBus: '@prooph_service_bus.bank_command_bus'
+            $messageFactory: '@prooph_service_bus.message_factory.bank_event_bus'
+
+    WalletAccountant\Domain\Bank\Handler\:
+        resource: '../src/Domain/Bank/Handler'
+        public: true
+        tags:
+            - { name: 'prooph_service_bus.bank_command_bus.route_target', message_detection: true }
+
+    prooph_event_store_bus_bridge.bank_event_publisher:
+        class: Prooph\EventStoreBusBridge\EventPublisher
+        arguments: ['@prooph_service_bus.bank_event_bus']
+        public: true
+        tags:
+            - { name: 'prooph_event_store.bank_store.plugin' }
+
+    WalletAccountant\Domain\Bank\BankRepositoryInterface:
+        alias: user_repository
+
+    WalletAccountant\Infrastructure\MongoDB\BankProjectionRepository:
+        arguments:
+            $databaseName: '%env(MONGODB_DB)%'
+
+
+    ######################
+    # Projection runners #
+    ######################
+    walletaccountant.projection_runner.user:
+        class: WalletAccountant\Projection\ProjectionRunner
+        public: true
+        arguments:
+            $projectionName: 'user_projection'
+
+    walletaccountant.projection_runner.bank:
+        class: WalletAccountant\Projection\ProjectionRunner
+        public: true
+        arguments:
+            $projectionName: 'bank_projection'
+
+    ##################
+    # Authenticators #
+    ##################
+    walletaccountant.authenticator.jwt:
+        class: WalletAccountant\Common\Authenticator\JwtAuthenticator
+        arguments:
+            $jwtEncoder: '@lexik_jwt_authentication.encoder.lcobucci'
+
+    walletaccountant.authenticator.login:
+        class: WalletAccountant\Common\Authenticator\LoginAuthenticator
+        arguments:
+            $jwtEncoder: '@lexik_jwt_authentication.encoder.lcobucci'
+            $userProjectionRepository: '@WalletAccountant\Infrastructure\MongoDB\UserProjectionRepository'
+
+    ##########
+    # Common #
+    ##########
+    WalletAccountant\Common\Authenticator\PasswordEncoder:
+
+    WalletAccountant\Infrastructure\Client\MongoDB:
+        arguments:
+            - '@doctrine_mongodb'
+
+    WalletAccountant\ProcessManager\SendPasswordRecoveryInitiatedEmailProcessManager:
+        public: true
