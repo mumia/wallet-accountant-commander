@@ -6,7 +6,17 @@ php:
   # aliased to a recent 7.x version
   - 7.3
 
-# optionally specify a list of environments, for example to test different RDBMS
+dist: xenial
+addons:
+ apt:
+  sources:
+   - mongodb-4.0-xenial
+
+services:
+ - mysql
+ - mongodb
+
+   # optionally specify a list of environments, for example to test different RDBMS
 env:
 #  - DB=mysql
 #  - DB=pgsql
@@ -27,9 +37,10 @@ before_script:
 #  - if [[ "$DB" == "mysql" ]]; then mysql -e "create database IF NOT EXISTS hello_world_test;" -uroot; fi
  - sudo apt-get install software-properties-common
  - sudo apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xcbcb082a1bb943db
- - sudo add-apt-repository 'deb [arch=amd64,i386,ppc64el] http://mirrors.up.pt/pub/mariadb/repo/10.3/ubuntu trusty main'
- - sudo apt-get update
- - sudo apt-get install mariadb-server mongodb php-pear
+# - sudo add-apt-repository 'deb [arch=amd64,i386,ppc64el] http://mirrors.up.pt/pub/mariadb/repo/10.3/ubuntu trusty main'
+# - sudo apt-get update
+# - sudo apt-get install mariadb-server
+# mongodb php-pear
  - phpenv config-rm xdebug.ini
  - wget https://phar.phpunit.de/phpunit.phar; mv phpunit.phar phpunit; chmod 755 phpunit;
  - cp phpunit.xml.dist phpunit.xml
