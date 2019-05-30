@@ -7,7 +7,6 @@ prooph_event_store:
                     repository_class: WalletAccountant\Infrastructure\EventStore\UserRepository
                     aggregate_type: WalletAccountant\Domain\User\User
                     aggregate_translator: prooph_event_sourcing.aggregate_translator
-                    snapshot_store: null
                     stream_name: user
                     one_stream_per_aggregate: true
         bank_store:
@@ -17,7 +16,6 @@ prooph_event_store:
                     repository_class: WalletAccountant\Infrastructure\EventStore\BankRepository
                     aggregate_type: WalletAccountant\Domain\Bank\Bank
                     aggregate_translator: prooph_event_sourcing.aggregate_translator
-                    snapshot_store: null
                     stream_name: bank
                     one_stream_per_aggregate: true
     projection_managers:
