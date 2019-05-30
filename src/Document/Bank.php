@@ -3,48 +3,90 @@
 namespace WalletAccountant\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use WalletAccountant\Common\Exceptions\InvalidArgumentException;
+use WalletAccountant\Document\Common\Authored;
+use WalletAccountant\Domain\Bank\Id\BankId;
 
 /**
- * Class Bank
- * @package WalletAccountant\Document
+ * Bank
  *
  * @MongoDB\Document
  */
-class Bank
+final class Bank
 {
     /**
-     * @var string
+     * @var BankId
      *
-     * @MongoDB\Id(strategy="none", name="aggregate_id")
+     * @MongoDB\Id(strategy="none", type="bankid")
      */
-    private $aggregateId;
+    private $id;
 
     /**
      * @var string
      *
-     * @MongoDB\EmbedOne(type="string")
+     * @MongoDB\Field(type="string")
      */
     private $name;
 
-    public function __construct(string $aggregateId, string $name)
+    /**
+     * @var Authored
+     *
+     * @MongoDB\EmbedOne(targetDocument="WalletAccountant\Document\Common\Authored")
+     */
+    private $created;
+
+    /**
+     * @var Authored
+     *
+     * @MongoDB\EmbedOne(targetDocument="WalletAccountant\Document\Common\Authored")
+     */
+    private $updated;
+
+    /**
+     * @param BankId   $id
+     * @param string   $name
+     * @param Authored $created
+     * @param Authored $updated
+     */
+    public function __construct(BankId $id, string $name, Authored $created, Authored $updated)
     {
-        $this->aggregateId = $aggregateId;
+        $this->id = $id;
         $this->name = $name;
+        $this->created = $created;
+        $this->updated = $updated;
     }
 
     /**
-     * @return string
+     * @return BankId
+     *
+     * @throws InvalidArgumentException
      */
-    public function getAggregateId(): string
+    public function id(): BankId
     {
-        return $this->aggregateId;
+        return $this->id;
     }
 
     /**
      * @return string
      */
-    public function getName(): string
+    public function name(): string
     {
         return $this->name;
+    }
+
+    /**
+     * @return Authored
+     */
+    public function created(): Authored
+    {
+        return $this->created;
+    }
+
+    /**
+     * @return Authored
+     */
+    public function updated(): Authored
+    {
+        return $this->updated;
     }
 }

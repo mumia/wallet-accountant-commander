@@ -2,41 +2,42 @@
 
 namespace WalletAccountant\Domain\Bank\Event;
 
-use Prooph\EventSourcing\AggregateChanged;
+use WalletAccountant\Common\Exceptions\InvalidArgumentException;
+use WalletAccountant\Domain\Bank\Id\BankId;
+use WalletAccountant\Domain\Bank\Name\Name;
+use WalletAccountant\Domain\Common\AbstractAggregateChanged;
 
-class BankWasCreated extends AggregateChanged
+/**
+ * BankWasCreated
+ */
+final class BankWasCreated extends AbstractAggregateChanged
 {
     private const NAME = 'name';
-    private const OWNER_ID = 'owner_id';
 
     /**
-     * BankWasCreated constructor.
-     * @param string $id
+     * @param BankId $id
      * @param string $name
      */
-    public function __construct(string $id, string $name)
+    public function __construct(BankId $id, Name $name)
     {
-        parent::__construct(
-            $id,
-            [
-                self::NAME => $name
-            ]
-        );
+        parent::__construct($id->toString(), [self::NAME => $name->value()]);
     }
 
     /**
-     * @return string
+     * @return BankId
+     *
+     * @throws InvalidArgumentException
      */
-    public function id(): string
+    public function id(): BankId
     {
-        return $this->aggregateId();
+        return BankId::createFromString($this->aggregateId());
     }
 
     /**
-     * @return string
+     * @return Name
      */
-    public function name(): string
+    public function name(): Name
     {
-        return $this->payload()[self::NAME];
+        return new Name($this->payload()[self::NAME]);
     }
 }

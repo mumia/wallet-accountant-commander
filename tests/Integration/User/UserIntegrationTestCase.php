@@ -5,6 +5,7 @@ namespace WalletAccountant\Tests\Integration\User;
 use Exception;
 use Symfony\Component\Console\Tester\CommandTester;
 use WalletAccountant\Document\User;
+use WalletAccountant\Domain\User\Id\UserId;
 use WalletAccountant\Tests\Integration\IntegrationTestCase;
 
 /**
@@ -32,11 +33,12 @@ abstract class UserIntegrationTestCase extends IntegrationTestCase
     }
 
     /**
+     * @param UserId $userId
      * @param User $expectedProjection
      */
-    protected function assertProjectionIsExpected(User $expectedProjection): void
+    protected function assertProjectionIsExpected(UserId $userId, User $expectedProjection): void
     {
-        $actualProjection = $this->projectionRepository->find(self::EMAIL);
+        $actualProjection = $this->projectionRepository->find($userId->toString());
         $this->assertEquals($expectedProjection, $actualProjection);
     }
 

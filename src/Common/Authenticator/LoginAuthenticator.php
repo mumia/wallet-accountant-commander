@@ -2,7 +2,7 @@
 
 namespace WalletAccountant\Common\Authenticator;
 
-use InvalidArgumentException;
+use InvalidArgumentException as StandardInvalidArgumentException;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTEncodeFailureException;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -16,7 +16,9 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Guard\AuthenticatorInterface;
 use Symfony\Component\Security\Guard\Token\PostAuthenticationGuardToken;
 use WalletAccountant\Common\DateTime\DateTime;
+use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 use WalletAccountant\Document\User;
+use WalletAccountant\Domain\User\Email\Email;
 use WalletAccountant\Domain\User\UserProjectionRepositoryInterface;
 
 /**
@@ -76,11 +78,14 @@ final class LoginAuthenticator implements AuthenticatorInterface
      *
      * @return UserInterface
      *
+     * @throws InvalidArgumentException
      * @throws CustomUserMessageAuthenticationException
      */
     public function getUser($credentials, UserProviderInterface $userProvider): UserInterface
     {
-        $user = $this->userProjectionRepository->getByEmailOrNull($credentials[self::AUTHENTICATION_POST_EMAIL]);
+        $user = $this->userProjectionRepository->getByEmailOrNull(
+            Email::createFromString($credentials[self::AUTHENTICATION_POST_EMAIL])
+        );
 
         if (!$user instanceof UserInterface) {
             throw new CustomUserMessageAuthenticationException(
@@ -90,7 +95,7 @@ final class LoginAuthenticator implements AuthenticatorInterface
 
         if (!$user->getStatus()->canLogin()) {
             throw new CustomUserMessageAuthenticationException(
-                sprintf('User email "%s" cannot login (%s)', $user->getEmail(), $user->getStatus()->toString())
+                sprintf('User email "%s" cannot login (%s)', $user->email(), $user->getStatus()->toString())
             );
         }
 
@@ -113,7 +118,7 @@ final class LoginAuthenticator implements AuthenticatorInterface
     /**
      * {@inheritdoc}
      *
-     * @throws InvalidArgumentException
+     * @throws StandardInvalidArgumentException
      */
     public function createAuthenticatedToken(UserInterface $user, $providerKey): PostAuthenticationGuardToken
     {
@@ -121,9 +126,7 @@ final class LoginAuthenticator implements AuthenticatorInterface
     }
 
     /**
-     * {@inheritdoc}
-     *
-     * @throws JWTEncodeFailureException
+     * @inheritDoc
      */
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey): JsonResponse
     {
@@ -133,13 +136,14 @@ final class LoginAuthenticator implements AuthenticatorInterface
         //Generate JWT token
         $jWToken = $this->jwtEncoder->encode(
             [
+                'sub' => $user->id()->toString(),
+                'iat' => DateTime::now()->getTimestamp(),
                 'exp' => DateTime::now()->addDays(self::JWT_EXPIRE_DAYS)->getTimestamp(),
-                'email' => $user->getEmail(),
+                'email' => $user->email()->toString(),
                 'name' => [
-                    'first' => $user->getName()->getFirst(),
-                    'last' => $user->getName()->getLast()
-                ],
-                'iat' => DateTime::now()->getTimestamp()
+                    'first' => $user->name()->getFirst(),
+                    'last' => $user->name()->getLast()
+                ]
             ]
         );
 

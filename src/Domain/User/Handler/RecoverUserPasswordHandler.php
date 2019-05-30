@@ -4,16 +4,12 @@ namespace WalletAccountant\Domain\User\Handler;
 
 use Respect\Validation\Validator;
 use function sprintf;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use WalletAccountant\Common\Authenticator\PasswordEncoder;
 use WalletAccountant\Common\Exceptions\User\LogicException;
 use WalletAccountant\Common\Exceptions\User\UserAggregateNotFoundException;
 use WalletAccountant\Common\Exceptions\User\UserNotFoundException;
-use WalletAccountant\Document\User;
-use WalletAccountant\Domain\Common\Command;
 use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 use WalletAccountant\Domain\User\Command\RecoverUserPassword;
-use WalletAccountant\Domain\User\Id\UserId;
 use WalletAccountant\Domain\User\UserProjectionRepositoryInterface;
 use WalletAccountant\Domain\User\UserRepositoryInterface;
 
@@ -71,8 +67,7 @@ final class RecoverUserPasswordHandler
         $this->validateInputs($code, $password, $repeatPassword);
 
         $user = $this->userProjectionRepository->getByPasswordRecoveryCode($code);
-        $id = $user->getAggregateId();
-        $userDomain = $this->userRepository->get(UserId::createFromString($id));
+        $userDomain = $this->userRepository->get($user->id());
 
         if (!$userDomain->hasRecovery()) {
             throw new LogicException('user is not in password recovery mode');

@@ -6,6 +6,7 @@ use Prooph\EventSourcing\AggregateChanged;
 use Prooph\EventSourcing\AggregateRoot;
 use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 use WalletAccountant\Domain\Bank\Event\BankWasCreated;
+use WalletAccountant\Domain\Bank\Event\BankWasUpdated;
 use WalletAccountant\Domain\Bank\Id\BankId;
 use WalletAccountant\Domain\Bank\Name\Name;
 
@@ -22,6 +23,21 @@ class Bank extends AggregateRoot
     protected $name;
 
     /**
+     * @param BankId $id
+     * @param Name $name
+     *
+     * @return Bank
+     */
+    public static function createBank(BankId $id, Name $name): self
+    {
+        $bank = new self();
+
+        $bank->recordThat(new BankWasCreated($id, $name));
+
+        return $bank;
+    }
+
+    /**
      * @return BankId
      */
     public function id() : BankId {
@@ -36,18 +52,11 @@ class Bank extends AggregateRoot
     }
 
     /**
-     * @param BankId $id
-     * @param Name $name
-     *
-     * @return Bank
+     * @param string $name
      */
-    public static function createBank(BankId $id, Name $name): self
+    public function setName(string $name): void
     {
-        $bank = new self();
-
-        $bank->recordThat(new BankWasCreated($id->toString(), $name->value()));
-
-        return $bank;
+        $this->recordThat(new BankWasUpdated($this->id(), $name));
     }
 
     /**
@@ -64,7 +73,17 @@ class Bank extends AggregateRoot
     protected function whenBankWasCreated(BankWasCreated $event) : void
     {
         $this->id = BankId::createFromString($event->id());
-        $this->name = new Name($event->name());
+        $this->name = $event->name();
+    }
+
+    /**
+     * @param BankWasUpdated $event
+     *
+     * @throws InvalidArgumentException
+     */
+    protected function whenBankWasUpdated(BankWasUpdated $event): void
+    {
+        $this->name = $event->name();
     }
 
     /**
@@ -74,6 +93,12 @@ class Bank extends AggregateRoot
     {
         if ($event instanceof BankWasCreated) {
             $this->whenBankWasCreated($event);
+
+            return;
+        }
+
+        if ($event instanceof BankWasUpdated) {
+            $this->whenBankWasUpdated($event);
 
             return;
         }

@@ -12,8 +12,10 @@ use WalletAccountant\Document\User;
 use WalletAccountant\Document\User\Name;
 use WalletAccountant\Document\User\Status;
 use WalletAccountant\Document\User\Recovery;
+use WalletAccountant\Domain\User\Email\Email;
 use WalletAccountant\Domain\User\Event\UserPasswordRecoveryInitiated;
 use WalletAccountant\Common\Exceptions\User\UserEmailNotUniqueException;
+use WalletAccountant\Domain\User\Id\UserId;
 
 /**
  * UserCreateTest
@@ -44,10 +46,13 @@ class UserCreateTest extends UserIntegrationTestCase
 
         $this->runProjection(self::PROJECTION_NAME);
 
+        $userId = UserId::createFromString($aggregateId);
+
         $this->assertProjectionIsExpected(
+            $userId,
             new User(
-                self::EMAIL,
-                $aggregateId,
+                $userId,
+                Email::createFromString(self::EMAIL),
                 new Name('firstname', 'lastname'),
                 [],
                 '',

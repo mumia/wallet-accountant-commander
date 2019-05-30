@@ -94,6 +94,9 @@
     "egulias/email-validator": {
         "version": "2.1.7"
     },
+    "eso/ireflection": {
+        "version": "v0.1.3"
+    },
     "jdorn/sql-formatter": {
         "version": "v1.2.17"
     },

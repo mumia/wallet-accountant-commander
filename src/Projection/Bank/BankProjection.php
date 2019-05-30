@@ -2,17 +2,18 @@
 
 namespace WalletAccountant\Projection\Bank;
 
-use Prooph\Bundle\EventStore\Projection\ReadModelProjection;
 use Prooph\EventStore\Projection\ReadModelProjector;
+use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 use WalletAccountant\Document\Bank;
-use WalletAccountant\Domain\Bank\BankProjectionRepositoryInterface;
 use WalletAccountant\Domain\Bank\Event\BankWasCreated;
+use WalletAccountant\Domain\Bank\Event\BankWasUpdated;
+use WalletAccountant\Domain\Bank\Id\BankId;
+use WalletAccountant\Projection\AbstractReadModelProjection;
 
 /**
- * Class BankProjection
- * @package WalletAccountant\Projection\Bank
+ * BankProjection
  */
-final class BankProjection implements ReadModelProjection
+final class BankProjection extends AbstractReadModelProjection
 {
     /**
      * @param ReadModelProjector $projector
@@ -22,10 +23,11 @@ final class BankProjection implements ReadModelProjection
     public function project(ReadModelProjector $projector): ReadModelProjector
     {
         $projector
-            ->fromCategory(BankProjectionRepositoryInterface::COLLECTION_NAME)
+            ->fromCategory('bank')
             ->when(
                 [
                     BankWasCreated::class => $this->bankWasCreatedHandler($projector),
+                    BankWasUpdated::class => $this->bankWasUpdatedHandler($projector)
                 ]
             );
 
@@ -36,17 +38,43 @@ final class BankProjection implements ReadModelProjection
      * @param ReadModelProjector $projector
      *
      * @return callable
+     *
+     * @throws InvalidArgumentException
      */
     private function bankWasCreatedHandler(ReadModelProjector $projector): callable
     {
         return function (array $state, BankWasCreated $event) use ($projector): void {
+            $authored = AbstractReadModelProjection::createAuthored($event);
+
             $bank = new Bank(
-                $event->aggregateId(),
-                $event->name()
+                BankId::createFromString($event->aggregateId()),
+                $event->name()->value(),
+                $authored,
+                $authored
             );
 
             $readModel = $projector->readModel();
             $readModel->stack('insert', $bank);
+        };
+    }
+
+    /**
+     * @param ReadModelProjector $projector
+     *
+     * @return callable
+     *
+     * @throws InvalidArgumentException
+     */
+    private function bankWasUpdatedHandler(ReadModelProjector $projector): callable
+    {
+        return function (array $state, BankWasUpdated $event) use ($projector): void {
+            $readModel = $projector->readModel();
+            $readModel->stack(
+                'update',
+                $event->id(),
+                $event->name(),
+                AbstractReadModelProjection::createAuthored($event)
+            );
         };
     }
 }

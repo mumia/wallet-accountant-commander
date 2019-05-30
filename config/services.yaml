@@ -93,7 +93,7 @@ services:
             - { name: 'prooph_event_store.bank_store.plugin' }
 
     WalletAccountant\Domain\Bank\BankRepositoryInterface:
-        alias: user_repository
+        alias: bank_repository
 
     WalletAccountant\Infrastructure\MongoDB\BankProjectionRepository:
         arguments:
@@ -140,3 +140,8 @@ services:
 
     WalletAccountant\ProcessManager\SendPasswordRecoveryInitiatedEmailProcessManager:
         public: true
+
+    WalletAccountant\Common\MetadataEnricher\:
+        resource: '../src/Common/MetadataEnricher'
+        tags:
+            - { name: 'prooph_event_store.metadata_enricher' }

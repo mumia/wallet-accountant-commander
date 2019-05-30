@@ -33,6 +33,7 @@
         "symfony/yaml": "4.2.*"
     },
     "require-dev": {
+        "eso/ireflection": "^0.1.3",
         "symfony/dotenv": "4.2.*",
         "symfony/profiler-pack": "^1.0",
         "symfony/test-pack": "^1.0"

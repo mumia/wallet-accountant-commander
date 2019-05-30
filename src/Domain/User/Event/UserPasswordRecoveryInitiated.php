@@ -2,47 +2,52 @@
 
 namespace WalletAccountant\Domain\User\Event;
 
-use Prooph\EventSourcing\AggregateChanged;
 use WalletAccountant\Common\DateTime\DateTime;
 use WalletAccountant\Common\Exceptions\InvalidArgumentException;
+use WalletAccountant\Domain\Common\AbstractAggregateChanged;
+use WalletAccountant\Domain\User\Email\Email;
+use WalletAccountant\Domain\User\Id\UserId;
 
 /**
  * UserPasswordRecoveryInitiated
  */
-final class UserPasswordRecoveryInitiated extends AggregateChanged
+final class UserPasswordRecoveryInitiated extends AbstractAggregateChanged
 {
     private const EMAIL = 'email';
     private const CODE = 'code';
     private const EXPIRES_ON = 'expires_on';
 
     /**
-     * @param string   $id
-     * @param string   $email
-     * @param string   $code
+     * UserPasswordRecoveryInitiated constructor.
+     * @param UserId $id
+     * @param Email $email
+     * @param string $code
      * @param DateTime $expiresOn
      */
     public function __construct(
-        string $id,
-        string $email,
+        UserId $id,
+        Email $email,
         string $code,
         DateTime $expiresOn
     ) {
         parent::__construct(
-            $id,
+            $id->toString(),
             [
                 self::EMAIL => $email,
                 self::CODE => $code,
-                self::EXPIRES_ON => $expiresOn->toDateTimeMicro()
+                self::EXPIRES_ON => $expiresOn->toDateTimeMicroFull()
             ]
         );
     }
 
     /**
-     * @return string
+     * @return UserId
+     *
+     * @throws InvalidArgumentException
      */
-    public function id(): string
+    public function id(): UserId
     {
-        return $this->aggregateId();
+        return UserId::createFromString($this->aggregateId());
     }
 
     /**
@@ -68,6 +73,6 @@ final class UserPasswordRecoveryInitiated extends AggregateChanged
      */
     public function expiresOn(): DateTime
     {
-        return DateTime::createFromDateTimeMicroFormat($this->payload()[self::EXPIRES_ON]);
+        return DateTime::createFromDateTimeMicroFullFormat($this->payload()[self::EXPIRES_ON]);
     }
 }

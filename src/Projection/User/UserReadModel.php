@@ -2,56 +2,41 @@
 
 namespace WalletAccountant\Projection\User;
 
-use Prooph\EventStore\Projection\AbstractReadModel;
-use function var_dump;
 use WalletAccountant\Common\DateTime\DateTime;
 use WalletAccountant\Document\User;
-use WalletAccountant\Document\User\Recovery;
+use WalletAccountant\Document\User\Name;
 use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 use WalletAccountant\Common\Exceptions\User\UserNotFoundException;
+use WalletAccountant\Domain\User\Id\UserId;
+use WalletAccountant\Domain\User\Name\Name as NameDomain;
+use WalletAccountant\Infrastructure\MongoDB\DroppableRepositoryInterface;
 use WalletAccountant\Infrastructure\MongoDB\UserProjectionRepository;
+use WalletAccountant\Projection\AbstractMongoDBReadModel;
 
 /**
  * UserReadModel
  */
-final class UserReadModel extends AbstractReadModel
+final class UserReadModel extends AbstractMongoDBReadModel
 {
     /**
      * @var UserProjectionRepository
      */
-    private $userRepository;
+    private $userProjectionRepository;
 
     /**
-     * @param UserProjectionRepository $userRepository
+     * @param UserProjectionRepository $userProjectionRepository
      */
-    public function __construct(UserProjectionRepository $userRepository)
+    public function __construct(UserProjectionRepository $userProjectionRepository)
     {
-        $this->userRepository = $userRepository;
-    }
-
-    public function init(): void
-    {
-        // MongoDB collection will be created automatically
+        $this->userProjectionRepository = $userProjectionRepository;
     }
 
     /**
-     * @return bool
+     * {@inheritdoc}
      */
-    public function isInitialized(): bool
+    public function getRepository(): DroppableRepositoryInterface
     {
-        // MongoDB collection will be initialized automatically
-
-        return true;
-    }
-
-    public function reset(): void
-    {
-        $this->userRepository->dropCollection();
-    }
-
-    public function delete(): void
-    {
-        $this->userRepository->dropCollection();
+        return $this->userProjectionRepository;
     }
 
     /**
@@ -61,20 +46,20 @@ final class UserReadModel extends AbstractReadModel
      */
     public function insert(User $user): void
     {
-        $this->userRepository->persist($user);
+        $this->userProjectionRepository->persist($user, null);
     }
 
     /**
-     * @param string   $id
+     * @param UserId   $id
      * @param string   $code
      * @param DateTime $expiresOn
      *
      * @throws UserNotFoundException
      * @throws InvalidArgumentException
      */
-    public function passwordRecovery(string $id, string $code, DateTime $expiresOn): void
+    public function passwordRecovery(UserId $id, string $code, DateTime $expiresOn): void
     {
-        $user = $this->userRepository->getByAggregateIdOrNull($id);
+        $user = $this->userProjectionRepository->getByIdOrNull($id);
 
         if (!$user instanceof User) {
             throw UserNotFoundException::withId($id);
@@ -82,22 +67,38 @@ final class UserReadModel extends AbstractReadModel
 
         $user->initiatePasswordRecovery($code, $expiresOn);
 
-        $this->userRepository->persist($user);
+        $this->userProjectionRepository->persist($user, null);
     }
 
     /**
-     * @param string   $id
-     * @param string   $password
+     * @param UserId $id
+     * @param string $password
      *
      * @throws UserNotFoundException
      * @throws InvalidArgumentException
      */
-    public function passwordRecovered(string $id, string $password): void
+    public function passwordRecovered(UserId $id, string $password): void
     {
-        $user = $this->userRepository->getByAggregateId($id);
+        $user = $this->userProjectionRepository->getById($id);
 
         $user->recoverPassword($password);
 
-        $this->userRepository->persist($user);
+        $this->userProjectionRepository->persist($user, null);
+    }
+
+    /**
+     * @param UserId     $id
+     * @param NameDomain $name
+     *
+     * @throws UserNotFoundException
+     * @throws InvalidArgumentException
+     */
+    public function nameChanged(UserId $id, NameDomain $name): void
+    {
+        $user = $this->userProjectionRepository->getById($id);
+
+        $user->replaceName(Name::createFromDomain($name));
+
+        $this->userProjectionRepository->persist($user, null);
     }
 }

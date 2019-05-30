@@ -7,7 +7,7 @@ use Prooph\Common\Messaging\Command as ProophCommand;
 /**
  * Command
  */
-abstract class Command extends ProophCommand
+abstract class AbstractCommand extends ProophCommand
 {
     /**
      * @var array

@@ -4,6 +4,9 @@ namespace WalletAccountant\Domain\User\Event;
 
 use Prooph\EventSourcing\AggregateChanged;
 use function sprintf;
+use WalletAccountant\Domain\User\Email\Email;
+use WalletAccountant\Domain\User\Id\UserId;
+use WalletAccountant\Domain\User\Name\Name;
 use WalletAccountant\Domain\User\Status\Status;
 
 /**
@@ -24,20 +27,19 @@ final class UserWasCreated extends AggregateChanged
     private const ENABLED = 'enabled';
 
     /**
-     * @param string $id
-     * @param string $email
-     * @param string $firstName
-     * @param string $lastName
+     * UserWasCreated constructor.
+     * @param UserId $id
+     * @param Email $email
+     * @param Name $name
      * @param string $password
      * @param string $salt
-     * @param array  $roles
+     * @param array $roles
      * @param Status $status
      */
     public function __construct(
-        string $id,
-        string $email,
-        string $firstName,
-        string $lastName,
+        UserId $id,
+        Email $email,
+        Name $name,
         string $password,
         string $salt,
         array $roles,
@@ -46,9 +48,9 @@ final class UserWasCreated extends AggregateChanged
         parent::__construct(
             $id,
             [
-                self::EMAIL => $email,
-                self::FIRST_NAME => $firstName,
-                self::LAST_NAME => $lastName,
+                self::EMAIL => $email->toString(),
+                self::FIRST_NAME => $name->first(),
+                self::LAST_NAME => $name->last(),
                 self::PASSWORD => $password,
                 self::SALT => $salt,
                 self::ROLES => $roles,
@@ -63,19 +65,19 @@ final class UserWasCreated extends AggregateChanged
     }
 
     /**
-     * @return string
+     * @return UserId
      */
-    public function id(): string
+    public function id(): UserId
     {
-        return $this->aggregateId();
+        return UserId::createFromString($this->aggregateId());
     }
 
     /**
-     * @return string
+     * @return Email
      */
-    public function email(): string
+    public function email(): Email
     {
-        return $this->payload()[self::EMAIL];
+        return Email::createFromString($this->payload()[self::EMAIL]);
     }
 
     /**
@@ -122,11 +124,11 @@ final class UserWasCreated extends AggregateChanged
     }
 
     /**
-     * @return string
+     * @return Name
      */
-    public function name(): string
+    public function name(): Name
     {
-        return sprintf('%s %s', $this->firstName(), $this->lastName());
+        return new Name($this->firstName(), $this->lastName());
     }
 
     /**

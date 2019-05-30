@@ -4,6 +4,8 @@ namespace WalletAccountant\Infrastructure\MongoDB;
 
 use InvalidArgumentException as StandardInvalidArgumentException ;
 use WalletAccountant\Document\User;
+use WalletAccountant\Domain\User\Email\Email;
+use WalletAccountant\Domain\User\Id\UserId;
 use WalletAccountant\Domain\User\UserProjectionRepositoryInterface;
 use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 use WalletAccountant\Common\Exceptions\User\UserNotFoundException;
@@ -16,12 +18,16 @@ final class UserProjectionRepository extends AbstractProjectionRepository implem
     /**
      * {@inheritdoc}
      */
-    public function persist(User $document): void
+    public function persist(User $newDocument, ?User $oldDocument): void
     {
         try {
             $manager = $this->client->getManager();
-            $manager->persist($document);
+            $manager->persist($newDocument);
             $manager->flush();
+
+            if ($oldDocument instanceof User) {
+                $manager->refresh($oldDocument);
+            }
         } catch (StandardInvalidArgumentException $exception) {
             throw InvalidArgumentException::createFromStandardException($exception);
         }
@@ -30,7 +36,7 @@ final class UserProjectionRepository extends AbstractProjectionRepository implem
     /**
      * {@inheritdoc}
      */
-    public function emailExists(string $email): bool
+    public function emailExists(Email $email): bool
     {
         return $this->getByEmailOrNull($email) instanceof User;
     }
@@ -38,17 +44,17 @@ final class UserProjectionRepository extends AbstractProjectionRepository implem
     /**
      * {@inheritdoc}
      */
-    public function getByEmailOrNull(string $email): ?User
+    public function getByEmailOrNull(Email $email): ?User
     {
         $repository = $this->client->getRepository(User::class);
 
-        return $repository->find($email);
+        return $repository->findOneBy(['email' => $email->toString()]);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getByEmail(string $email): User
+    public function getByEmail(Email $email): User
     {
         $user = $this->getByEmailOrNull($email);
 
@@ -62,22 +68,22 @@ final class UserProjectionRepository extends AbstractProjectionRepository implem
     /**
      * {@inheritdoc}
      */
-    public function getByAggregateIdOrNull(string $aggregateId): ?User
+    public function getByIdOrNull(UserId $id): ?User
     {
         $repository = $this->client->getRepository(User::class);
 
-        return $repository->findOneBy(['aggregate_id' => $aggregateId]);
+        return $repository->find($id->toString());
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getByAggregateId(string $aggregateId): User
+    public function getById(UserId $id): User
     {
-        $user = $this->getByAggregateIdOrNull($aggregateId);
+        $user = $this->getByIdOrNull($id);
 
         if (!$user instanceof User) {
-            throw UserNotFoundException::withId($aggregateId);
+            throw UserNotFoundException::withId($id);
         }
 
         return $user;

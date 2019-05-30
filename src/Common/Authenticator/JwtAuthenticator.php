@@ -2,7 +2,7 @@
 
 namespace WalletAccountant\Common\Authenticator;
 
-use InvalidArgumentException;
+use InvalidArgumentException as StandardInvalidArgumentException;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
 use Lexik\Bundle\JWTAuthenticationBundle\TokenExtractor\AuthorizationHeaderTokenExtractor;
@@ -16,6 +16,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Guard\AuthenticatorInterface;
 use Symfony\Component\Security\Guard\Token\PostAuthenticationGuardToken;
+use WalletAccountant\Common\Exceptions\InvalidArgumentException;
+use WalletAccountant\Domain\User\Email\Email;
 use WalletAccountant\Domain\User\UserProjectionRepositoryInterface;
 
 /**
@@ -23,8 +25,8 @@ use WalletAccountant\Domain\User\UserProjectionRepositoryInterface;
  */
 final class JwtAuthenticator implements AuthenticatorInterface
 {
-    private const AUTHORIZATION_HEADER_KEY = 'Authorization';
-    private const AUTHORIZATION_TOKEN_PREFIX = 'Bearer';
+    public const AUTHORIZATION_HEADER_KEY = 'Authorization';
+    public const AUTHORIZATION_TOKEN_PREFIX = 'Bearer';
 
     /**
      * @var JWTEncoderInterface
@@ -73,6 +75,7 @@ final class JwtAuthenticator implements AuthenticatorInterface
      *
      * @return UserInterface
      *
+     * @throws InvalidArgumentException
      * @throws JWTDecodeFailureException
      * @throws CustomUserMessageAuthenticationException
      */
@@ -83,7 +86,7 @@ final class JwtAuthenticator implements AuthenticatorInterface
             throw new CustomUserMessageAuthenticationException('Invalid jwt token');
         }
 
-        $user = $this->userProjectionRepository->getByEmailOrNull($data['email']);
+        $user = $this->userProjectionRepository->getByEmailOrNull(Email::createFromString($data['email']));
 
         if (!$user instanceof UserInterface) {
             throw new CustomUserMessageAuthenticationException(
@@ -112,7 +115,7 @@ final class JwtAuthenticator implements AuthenticatorInterface
     /**
      * {@inheritdoc}
      *
-     * @throws InvalidArgumentException
+     * @throws StandardInvalidArgumentException
      */
     public function createAuthenticatedToken(UserInterface $user, $providerKey): PostAuthenticationGuardToken
     {

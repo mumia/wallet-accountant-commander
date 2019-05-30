@@ -79,10 +79,9 @@ final class User extends AggregateRoot
 
         $user->recordThat(
             new UserWasCreated(
-                $id->toString(),
-                $email->toString(),
-                $name->first(),
-                $name->last(),
+                $id,
+                $email,
+                $name,
                 '',
                 base64_encode(random_bytes(64)),
                 [],
@@ -176,7 +175,7 @@ final class User extends AggregateRoot
 
         $this->recordThat(
             new UserPasswordRecoveryInitiated(
-                $this->id()->toString(),
+                $this->id(),
                 $this->email(),
                 $recovery->code(),
                 $recovery->expiresOn()

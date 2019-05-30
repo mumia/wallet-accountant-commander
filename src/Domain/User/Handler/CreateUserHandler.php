@@ -46,7 +46,7 @@ final class CreateUserHandler
     public function __invoke(CreateUser $command): void
     {
         // Validate email is unique using projection
-        if ($this->userProjectionRepository->emailExists($command->email()->toString())) {
+        if ($this->userProjectionRepository->emailExists($command->email())) {
             throw new UserEmailNotUniqueException($command->email()->toString());
         }
 

@@ -1,20 +1,71 @@
 services:
-    fixtures.loader.user:
+    walletaccountant.test.client:
         public: true
-        class: WalletAccountant\Tests\Functional\Fixtures\User\UserFixtures
+        class: WalletAccountant\Tests\Functional\TestClient
+        #scope: prototype
         arguments:
-            $aggregateRepository: '@user_repository'
-            $projectionRunner: '@walletaccountant.projection_runner.user'
-            $dbalConnection: '@doctrine.dbal.default_connection'
-            $userProjectionRepository: '@WalletAccountant\Infrastructure\MongoDB\UserProjectionRepository'
-            $passwordEncoder: '@WalletAccountant\Common\Authenticator\PasswordEncoder'
-            $jwtEncoder: '@lexik_jwt_authentication.encoder.lcobucci'
+            $kernel: "@kernel"
+            $server: "%test.client.parameters%"
+            $history: "@test.client.history"
+            $cookieJar: "@test.client.cookiejar"
 
-    fixtures.loader.bank:
+    #
+    # Aliasing to raise exposure for use in the tests' container
+    #
+    test.jwt.encoder:
         public: true
-        class: WalletAccountant\Tests\Functional\Fixtures\Bank\BankFixtures
+        alias: lexik_jwt_authentication.encoder.lcobucci
+
+    test.user_projection_repository:
+        public: true
+        alias: WalletAccountant\Infrastructure\MongoDB\UserProjectionRepository
+
+    test.bank_projection_repository:
+        public: true
+        alias: WalletAccountant\Infrastructure\MongoDB\BankProjectionRepository
+
+    test.password_encoder:
+        public: true
+        alias: WalletAccountant\Common\Authenticator\PasswordEncoder
+
+    #
+    # Fixtures
+    #
+    fixtures.loader:
+        public: true
+        class: WalletAccountant\Tests\Functional\Fixtures\FixturesLoader
         arguments:
-            $aggregateRepository: '@bank_repository'
-            $projectionRunner: '@walletaccountant.projection_runner.bank'
             $dbalConnection: '@doctrine.dbal.default_connection'
-            $bankProjectionRepository: '@WalletAccountant\Infrastructure\MongoDB\BankProjectionRepository'
+            $fixturesRegistry: '@fixtures.registry'
+
+    fixtures.registry:
+        class: WalletAccountant\Tests\Functional\Fixtures\FixturesRegistry
+        arguments:
+            $fixtures:
+                - '@fixtures.user_with_password'
+                - '@fixtures.user_with_password_recovery_initiated'
+                - '@fixtures.bank'
+
+    #
+    # User
+    #
+    fixtures.user_with_password:
+        class: WalletAccountant\Tests\Functional\Fixtures\User\UserWithPassword
+        arguments:
+            $eventStore: '@prooph_event_store.user_store'
+            $projectionRunner: '@walletaccountant.projection_runner.user'
+
+    fixtures.user_with_password_recovery_initiated:
+        class: WalletAccountant\Tests\Functional\Fixtures\User\UserWithPasswordRecoveryInitiated
+        arguments:
+            $eventStore: '@prooph_event_store.user_store'
+            $projectionRunner: '@walletaccountant.projection_runner.user'
+
+    #
+    # Bank
+    #
+    fixtures.bank:
+        class: WalletAccountant\Tests\Functional\Fixtures\Bank\Bank
+        arguments:
+            $eventStore: '@prooph_event_store.bank_store'
+            $projectionRunner: '@walletaccountant.projection_runner.bank'

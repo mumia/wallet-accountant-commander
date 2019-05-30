@@ -2,12 +2,12 @@
 
 namespace WalletAccountant\Domain\User\Command;
 
-use WalletAccountant\Domain\Common\Command;
+use WalletAccountant\Domain\Common\AbstractCommand;
 
 /**
  * RecoverUserPassword
  */
-final class RecoverUserPassword extends Command
+final class RecoverUserPassword extends AbstractCommand
 {
     public const CODE = 'code';
     public const PASSWORD = 'password';

@@ -2,25 +2,33 @@
 
 namespace WalletAccountant\Domain\Bank\Command;
 
+use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 use WalletAccountant\Domain\Bank\Id\BankId;
-use WalletAccountant\Domain\Common\Command;
 use WalletAccountant\Domain\Bank\Name\Name;
+use WalletAccountant\Domain\Common\AbstractCommand;
 
-final class CreateBank extends Command
+/**
+ * CreateBank
+ */
+final class CreateBank extends AbstractCommand
 {
-    private const ID = 'id';
+    public const ID = 'id';
     public const NAME = 'name';
 
     /**
      * @return BankId
+     *
+     * @throws InvalidArgumentException
      */
-    public function id(): BankId
+    public function bankId(): BankId
     {
         return BankId::createFromString($this->payload()[self::ID]);
     }
 
     /**
      * @return Name
+     *
+     * @throws InvalidArgumentException
      */
     public function name(): Name
     {

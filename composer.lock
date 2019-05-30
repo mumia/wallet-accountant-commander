@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6a3261f9e91fa3f854ba0574391b8f44",
+    "content-hash": "7f27ef60482f436feb251794270a6037",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -5322,6 +5322,53 @@
         }
     ],
     "packages-dev": [
+        {
+            "name": "eso/ireflection",
+            "version": "v0.1.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/entering/ireflection.git",
+                "reference": "fbeae58876079bc057bfca16b6f1bb3a11022541"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/entering/ireflection/zipball/fbeae58876079bc057bfca16b6f1bb3a11022541",
+                "reference": "fbeae58876079bc057bfca16b6f1bb3a11022541",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "phpmd/phpmd": "~1.5.0",
+                "phpunit/phpunit": "3.7.*",
+                "squizlabs/php_codesniffer": "~1.5.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "ESO\\IReflection": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Eduardo Oliviveira",
+                    "email": "entering@gmail.com"
+                }
+            ],
+            "description": "Wrapper around PHP Reflection to make it easier to use",
+            "homepage": "http://github.com/entering/ireflection",
+            "keywords": [
+                "library",
+                "php",
+                "reflection"
+            ],
+            "time": "2016-11-26T20:29:31+00:00"
+        },
         {
             "name": "myclabs/deep-copy",
             "version": "1.9.1",
