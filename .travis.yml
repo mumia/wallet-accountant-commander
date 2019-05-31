@@ -52,7 +52,7 @@ before_script:
  - echo "extension=mongodb.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
  - composer install
  - mkdir -p config/jwt
- - openssl genrsa -out config/jwt/private.pem -aes256 4096 -passout 2aaae9c46fdc2ddc39e659e634dfe4fc
+ - openssl genrsa -out config/jwt/private.pem 4096
  - openssl rsa -pubout -in config/jwt/private.pem -out config/jwt/public.pem
 
 # omitting "script:" will default to phpunit
