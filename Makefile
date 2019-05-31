@@ -3,17 +3,17 @@ MARIADB_HOST = mariadb
 MONGODB_HOST = mongo
 
 run-functional-test:
-	@echo "Running functional tests" \
+	@echo "Running functional tests -- phpunit$(PHPUNIT_CONFIG_PREPEND).xml" \
 	&& ./vendor/bin/phpunit -c phpunit$(PHPUNIT_CONFIG_PREPEND).xml tests/Functional
 .PHONY: run-unit-test
 
 run-integration-test:
-	@echo "Running integration tests" \
+	@echo "Running integration tests -- phpunit$(PHPUNIT_CONFIG_PREPEND).xml" \
 	&& ./vendor/bin/phpunit -c phpunit$(PHPUNIT_CONFIG_PREPEND).xml tests/Integration
 .PHONY: run-integration-test
 
 prepare-phpunit-config:
-	@echo "Preparing test config" \
+	@echo "Preparing test config -- phpunit$(PHPUNIT_CONFIG_PREPEND).xml.dist phpunit$(PHPUNIT_CONFIG_PREPEND).xml" \
 	&& cp phpunit$(PHPUNIT_CONFIG_PREPEND).xml.dist phpunit$(PHPUNIT_CONFIG_PREPEND).xml
 .PHONY: prepare-phpunit-config
 
