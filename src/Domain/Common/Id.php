@@ -5,12 +5,11 @@ namespace WalletAccountant\Domain\Common;
 use function get_class;
 use Ramsey\Uuid\Uuid;
 use WalletAccountant\Common\Exceptions\InvalidArgumentException;
-use WalletAccountant\Common\Stringable\StringableInterface;
 
 /**
  * Id
  */
-abstract class Id implements ValueObjectInterface, StringableInterface
+abstract class Id implements ValueObjectInterface
 {
     /**
      * @var string

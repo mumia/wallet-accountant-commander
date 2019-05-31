@@ -4,10 +4,10 @@ namespace WalletAccountant\Common\Exceptions\Bank;
 
 use LogicException;
 use function sprintf;
-use WalletAccountant\Domain\Bank\Id\BankId;
 
 /**
- * UserNotFoundException
+ * Class BankNotFoundException
+ * @package WalletAccountant\Common\Exceptions\Bank
  */
 class BankNotFoundException extends LogicException
 {
@@ -20,12 +20,12 @@ class BankNotFoundException extends LogicException
     }
 
     /**
-     * @param BankId $bankId
+     * @param string $userId
      *
      * @return BankNotFoundException
      */
-    public static function withId(BankId $bankId): self
+    public static function withId(string $userId): self
     {
-        return new self(sprintf('id "%s"', $bankId->toString()));
+        return new self(sprintf('id "%s"', $userId));
     }
 }

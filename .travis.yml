@@ -4,9 +4,19 @@ language: php
 # list any PHP version you want to test against
 php:
   # aliased to a recent 7.x version
-  - 7.2
+  - 7.3
 
-# optionally specify a list of environments, for example to test different RDBMS
+dist: xenial
+addons:
+ apt:
+  sources:
+   - mongodb-4.0-xenial
+
+services:
+ - mysql
+ - mongodb
+
+   # optionally specify a list of environments, for example to test different RDBMS
 env:
 #  - DB=mysql
 #  - DB=pgsql
@@ -27,20 +37,27 @@ before_script:
 #  - if [[ "$DB" == "mysql" ]]; then mysql -e "create database IF NOT EXISTS hello_world_test;" -uroot; fi
  - sudo apt-get install software-properties-common
  - sudo apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xcbcb082a1bb943db
- - sudo add-apt-repository 'deb [arch=amd64,i386,ppc64el] http://mirrors.up.pt/pub/mariadb/repo/10.3/ubuntu trusty main'
- - sudo apt-get update
- - sudo apt-get install mariadb-server mongodb
+# - sudo add-apt-repository 'deb [arch=amd64,i386,ppc64el] http://mirrors.up.pt/pub/mariadb/repo/10.3/ubuntu trusty main'
+# - sudo apt-get update
+# - sudo apt-get install mariadb-server
+# mongodb php-pear
  - phpenv config-rm xdebug.ini
- - wget https://phar.phpunit.de/phpunit-6.phar; mv phpunit-6.phar phpunit; chmod 755 phpunit;
+ - wget https://phar.phpunit.de/phpunit.phar; mv phpunit.phar phpunit; chmod 755 phpunit;
+ - cp phpunit.xml.dist phpunit.xml
  - composer self-update
  - composer global require "hirak/prestissimo:^0.3" --prefer-dist --no-progress --no-suggest --optimize-autoloader --classmap-authoritative
  - composer clear-cache
+ #- sudo apt-get install php-pear libcurl3-openssl-dev
+ #- pecl install mongodb
  - echo "extension=mongodb.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
  - composer install
+ - mkdir -p config/jwt
+ - openssl genrsa -out config/jwt/private.pem 4096
+ - openssl rsa -pubout -in config/jwt/private.pem -out config/jwt/public.pem
 
 # omitting "script:" will default to phpunit
 # use the $DB env variable to determine the phpunit.xml to use
-script: make test-travis
+script: make test-travis && make test-integration-travis
 
 # configure notifications (email, IRC, campfire etc)
 #notifications:

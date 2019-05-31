@@ -5,32 +5,30 @@ namespace WalletAccountant\Domain\Bank;
 use Prooph\EventSourcing\AggregateChanged;
 use Prooph\EventSourcing\AggregateRoot;
 use WalletAccountant\Common\Exceptions\InvalidArgumentException;
-use WalletAccountant\Domain\Bank\Event\BankWasUpdated;
 use WalletAccountant\Domain\Bank\Event\BankWasCreated;
+use WalletAccountant\Domain\Bank\Event\BankWasUpdated;
 use WalletAccountant\Domain\Bank\Id\BankId;
+use WalletAccountant\Domain\Bank\Name\Name;
 
-/**
- * Bank
- */
-final class Bank extends AggregateRoot
+class Bank extends AggregateRoot
 {
     /**
      * @var BankId
      */
-    private $id;
+    protected $id;
 
     /**
-     * @var string
+     * @var Name
      */
-    private $name;
+    protected $name;
 
     /**
      * @param BankId $id
-     * @param string $name
+     * @param Name $name
      *
      * @return Bank
      */
-    public static function createBank(BankId $id, string $name): self
+    public static function createBank(BankId $id, Name $name): self
     {
         $bank = new self();
 
@@ -42,16 +40,14 @@ final class Bank extends AggregateRoot
     /**
      * @return BankId
      */
-    public function id(): BankId
-    {
+    public function id() : BankId {
         return $this->id;
     }
 
     /**
-     * @return string
+     * @return Name
      */
-    public function name(): string
-    {
+    public function name() : Name {
         return $this->name;
     }
 
@@ -68,15 +64,13 @@ final class Bank extends AggregateRoot
      */
     protected function aggregateId(): string
     {
-        return $this->id()->toString();
+        return $this->id->toString();
     }
 
     /**
      * @param BankWasCreated $event
-     *
-     * @throws InvalidArgumentException
      */
-    protected function whenBankWasCreated(BankWasCreated $event): void
+    protected function whenBankWasCreated(BankWasCreated $event) : void
     {
         $this->id = BankId::createFromString($event->id());
         $this->name = $event->name();
@@ -94,8 +88,6 @@ final class Bank extends AggregateRoot
 
     /**
      * @param AggregateChanged $event
-     *
-     * @throws InvalidArgumentException
      */
     protected function apply(AggregateChanged $event): void
     {

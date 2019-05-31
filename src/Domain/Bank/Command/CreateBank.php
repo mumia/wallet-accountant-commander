@@ -4,12 +4,13 @@ namespace WalletAccountant\Domain\Bank\Command;
 
 use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 use WalletAccountant\Domain\Bank\Id\BankId;
+use WalletAccountant\Domain\Bank\Name\Name;
 use WalletAccountant\Domain\Common\AbstractCommand;
 
 /**
  * CreateBank
  */
-class CreateBank extends AbstractCommand
+final class CreateBank extends AbstractCommand
 {
     public const ID = 'id';
     public const NAME = 'name';
@@ -25,14 +26,14 @@ class CreateBank extends AbstractCommand
     }
 
     /**
-     * @return string
+     * @return Name
      *
      * @throws InvalidArgumentException
      */
-    public function name(): string
+    public function name(): Name
     {
         $payload = $this->payload();
 
-        return $payload[self::NAME];
+        return new Name($payload[self::NAME]);
     }
 }

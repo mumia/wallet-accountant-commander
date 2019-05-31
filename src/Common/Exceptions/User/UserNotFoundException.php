@@ -4,8 +4,6 @@ namespace WalletAccountant\Common\Exceptions\User;
 
 use LogicException;
 use function sprintf;
-use WalletAccountant\Domain\User\Email\Email;
-use WalletAccountant\Domain\User\Id\UserId;
 
 /**
  * UserNotFoundException
@@ -21,23 +19,23 @@ class UserNotFoundException extends LogicException
     }
 
     /**
-     * @param UserId $userId
+     * @param string $userId
      *
      * @return UserNotFoundException
      */
-    public static function withId(UserId $userId): self
+    public static function withId(string $userId): self
     {
-        return new self(sprintf('id "%s"', $userId->toString()));
+        return new self(sprintf('id "%s"', $userId));
     }
 
     /**
-     * @param Email $email
+     * @param string $email
      *
      * @return UserNotFoundException
      */
-    public static function withEmail(Email $email): self
+    public static function withEmail(string $email): self
     {
-        return new self(sprintf('email "%s"', $email->toString()));
+        return new self(sprintf('email "%s"', $email));
     }
 
     /**

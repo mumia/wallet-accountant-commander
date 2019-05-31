@@ -2,38 +2,53 @@
 
 namespace WalletAccountant\Projection;
 
-use Prooph\Bundle\EventStore\Projection\ReadModelProjection;
-use Prooph\EventStore\Projection\ProjectionManager;
-use Prooph\EventStore\Projection\ReadModel;
+use Exception;
+use Prooph\Bundle\EventStore\Command\ProjectionRunCommand;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputDefinition;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Tests\Fixtures\DummyOutput;
 
 /**
  * ProjectionRunner
  */
 final class ProjectionRunner
 {
-    /**
-     * @var ReadModelProjection
-     */
-    private $projection;
+    private const PROJECTION_NAME_PARAMETER = 'projection-name';
 
     /**
-     * @param string              $projectionName
-     * @param ReadModelProjection $projection
-     * @param ProjectionManager   $projectionManager
-     * @param ReadModel           $readModel
+     * @var string
      */
-    public function __construct(
-        string $projectionName,
-        ReadModelProjection $projection,
-        ProjectionManager $projectionManager,
-        ReadModel $readModel
-    ) {
-        $projector = $projectionManager->createReadModelProjection($projectionName, $readModel);
-        $this->projection = $projection->project($projector);
+    private $projectionName;
+
+    /**
+     * @var ProjectionRunCommand
+     */
+    private $projectionRunCommand;
+
+    public function __construct(string $projectionName, ProjectionRunCommand $projectionRunCommand) {
+        $this->projectionName = $projectionName;
+        $this->projectionRunCommand = $projectionRunCommand;
     }
 
-    public function run(): void
-    {
-        $this->projection->run(false);
+    /**
+     * @throws Exception
+     */
+    public function run(): void {
+        $input = new ArrayInput(
+            [
+                self::PROJECTION_NAME_PARAMETER => $this->projectionName,
+                '--run-once' => true
+            ],
+            new InputDefinition(
+                [
+                    new InputArgument(self::PROJECTION_NAME_PARAMETER),
+                    new InputOption('--run-once')
+                ]
+            )
+        );
+
+        $this->projectionRunCommand->run($input, new DummyOutput());
     }
 }

@@ -2,6 +2,7 @@
 
 namespace WalletAccountant\Controller;
 
+use Exception;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,6 +23,7 @@ class BankController extends AbstractController
      * @return Response
      *
      * @throws CommandDispatchException
+     * @throws Exception
      */
     public function createBank(Request $request): Response
     {

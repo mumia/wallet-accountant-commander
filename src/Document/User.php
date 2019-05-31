@@ -3,7 +3,7 @@
 namespace WalletAccountant\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
-use Symfony\Component\Security\Core\User\AdvancedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 use WalletAccountant\Common\DateTime\DateTime;
 use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 use WalletAccountant\Document\User\Name;
@@ -17,7 +17,7 @@ use WalletAccountant\Domain\User\Id\UserId;
  *
  * @MongoDB\Document
  */
-final class User implements AdvancedUserInterface
+final class User implements UserInterface
 {
     /**
      * @var UserId
@@ -110,7 +110,7 @@ final class User implements AdvancedUserInterface
      *
      * @throws InvalidArgumentException
      */
-    public function getId(): UserId
+    public function id(): UserId
     {
         return $this->id;
     }
@@ -120,7 +120,7 @@ final class User implements AdvancedUserInterface
      *
      * @throws InvalidArgumentException
      */
-    public function getEmail(): Email
+    public function email(): Email
     {
         return $this->email;
     }
@@ -128,7 +128,7 @@ final class User implements AdvancedUserInterface
     /**
      * @return Name
      */
-    public function getName(): Name
+    public function name(): Name
     {
         return $this->name;
     }
@@ -227,7 +227,7 @@ final class User implements AdvancedUserInterface
      */
     public function getUsername(): string
     {
-        return $this->getEmail()->toString();
+        return $this->email()->toString();
     }
 
     public function eraseCredentials(): void

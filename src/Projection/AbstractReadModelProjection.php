@@ -6,7 +6,6 @@ use Prooph\Bundle\EventStore\Projection\ReadModelProjection;
 use WalletAccountant\Common\DateTime\DateTime;
 use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 use WalletAccountant\Document\Common\Authored;
-use WalletAccountant\Document\User\UserId;
 use WalletAccountant\Domain\Common\AbstractAggregateChanged;
 
 /**

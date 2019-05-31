@@ -2,6 +2,7 @@
 
 namespace WalletAccountant\Domain\User\Id;
 
+use Exception;
 use WalletAccountant\Domain\Common\Id;
 use WalletAccountant\Domain\Common\ValueObjectInterface;
 use Ramsey\Uuid\Uuid;
@@ -16,8 +17,9 @@ class UserId extends Id
      * @return UserId
      *
      * @throws InvalidArgumentException
+     * @throws Exception
      */
-    public static function createNew(): UserId
+    public static function createNew(): self
     {
         return new self(Uuid::uuid4()->toString());
     }
@@ -29,7 +31,7 @@ class UserId extends Id
      *
      * @throws InvalidArgumentException
      */
-    public static function createFromString(string $uuid): UserId
+    public static function createFromString(string $uuid): self
     {
         return new self($uuid);
     }

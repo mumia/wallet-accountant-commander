@@ -12,6 +12,7 @@ use WalletAccountant\Domain\User\Event\UserNameChanged;
 use WalletAccountant\Domain\User\Event\UserPasswordRecovered;
 use WalletAccountant\Domain\User\Event\UserPasswordRecoveryInitiated;
 use WalletAccountant\Domain\User\Event\UserWasCreated;
+use WalletAccountant\Domain\User\UserProjectionRepositoryInterface;
 
 /**
  * Class UserProjection
@@ -22,13 +23,11 @@ final class UserProjection implements ReadModelProjection
      * @param ReadModelProjector $projector
      *
      * @return ReadModelProjector
-     *
-     * @throws InvalidArgumentException
      */
     public function project(ReadModelProjector $projector): ReadModelProjector
     {
         $projector
-            ->fromCategory('user')
+            ->fromCategory(UserProjectionRepositoryInterface::COLLECTION_NAME)
             ->when(
                 [
                     UserWasCreated::class => $this->userWasCreatedHandler($projector),
@@ -45,8 +44,6 @@ final class UserProjection implements ReadModelProjection
      * @param ReadModelProjector $projector
      *
      * @return callable
-     *
-     * @throws InvalidArgumentException
      */
     private function userWasCreatedHandler(ReadModelProjector $projector): callable
     {
@@ -72,8 +69,6 @@ final class UserProjection implements ReadModelProjection
      * @param ReadModelProjector $projector
      *
      * @return callable
-     *
-     * @throws InvalidArgumentException
      */
     private function userPasswordRecoveryInitiatedHandler(ReadModelProjector $projector): callable
     {
@@ -87,8 +82,6 @@ final class UserProjection implements ReadModelProjection
      * @param ReadModelProjector $projector
      *
      * @return callable
-     *
-     * @throws InvalidArgumentException
      */
     private function userPasswordRecoveredHandler(ReadModelProjector $projector): callable
     {

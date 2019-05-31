@@ -4,10 +4,9 @@ namespace WalletAccountant\Common\Exceptions\Bank;
 
 use LogicException;
 use function sprintf;
-use WalletAccountant\Domain\Bank\Id\BankId;
 
 /**
- * BankAggregateNotFoundException
+ * UserAggregateNotFoundException
  */
 class BankAggregateNotFoundException extends LogicException
 {
@@ -20,11 +19,11 @@ class BankAggregateNotFoundException extends LogicException
     }
 
     /**
-     * @param BankId $bankId
+     * @param string $userId
      *
      * @return BankAggregateNotFoundException
      */
-    public static function withId(BankId $bankId): self
+    public static function withId(string $bankId): self
     {
         return new self(sprintf('id "%s"', $bankId));
     }

@@ -3,9 +3,11 @@
 namespace WalletAccountant\Tests\Functional\Fixtures\User;
 
 use WalletAccountant\Common\DateTime\DateTime;
+use WalletAccountant\Domain\User\Email\Email;
 use WalletAccountant\Domain\User\Event\UserPasswordRecoveryInitiated;
 use WalletAccountant\Domain\User\Event\UserWasCreated;
 use WalletAccountant\Domain\User\Id\UserId;
+use WalletAccountant\Domain\User\Name\Name;
 use WalletAccountant\Domain\User\Status\Status;
 use WalletAccountant\Tests\Functional\Fixtures\AbstractFixture;
 use WalletAccountant\Domain\User\User as UserDomain;
@@ -47,9 +49,8 @@ class UserWithPasswordRecoveryInitiated extends AbstractFixture
 
         $userWasCreatedEvent = new UserWasCreated(
             $this->getUserId(),
-            self::EMAIL,
-            'first_name',
-            'last_name',
+            Email::createFromString(self::EMAIL),
+            new Name('first_name', 'last_name'),
             '',
             'rwIFHkvWtG89swC3K1YS29PFm7bJdS0tyENY2X9w6wGGsGE7BupqKsMcfgChwqf476ItL/j0njinkXtaJkbz5w==',
             [],
@@ -67,7 +68,7 @@ class UserWithPasswordRecoveryInitiated extends AbstractFixture
 
         $userPasswordRecoveryInitiated = new UserPasswordRecoveryInitiated(
             $this->getUserId(),
-            self::EMAIL,
+            Email::createFromString(self::EMAIL),
             self::PASSWORD_RECOVERY_CODE,
             $now->subDay(1)->addHours(360)
         );

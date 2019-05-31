@@ -47,6 +47,6 @@ class CreatedByMetadataEnricher implements MetadataEnricher
         /** @var User $user */
         $user = $token->getUser();
 
-        return $message->withAddedMetadata(self::METADATA_CREATED_BY, $user->getId()->toString());
+        return $message->withAddedMetadata(self::METADATA_CREATED_BY, $user->id()->toString());
     }
 }

@@ -6,7 +6,8 @@ use WalletAccountant\Common\Exceptions\Bank\BankAggregateNotFoundException;
 use WalletAccountant\Domain\Bank\Id\BankId;
 
 /**
- * BankRepositoryInterface
+ * Interface BankRepositoryInterface
+ * @package WalletAccountant\Domain\Bank
  */
 interface BankRepositoryInterface
 {

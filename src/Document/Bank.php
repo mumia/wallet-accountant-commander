@@ -61,7 +61,7 @@ final class Bank
      *
      * @throws InvalidArgumentException
      */
-    public function getId(): BankId
+    public function id(): BankId
     {
         return $this->id;
     }
@@ -69,7 +69,7 @@ final class Bank
     /**
      * @return string
      */
-    public function getName(): string
+    public function name(): string
     {
         return $this->name;
     }
@@ -77,7 +77,7 @@ final class Bank
     /**
      * @return Authored
      */
-    public function getCreated(): Authored
+    public function created(): Authored
     {
         return $this->created;
     }
@@ -85,7 +85,7 @@ final class Bank
     /**
      * @return Authored
      */
-    public function getUpdated(): Authored
+    public function updated(): Authored
     {
         return $this->updated;
     }

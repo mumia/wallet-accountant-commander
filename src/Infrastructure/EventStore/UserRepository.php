@@ -9,7 +9,8 @@ use WalletAccountant\Domain\User\User;
 use WalletAccountant\Domain\User\UserRepositoryInterface;
 
 /**
- * UserRepository
+ * Class UserRepository
+ * @package WalletAccountant\Infrastructure\EventStore
  */
 final class UserRepository extends AggregateRepository implements UserRepositoryInterface
 {

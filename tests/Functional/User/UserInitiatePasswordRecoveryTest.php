@@ -44,10 +44,10 @@ class UserInitiatePasswordRecoveryTest extends FunctionalTestCase
             $this->fail(sprintf('response in not an %s object', Response::class));
         }
 
-        $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
+        $this->assertEquals(Response::HTTP_OK, $response->getStatusCode(), $response->getContent());
         $this->assertEquals('{"message":"user password recovery initiated"}', $response->getContent());
 
-        $userProjectionRepository = $this->container->get('test.user_projection_repository');
+        $userProjectionRepository = self::$container->get('test.user_projection_repository');
 
         $actualUser = $userProjectionRepository->getByEmail(Email::createFromString(UserWithPassword::EMAIL));
 

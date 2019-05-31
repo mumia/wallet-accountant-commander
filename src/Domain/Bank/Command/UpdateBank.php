@@ -9,7 +9,7 @@ use WalletAccountant\Domain\Common\AbstractCommand;
 /**
  * UpdateBank
  */
-class UpdateBank extends AbstractCommand
+final class UpdateBank extends AbstractCommand
 {
     public const ID = 'id';
     public const NAME = 'name';

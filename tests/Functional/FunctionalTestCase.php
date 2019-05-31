@@ -3,10 +3,9 @@
 namespace WalletAccountant\Tests\Functional;
 
 use Doctrine\DBAL\DBALException;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
-use WalletAccountant\Common\DateTime\DateTime;
 use WalletAccountant\Projection\ProjectionRunner;
 use WalletAccountant\Tests\Functional\Fixtures\FixturesLoader;
 
@@ -15,11 +14,6 @@ use WalletAccountant\Tests\Functional\Fixtures\FixturesLoader;
  */
 abstract class FunctionalTestCase extends WebTestCase
 {
-    /**
-     * @var ContainerInterface
-     */
-    protected $container;
-
     /**
      * @var FixturesLoader
      */
@@ -34,9 +28,16 @@ abstract class FunctionalTestCase extends WebTestCase
     {
         parent::__construct($name, $data, $dataName);
 
-        $kernel = self::bootKernel();
-        $this->container = $kernel->getContainer();
-        $this->fixturesLoader = $this->container->get('fixtures.loader');
+        self::bootKernel();
+        $this->fixturesLoader = self::$container->get('fixtures.loader');
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function setUp(): void
+    {
+        self::bootKernel();
     }
 
     /**
@@ -58,7 +59,7 @@ abstract class FunctionalTestCase extends WebTestCase
         $client = self::createClient();
         $client->post('/login', ['email' => $email, 'password' => $password]);
 
-        $this->assertTrue($client->isOkAndJson());
+        $this->assertTrue($client->isOkAndJson(), $client->getContent());
 
         return $client->getResponse();
     }
@@ -73,6 +74,7 @@ abstract class FunctionalTestCase extends WebTestCase
     {
         static::bootKernel($options);
 
+        /** @var TestClient $client */
         $client = static::$kernel->getContainer()->get('walletaccountant.test.client');
         $client->setServerParameters($server);
 
@@ -81,11 +83,12 @@ abstract class FunctionalTestCase extends WebTestCase
 
     /**
      * @param string $projection
+     * @throws Exception
      */
     protected function runProjection(string $projection): void
     {
         /** @var ProjectionRunner $projectionRunner */
-        $projectionRunner = $this->container->get(sprintf('walletaccountant.projection_runner.%s', $projection));
+        $projectionRunner = self::$container->get(sprintf('walletaccountant.projection_runner.%s', $projection));
         $projectionRunner->run();
     }
 }

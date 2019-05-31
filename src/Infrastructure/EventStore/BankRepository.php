@@ -9,7 +9,8 @@ use WalletAccountant\Domain\Bank\BankRepositoryInterface;
 use WalletAccountant\Domain\Bank\Id\BankId;
 
 /**
- * BankRepository
+ * Class BankRepository
+ * @package WalletAccountant\Infrastructure\EventStore
  */
 final class BankRepository extends AggregateRepository implements BankRepositoryInterface
 {

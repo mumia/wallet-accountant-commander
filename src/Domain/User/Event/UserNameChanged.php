@@ -10,7 +10,7 @@ use WalletAccountant\Domain\User\Name\Name;
 /**
  * UserNameChanged
  */
-class UserNameChanged extends AbstractAggregateChanged
+final class UserNameChanged extends AbstractAggregateChanged
 {
     private const FIRST_NAME = 'first_name';
     private const LAST_NAME = 'last_name';

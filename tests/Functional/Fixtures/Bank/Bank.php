@@ -5,6 +5,7 @@ namespace WalletAccountant\Tests\Functional\Fixtures\Bank;
 use WalletAccountant\Common\DateTime\DateTime;
 use WalletAccountant\Domain\Bank\Event\BankWasCreated;
 use WalletAccountant\Domain\Bank\Id\BankId;
+use WalletAccountant\Domain\Bank\Name\Name;
 use WalletAccountant\Domain\User\Id\UserId;
 use WalletAccountant\Tests\Functional\Fixtures\AbstractFixture;
 use WalletAccountant\Domain\Bank\Bank as BankDomain;
@@ -16,7 +17,6 @@ class Bank extends AbstractFixture
 {
     public const EVENT_CATEGORY = 'bank';
     public const EVENT_AGGREGATE_ID = 'f9145a03-69f7-4852-88d6-dedd330f839a';
-
     public const NAME = 'BIC';
 
     /**
@@ -42,7 +42,7 @@ class Bank extends AbstractFixture
     {
         $events = [];
 
-        $bankWasCreatedEvent = new BankWasCreated(BankId::createFromString($this->getAggregateId()), self::NAME);
+        $bankWasCreatedEvent = new BankWasCreated(BankId::createFromString($this->getAggregateId()), new Name(self::NAME));
         $this->enrichEventWithTestData(
             $bankWasCreatedEvent,
             'eb0af1d6-ccc6-44ad-8490-5ea8eaa3b5d2',

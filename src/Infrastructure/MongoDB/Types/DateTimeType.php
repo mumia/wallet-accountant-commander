@@ -8,7 +8,7 @@ use WalletAccountant\Common\DateTime\DateTime;
 use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 
 /**
- * DateTimeType
+ * DateTimeAnnotation
  */
 class DateTimeType extends Type
 {
@@ -24,7 +24,7 @@ class DateTimeType extends Type
             return $value;
         }
 
-        return $value->toDateTimeMicroFull();
+        return $value->toDateTimeMicro();
     }
 
     /**
@@ -41,7 +41,7 @@ class DateTimeType extends Type
                 return null;
             }
 
-            return DateTime::createFromDateTimeMicroFullFormat($value);
+            return DateTime::createFromDateTimeMicroFormat($value);
         } catch (StandardInvalidArgumentException $exception) {
             throw InvalidArgumentException::createFromStandardException($exception);
         }
@@ -53,7 +53,7 @@ class DateTimeType extends Type
     public function closureToMongo(): string
     {
         return 'if ($value === null || $value instanceof \MongoDate) { $return = $value; } ' .
-            'else { $return $value->toDateTimeMicroFull(); }';
+            'else { $return $value->toDateTimeMicro(); }';
     }
 
     /**
@@ -62,6 +62,6 @@ class DateTimeType extends Type
     public function closureToPHP(): string
     {
         return 'if ($value === null) { $return = null; } ' .
-            'else { $return = \WalletAccountant\Common\DateTime\DateTime::createFromDateTimeMicroFullFormat($value); }';
+            'else { $return = \WalletAccountant\Common\DateTime\DateTime::createFromDateTimeMicroFormat($value); }';
     }
 }

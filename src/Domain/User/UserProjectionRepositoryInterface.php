@@ -13,6 +13,8 @@ use WalletAccountant\Domain\User\Id\UserId;
  */
 interface UserProjectionRepositoryInterface
 {
+    public const COLLECTION_NAME = 'user';
+
     /**
      * @param UserDocument      $newDocument
      * @param null|UserDocument $oldDocument

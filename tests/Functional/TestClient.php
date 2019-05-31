@@ -7,7 +7,7 @@ use function sprintf;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\DomCrawler\Crawler;;
+use Symfony\Component\DomCrawler\Crawler;
 use WalletAccountant\Common\Authenticator\JwtAuthenticator;
 
 /**
@@ -256,7 +256,7 @@ class TestClient extends Client
         $parameters = $options['parameters'] ?? [];
         $files = $options['files'] ?? [];
         $server = $options['server'] ?? [];
-        $content = $options['content'] ?? [];
+        $content = $options['content'] ?? '';
         $changeHistory  = $options['change_history'] ?? true;
 
         if ($this->hasAuthorizationToken()) {

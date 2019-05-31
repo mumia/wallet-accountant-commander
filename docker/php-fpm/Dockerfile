@@ -1,4 +1,4 @@
-FROM php:7.2-fpm-alpine
+FROM php:7.3-fpm-alpine
 
 RUN apk update && apk upgrade && apk add --no-cache bash git openssh unzip zip
 
@@ -12,7 +12,7 @@ RUN composer global require "hirak/prestissimo:^0.3" --prefer-dist --no-progress
     && composer clear-cache
 
 # Set timezone
-RUN rm /etc/localtime
+#RUN rm /etc/localtime
 RUN ln -s /usr/share/zoneinfo/Europe/Lisbon /etc/localtime
 RUN "date"
 
@@ -27,13 +27,14 @@ RUN apk add --no-cache --virtual .build-deps \
         icu-dev \
         zlib-dev \
         libxml2-dev \
-        && docker-php-ext-install intl soap pdo_mysql bcmath
+        && docker-php-ext-install intl soap pdo_mysql
 
 RUN pecl install mongodb
 
 # http://symfony.com/doc/current/performance.html
-RUN pecl install apcu-5.1.5
-RUN docker-php-ext-enable opcache apcu mongodb
+#RUN pecl install apcu-5.1.5
+# apcu
+RUN docker-php-ext-enable opcache mongodb
 # opcache
 RUN echo "opcache.max_accelerated_files=20000" >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini
 RUN echo "realpath_cache_ttl=600" >> /usr/local/etc/php/conf.d/php.ini

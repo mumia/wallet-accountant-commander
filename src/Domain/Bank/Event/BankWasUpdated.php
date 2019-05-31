@@ -8,7 +8,7 @@ use WalletAccountant\Domain\Common\AbstractAggregateChanged;
 /**
  * BankWasUpdated
  */
-class BankWasUpdated extends AbstractAggregateChanged
+final class BankWasUpdated extends AbstractAggregateChanged
 {
     private const NAME = 'name';
 

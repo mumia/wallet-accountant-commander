@@ -9,7 +9,6 @@ use Prooph\EventSourcing\AggregateRoot;
 use function random_bytes;
 use WalletAccountant\Common\Exceptions\User\LogicException;
 use WalletAccountant\Domain\User\Email\Email;
-use WalletAccountant\Domain\User\Event\UserNameChanged;
 use WalletAccountant\Domain\User\Event\UserPasswordRecovered;
 use WalletAccountant\Domain\User\Event\UserPasswordRecoveryInitiated;
 use WalletAccountant\Domain\User\Event\UserWasCreated;
@@ -27,37 +26,37 @@ final class User extends AggregateRoot
     /**
      * @var UserId
      */
-    private $id;
+    protected $id;
 
     /**
      * @var Email
      */
-    private $email;
+    protected $email;
 
     /**
      * @var Name
      */
-    private $name;
+    protected $name;
 
     /**
      * @var string
      */
-    private $password;
+    protected $password;
 
     /**
      * @var string
      */
-    private $salt;
+    protected $salt;
 
     /**
      * @var array
      */
-    private $roles;
+    protected $roles;
 
     /**
      * @var Status
      */
-    private $status;
+    protected $status;
 
     /**
      * @var Recovery
@@ -81,9 +80,8 @@ final class User extends AggregateRoot
         $user->recordThat(
             new UserWasCreated(
                 $id,
-                $email->toString(),
-                $name->first(),
-                $name->last(),
+                $email,
+                $name,
                 '',
                 base64_encode(random_bytes(64)),
                 [],
@@ -192,15 +190,7 @@ final class User extends AggregateRoot
      */
     public function recoverPassword(string $encodedPassword): void
     {
-        $this->recordThat(new UserPasswordRecovered($this->id(), $encodedPassword));
-    }
-
-    /**
-     * @param Name $name
-     */
-    public function replaceName(Name $name): void
-    {
-        $this->recordThat(new UserNameChanged($this->id(), $name));
+        $this->recordThat(new UserPasswordRecovered($this->id()->toString(), $encodedPassword));
     }
 
     /**
@@ -260,14 +250,6 @@ final class User extends AggregateRoot
     }
 
     /**
-     * @param UserNameChanged $event
-     */
-    protected function whenUserNameChanged(UserNameChanged $event): void
-    {
-        $this->name = $event->name();
-    }
-
-    /**
      * @param AggregateChanged $event
      *
      * @throws InvalidArgumentException
@@ -288,12 +270,6 @@ final class User extends AggregateRoot
 
         if ($event instanceof UserPasswordRecovered) {
             $this->whenUserPasswordRecovered($event);
-
-            return;
-        }
-
-        if ($event instanceof UserNameChanged) {
-            $this->whenUserNameChanged($event);
 
             return;
         }

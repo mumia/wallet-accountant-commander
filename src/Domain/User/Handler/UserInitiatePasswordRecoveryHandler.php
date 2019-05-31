@@ -47,7 +47,7 @@ final class UserInitiatePasswordRecoveryHandler
     {
         $user = $this->userProjectionRepository->getByEmail($command->email());
 
-        $userDomain = $this->userRepository->get($user->getId());
+        $userDomain = $this->userRepository->get($user->id());
 
         $userDomain->initiatePasswordRecovery();
 

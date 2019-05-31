@@ -67,7 +67,7 @@ final class BankReadModel extends AbstractMongoDBReadModel
     {
         $oldBank = $this->bankProjectionRepository->getById($id);
 
-        $newBank = new Bank($oldBank->getId(), $name, $oldBank->getCreated(), $updated);
+        $newBank = new Bank($oldBank->id(), $name, $oldBank->created(), $updated);
 
         $this->bankProjectionRepository->persist($newBank, $oldBank);
     }

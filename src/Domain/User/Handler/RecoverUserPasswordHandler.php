@@ -67,7 +67,7 @@ final class RecoverUserPasswordHandler
         $this->validateInputs($code, $password, $repeatPassword);
 
         $user = $this->userProjectionRepository->getByPasswordRecoveryCode($code);
-        $userDomain = $this->userRepository->get($user->getId());
+        $userDomain = $this->userRepository->get($user->id());
 
         if (!$userDomain->hasRecovery()) {
             throw new LogicException('user is not in password recovery mode');

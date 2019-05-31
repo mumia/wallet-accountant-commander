@@ -2,7 +2,7 @@ services:
     walletaccountant.test.client:
         public: true
         class: WalletAccountant\Tests\Functional\TestClient
-        scope: prototype
+        #scope: prototype
         arguments:
             $kernel: "@kernel"
             $server: "%test.client.parameters%"
@@ -14,7 +14,7 @@ services:
     #
     test.jwt.encoder:
         public: true
-        alias: lexik_jwt_authentication.encoder.default
+        alias: lexik_jwt_authentication.encoder.lcobucci
 
     test.user_projection_repository:
         public: true
@@ -23,10 +23,6 @@ services:
     test.bank_projection_repository:
         public: true
         alias: WalletAccountant\Infrastructure\MongoDB\BankProjectionRepository
-
-    test.account_projection_repository:
-        public: true
-        alias: WalletAccountant\Infrastructure\MongoDB\AccountProjectionRepository
 
     test.password_encoder:
         public: true
@@ -49,8 +45,10 @@ services:
                 - '@fixtures.user_with_password'
                 - '@fixtures.user_with_password_recovery_initiated'
                 - '@fixtures.bank'
-                - '@fixtures.account'
 
+    #
+    # User
+    #
     fixtures.user_with_password:
         class: WalletAccountant\Tests\Functional\Fixtures\User\UserWithPassword
         arguments:
@@ -63,14 +61,11 @@ services:
             $eventStore: '@prooph_event_store.user_store'
             $projectionRunner: '@walletaccountant.projection_runner.user'
 
+    #
+    # Bank
+    #
     fixtures.bank:
         class: WalletAccountant\Tests\Functional\Fixtures\Bank\Bank
         arguments:
             $eventStore: '@prooph_event_store.bank_store'
             $projectionRunner: '@walletaccountant.projection_runner.bank'
-
-    fixtures.account:
-        class: WalletAccountant\Tests\Functional\Fixtures\Account\Account
-        arguments:
-            $eventStore: '@prooph_event_store.account_store'
-            $projectionRunner: '@walletaccountant.projection_runner.account'

@@ -32,9 +32,7 @@ security:
                     - walletaccountant.authenticator.login
 
         main:
-            pattern: ^/
             anonymous: false
-            security: true
             guard:
                 authenticators:
                     - walletaccountant.authenticator.jwt

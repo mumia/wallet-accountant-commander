@@ -8,6 +8,7 @@ use Twig_Environment;
 use Twig_Error_Loader;
 use Twig_Error_Runtime;
 use Twig_Error_Syntax;
+use function var_dump;
 use WalletAccountant\Domain\User\Event\UserPasswordRecoveryInitiated;
 
 /**
@@ -26,8 +27,7 @@ class SendPasswordRecoveryInitiatedEmailProcessManager
     private $templating;
 
     /**
-     * @param Swift_Mailer     $mailer
-     * @param Twig_Environment $templating
+     * @param Swift_Mailer $mailer
      */
     public function __construct(Swift_Mailer $mailer, Twig_Environment $templating)
     {

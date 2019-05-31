@@ -2,10 +2,11 @@
 
 namespace WalletAccountant\Domain\Bank\Id;
 
-use Ramsey\Uuid\Uuid;
-use WalletAccountant\Common\Exceptions\InvalidArgumentException;
+use Exception;
 use WalletAccountant\Domain\Common\Id;
 use WalletAccountant\Domain\Common\ValueObjectInterface;
+use Ramsey\Uuid\Uuid;
+use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 
 /**
  * BankId
@@ -16,6 +17,7 @@ class BankId extends Id
      * @return BankId
      *
      * @throws InvalidArgumentException
+     * @throws Exception
      */
     public static function createNew(): self
     {

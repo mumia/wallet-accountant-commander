@@ -5,6 +5,7 @@ namespace WalletAccountant\Domain\User\Event;
 use WalletAccountant\Common\DateTime\DateTime;
 use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 use WalletAccountant\Domain\Common\AbstractAggregateChanged;
+use WalletAccountant\Domain\User\Email\Email;
 use WalletAccountant\Domain\User\Id\UserId;
 
 /**
@@ -17,14 +18,15 @@ final class UserPasswordRecoveryInitiated extends AbstractAggregateChanged
     private const EXPIRES_ON = 'expires_on';
 
     /**
-     * @param UserId   $id
-     * @param string   $email
-     * @param string   $code
+     * UserPasswordRecoveryInitiated constructor.
+     * @param UserId $id
+     * @param Email $email
+     * @param string $code
      * @param DateTime $expiresOn
      */
     public function __construct(
         UserId $id,
-        string $email,
+        Email $email,
         string $code,
         DateTime $expiresOn
     ) {

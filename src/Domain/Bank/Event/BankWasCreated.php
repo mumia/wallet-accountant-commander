@@ -4,12 +4,13 @@ namespace WalletAccountant\Domain\Bank\Event;
 
 use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 use WalletAccountant\Domain\Bank\Id\BankId;
+use WalletAccountant\Domain\Bank\Name\Name;
 use WalletAccountant\Domain\Common\AbstractAggregateChanged;
 
 /**
  * BankWasCreated
  */
-class BankWasCreated extends AbstractAggregateChanged
+final class BankWasCreated extends AbstractAggregateChanged
 {
     private const NAME = 'name';
 
@@ -17,9 +18,9 @@ class BankWasCreated extends AbstractAggregateChanged
      * @param BankId $id
      * @param string $name
      */
-    public function __construct(BankId $id, string $name)
+    public function __construct(BankId $id, Name $name)
     {
-        parent::__construct($id->toString(), [self::NAME => $name]);
+        parent::__construct($id->toString(), [self::NAME => $name->value()]);
     }
 
     /**
@@ -33,10 +34,10 @@ class BankWasCreated extends AbstractAggregateChanged
     }
 
     /**
-     * @return string
+     * @return Name
      */
-    public function name(): string
+    public function name(): Name
     {
-        return $this->payload()[self::NAME];
+        return new Name($this->payload()[self::NAME]);
     }
 }

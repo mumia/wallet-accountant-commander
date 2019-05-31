@@ -15,8 +15,6 @@ use WalletAccountant\Common\Exceptions\User\UserNotFoundException;
  */
 final class UserProjectionRepository extends AbstractProjectionRepository implements UserProjectionRepositoryInterface
 {
-    protected const COLLECTION_NAME = 'user';
-
     /**
      * {@inheritdoc}
      */

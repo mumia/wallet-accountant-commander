@@ -95,7 +95,7 @@ final class LoginAuthenticator implements AuthenticatorInterface
 
         if (!$user->getStatus()->canLogin()) {
             throw new CustomUserMessageAuthenticationException(
-                sprintf('User email "%s" cannot login (%s)', $user->getEmail(), $user->getStatus()->toString())
+                sprintf('User email "%s" cannot login (%s)', $user->email(), $user->getStatus()->toString())
             );
         }
 
@@ -126,10 +126,7 @@ final class LoginAuthenticator implements AuthenticatorInterface
     }
 
     /**
-     * {@inheritdoc}
-     *
-     * @throws JWTEncodeFailureException
-     * @throws InvalidArgumentException
+     * @inheritDoc
      */
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey): JsonResponse
     {
@@ -139,13 +136,13 @@ final class LoginAuthenticator implements AuthenticatorInterface
         //Generate JWT token
         $jWToken = $this->jwtEncoder->encode(
             [
-                'sub' => $user->getId()->toString(),
+                'sub' => $user->id()->toString(),
                 'iat' => DateTime::now()->getTimestamp(),
                 'exp' => DateTime::now()->addDays(self::JWT_EXPIRE_DAYS)->getTimestamp(),
-                'email' => $user->getEmail()->toString(),
+                'email' => $user->email()->toString(),
                 'name' => [
-                    'first' => $user->getName()->getFirst(),
-                    'last' => $user->getName()->getLast()
+                    'first' => $user->name()->getFirst(),
+                    'last' => $user->name()->getLast()
                 ]
             ]
         );

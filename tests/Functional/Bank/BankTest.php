@@ -10,6 +10,7 @@ use WalletAccountant\Document\Bank;
 use WalletAccountant\Document\Common\Authored;
 use WalletAccountant\Domain\Bank\Id\BankId;
 use WalletAccountant\Domain\User\Id\UserId;
+use WalletAccountant\Infrastructure\MongoDB\BankProjectionRepository;
 use WalletAccountant\Tests\Functional\Fixtures\Bank\Bank as BankFixture;
 use WalletAccountant\Tests\Functional\Fixtures\User\UserWithPassword;
 use WalletAccountant\Tests\Functional\FunctionalTestCase;
@@ -39,7 +40,7 @@ class BankTest extends FunctionalTestCase
 
         $bankId = BankId::createFromString(json_decode($client->getContent(), true)['id']);
 
-        $bankProjectionRepository = $this->container->get('test.bank_projection_repository');
+        $bankProjectionRepository = self::$container->get('test.bank_projection_repository');
         $actualBank = $bankProjectionRepository->getById($bankId);
 
         $authoredBy = UserId::createFromString('6eeaf6b5-ce76-4d15-b370-5e148b93c8db');
@@ -60,11 +61,12 @@ class BankTest extends FunctionalTestCase
         $this->loadFixtures();
         $response = $this->login(UserWithPassword::EMAIL, UserWithPassword::PASSWORD);
 
-        $bankProjectionRepository = $this->container->get('test.bank_projection_repository');
+        /** @var BankProjectionRepository $bankProjectionRepository */
+        $bankProjectionRepository = self::$container->get('test.bank_projection_repository');
         $previousBank = $bankProjectionRepository->getById(
             BankId::createFromString(BankFixture::EVENT_AGGREGATE_ID)
         );
-        $this->assertEquals(BankFixture::NAME, $previousBank->getName());
+        $this->assertEquals(BankFixture::NAME, $previousBank->name());
 
         $client = self::createClient();
         $client->setAuthorizationTokenFromResponse($response);
@@ -86,7 +88,6 @@ class BankTest extends FunctionalTestCase
             $expectedAuthoredCreated,
             $expectedAuthoredUpdated
         );
-
 
         $this->assertEquals($expectedBank, $actualBank);
     }

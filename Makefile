@@ -3,12 +3,17 @@ MARIADB_HOST = mariadb
 MONGODB_HOST = mongo
 
 run-functional-test:
-	@echo "Running functional tests" \
-	&& ./phpunit -c phpunit$(PHPUNIT_CONFIG_PREPEND).xml tests/Functional
+	@echo "Running functional tests -- phpunit$(PHPUNIT_CONFIG_PREPEND).xml" \
+	&& ./vendor/bin/phpunit -c phpunit$(PHPUNIT_CONFIG_PREPEND).xml tests/Functional
 .PHONY: run-unit-test
 
+run-integration-test:
+	@echo "Running integration tests -- phpunit$(PHPUNIT_CONFIG_PREPEND).xml" \
+	&& ./vendor/bin/phpunit -c phpunit$(PHPUNIT_CONFIG_PREPEND).xml tests/Integration
+.PHONY: run-integration-test
+
 prepare-phpunit-config:
-	@echo "Preparing test config" \
+	@echo "Preparing test config -- phpunit$(PHPUNIT_CONFIG_PREPEND).xml.dist phpunit$(PHPUNIT_CONFIG_PREPEND).xml" \
 	&& cp phpunit$(PHPUNIT_CONFIG_PREPEND).xml.dist phpunit$(PHPUNIT_CONFIG_PREPEND).xml
 .PHONY: prepare-phpunit-config
 
@@ -28,6 +33,15 @@ test-travis: MARIADB_HOST = 127.0.0.1
 test-travis: MONGODB_HOST = 127.0.0.1
 test-travis: test
 .PHONY: test-travis
+
+test-integration: prepare-phpunit-config prepare-test-database run-integration-test
+.PHONY: test-integration
+
+test-integration-travis: PHPUNIT_CONFIG_PREPEND = -travis
+test-integration-travis: MARIADB_HOST = 127.0.0.1
+test-integration-travis: MONGODB_HOST = 127.0.0.1
+test-integration-travis: test-integration
+.PHONY: test-integration-travis
 
 # local docker
 build-env:

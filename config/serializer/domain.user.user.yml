@@ -1,9 +1,0 @@
-mapping:
-    class: WalletAccountant\Document\User
-    aliased_properties:
-        email: 'email'
-    hide_properties: ['password', 'salt', 'recovery']
-    id_properties:
-        - id
-    urls:
-        self: user_get_by_id

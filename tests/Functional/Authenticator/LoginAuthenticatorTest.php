@@ -3,9 +3,8 @@
 namespace WalletAccountant\Tests\Functional\Authenticator;
 
 use Doctrine\DBAL\DBALException;
-use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
+use stdClass;
 use WalletAccountant\Common\DateTime\DateTime;
-use WalletAccountant\Tests\Functional\Fixtures\Authenticator\AuthenticatorFixtures;
 use WalletAccountant\Tests\Functional\Fixtures\User\UserWithPassword;
 use WalletAccountant\Tests\Functional\FunctionalTestCase;
 
@@ -16,7 +15,6 @@ class LoginAuthenticatorTest extends FunctionalTestCase
 {
     /**
      * @throws DBALException
-     * @throws JWTDecodeFailureException
      */
     public function testLogin()
     {
@@ -30,16 +28,18 @@ class LoginAuthenticatorTest extends FunctionalTestCase
 
         $this->assertFalse(isset($token['error']));
 
-        $encoder = $this->container->get('test.jwt.encoder');
+        $encoder = self::$container->get('test.jwt.encoder');
         $decodedToken = $encoder->decode($token['token']);
+
+        // This mimics the behaviour of the 'lcobucci' decoder, but in my opinion it should return the array.
+        $name = new stdClass();
+        $name->first = UserWithPassword::FIRST_NAME;
+        $name->last = UserWithPassword::LAST_NAME;
 
         $expectedToken = [
             'exp' => DateTime::now()->addDays(10)->getTimestamp(),
             'email' => UserWithPassword::EMAIL,
-            'name' => [
-                'first' => UserWithPassword::FIRST_NAME,
-                'last' => UserWithPassword::LAST_NAME
-            ],
+            'name' => $name,
             'iat' => DateTime::now()->getTimestamp(),
             'sub' => UserWithPassword::EVENT_AGGREGATE_ID
         ];

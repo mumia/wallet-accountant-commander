@@ -2,13 +2,17 @@
 
 namespace WalletAccountant\Domain\Bank\Handler;
 
-use WalletAccountant\Common\Exceptions\InvalidArgumentException;
 use WalletAccountant\Domain\Bank\Bank;
+use WalletAccountant\Domain\Bank\BankProjectionRepositoryInterface;
 use WalletAccountant\Domain\Bank\BankRepositoryInterface;
 use WalletAccountant\Domain\Bank\Command\CreateBank;
+use WalletAccountant\Common\Exceptions\InvalidArgumentException;
+use WalletAccountant\Common\Exceptions\User\UserEmailNotUniqueException;
+use WalletAccountant\Domain\Bank\Id\BankId;
 
 /**
- * CreateBankHandler
+ * Class CreateBankHandler
+ * @package WalletAccountant\Domain\Bank\Handler
  */
 final class CreateBankHandler
 {
@@ -18,17 +22,23 @@ final class CreateBankHandler
     private $bankRepository;
 
     /**
-     * @param BankRepositoryInterface $bankRepository
+     * @var BankProjectionRepositoryInterface
      */
-    public function __construct(BankRepositoryInterface $bankRepository)
-    {
+    private $bankProjectionRepository;
+
+    public function __construct(
+        BankRepositoryInterface $bankRepository,
+        BankProjectionRepositoryInterface $bankProjectionRepository
+    ) {
         $this->bankRepository = $bankRepository;
+        $this->bankProjectionRepository = $bankProjectionRepository;
     }
 
     /**
      * @param CreateBank $command
      *
      * @throws InvalidArgumentException
+     * @throws UserEmailNotUniqueException
      */
     public function __invoke(CreateBank $command): void
     {
